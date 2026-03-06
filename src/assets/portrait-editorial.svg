@@ -1,0 +1,24 @@
+<svg width="1080" height="1320" viewBox="0 0 1080 1320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1080" height="1320" fill="#F3ECEA"/>
+  <rect x="64" y="64" width="952" height="1192" rx="52" fill="#FFF8F7"/>
+  <circle cx="840" cy="262" r="180" fill="#F31D5B" fill-opacity="0.1"/>
+  <circle cx="272" cy="1016" r="224" fill="#161116" fill-opacity="0.05"/>
+  <path d="M712 278C648 224 546 204 464 246C376 292 330 388 332 514V1156H766V520C766 420 748 320 712 278Z" fill="#1B151C"/>
+  <path d="M690 420C690 312 626 232 530 232C434 232 370 316 370 428V1156H690V420Z" fill="#2B2230"/>
+  <path d="M458 550C458 442 516 360 600 360C692 360 742 450 742 548V1156H458V550Z" fill="#F6D8D2"/>
+  <path d="M458 610C458 496 512 420 596 420C676 420 722 492 722 600V1156H458V610Z" fill="#FFEDE7"/>
+  <path d="M414 602C414 516 450 430 526 394C614 352 736 392 774 500C796 562 790 642 766 708C736 786 684 846 678 930H430C418 858 398 770 400 692C400 660 404 630 414 602Z" fill="#F2CFC7"/>
+  <path d="M458 930C492 850 536 826 594 826C652 826 704 848 742 930V1156H458V930Z" fill="#FFF8F7"/>
+  <path d="M424 548C430 456 480 398 558 382C632 366 712 404 748 476C774 528 774 606 742 668C716 718 674 744 664 804H450C434 742 418 694 418 630C418 602 420 576 424 548Z" fill="#FFEDE8"/>
+  <path d="M450 516C450 432 500 374 572 374C642 374 700 426 708 512C714 570 692 630 658 672C632 704 592 718 554 716C508 714 470 694 454 656C444 632 446 604 450 516Z" fill="#FFF4F0"/>
+  <path d="M500 498C500 470 520 448 548 448C578 448 602 470 602 498C602 526 578 548 548 548C520 548 500 526 500 498Z" fill="#1B151C"/>
+  <path d="M630 492C630 468 648 450 672 450C698 450 716 468 716 492C716 518 698 536 672 536C648 536 630 518 630 492Z" fill="#1B151C"/>
+  <path d="M516 644C552 682 624 684 672 642" stroke="#1B151C" stroke-width="18" stroke-linecap="round"/>
+  <path d="M448 376C474 268 600 212 704 264C786 304 826 404 812 506C806 548 786 588 756 618C742 538 674 482 602 472C528 462 468 420 448 376Z" fill="#1B151C"/>
+  <path d="M788 636C856 652 902 706 902 784C902 904 804 980 694 980H610" stroke="#F31D5B" stroke-width="28" stroke-linecap="round"/>
+  <path d="M220 1048H452" stroke="#1B151C" stroke-opacity="0.18" stroke-width="12" stroke-linecap="round"/>
+  <path d="M220 1096H520" stroke="#1B151C" stroke-opacity="0.18" stroke-width="12" stroke-linecap="round"/>
+  <path d="M220 1144H480" stroke="#1B151C" stroke-opacity="0.18" stroke-width="12" stroke-linecap="round"/>
+  <text x="220" y="172" fill="#1B151C" fill-opacity="0.4" font-family="Georgia, serif" font-size="42" letter-spacing="0.38em">GONISH</text>
+  <text x="220" y="238" fill="#F31D5B" font-family="'Brush Script MT', cursive" font-size="88">editorial portrait</text>
+</svg>

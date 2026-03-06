@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-1Thin.woff2")
+    format("woff2");
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-2ExtraLight.woff2")
+    format("woff2");
+  font-weight: 200;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-3Light.woff2")
+    format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-5Medium.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-6SemiBold.woff2")
+    format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2")
+    format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paperozi";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-9Black.woff2")
+    format("woff2");
+  font-weight: 900;
+  font-display: swap;
+}
+
+:root {
+  color: #141014;
+  background: #fffdfc;
+  font-family: "Aptos", "Segoe UI", "Helvetica Neue", "Arial", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background:
+      radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
+      linear-gradient(180deg, #fffdfd 0%, #f8f3f1 54%, #f5f0ef 100%);
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background: transparent;
+    color: #141014;
+  }
+
+  body::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(20, 16, 20, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(20, 16, 20, 0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent);
+    content: "";
+    pointer-events: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  button,
+  a {
+    transition:
+      color 220ms ease,
+      background-color 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease,
+      transform 220ms ease;
+  }
+
+  ::selection {
+    background: rgba(243, 29, 91, 0.18);
+    color: #141014;
+  }
+}
+
+.shell {
+  width: min(1400px, calc(100vw - 2rem));
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    width: min(1400px, calc(100vw - 3rem));
+  }
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    width: min(1400px, calc(100vw - 5rem));
+  }
+}
+
+.section-space {
+  padding-block: clamp(4.5rem, 8vw, 8rem);
+}
+
+.section-space-tight {
+  padding-block: clamp(3rem, 5vw, 5rem);
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(20, 16, 20, 0.08);
+  box-shadow: 0 32px 120px rgba(20, 16, 20, 0.08);
+  backdrop-filter: blur(26px);
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 20, 0.5);
+}
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(20, 16, 20, 0.18);
+}
+
+.brand-fill {
+  color: transparent;
+  background: linear-gradient(180deg, #ffadc5 0%, #f31d5b 68%, #c90f49 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.hero-title-font {
+  font-family: "Paperozi", "Aptos", "Segoe UI", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.soft-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(20, 16, 20, 0.12) 18%, rgba(20, 16, 20, 0.12) 82%, transparent 100%);
+}
