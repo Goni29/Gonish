@@ -31,7 +31,7 @@ export default function HeroSection() {
   }, [videoFailed]);
 
   return (
-    <section className="relative overflow-hidden bg-black">
+    <section id="home-hero" className="relative overflow-hidden bg-black">
       <div className="relative min-h-[100svh]">
         {!videoFailed ? (
           <video
@@ -40,7 +40,6 @@ export default function HeroSection() {
             autoPlay
             loop
             muted
-            defaultMuted
             playsInline
             preload="auto"
             aria-hidden="true"

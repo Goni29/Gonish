@@ -1,0 +1,583 @@
+@property --clock-sweep-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.clock-sweep-nav {
+  --anchor-x: 50%;
+  --dial-size: clamp(20.5rem, 24vw, 23.5rem);
+  --logo-top: 0.2rem;
+  --logo-height: 2.96rem;
+  --anchor-center-y: calc(var(--logo-top) + (var(--logo-height) / 2));
+  --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.54));
+  --nub-height: 1.42rem;
+
+  --dial-white-1: #fffdfd;
+  --dial-white-2: #fff7fa;
+  --dial-white-3: #fdf0f5;
+  --dial-white-4: #f7e8ee;
+  --dial-white-5: #efd8e2;
+  --dial-rose-tint: rgba(243, 29, 91, 0.06);
+  --dial-rose-shadow: rgba(168, 114, 136, 0.14);
+  --dial-white-line: rgba(255, 255, 255, 0.74);
+  --dial-line-soft: rgba(191, 164, 176, 0.18);
+
+  position: relative;
+  width: min(calc(var(--dial-size) + 2rem), calc(100vw - 1rem));
+  height: calc(var(--dial-size) + 4.3rem);
+  margin-left: clamp(0.9rem, 2vw, 1.9rem);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.clock-sweep-nav__logoLayer {
+  position: absolute;
+  top: var(--logo-top);
+  left: var(--anchor-x);
+  z-index: 6;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.clock-sweep-nav__logoButton {
+  position: relative;
+  display: inline-flex;
+  min-width: 9rem;
+  height: var(--logo-height);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 126, 154, 0.3);
+  background: linear-gradient(135deg, rgba(236, 139, 166, 0.96), rgba(198, 74, 110, 0.96));
+  padding: 0 1.35rem;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(20, 13, 18, 0.14);
+  transition:
+    box-shadow 280ms ease,
+    transform 280ms ease;
+}
+
+.clock-sweep-nav__logoButton--hero {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 32px rgba(8, 8, 10, 0.16);
+}
+
+.clock-sweep-nav__logoButton:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(243, 29, 91, 0.18),
+    0 0 0 5px rgba(243, 29, 91, 0.12),
+    0 18px 34px rgba(20, 13, 18, 0.14);
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__logoButton,
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__logoButton {
+  box-shadow: 0 18px 40px rgba(8, 8, 10, 0.18);
+}
+
+.clock-sweep-nav__logoGlow {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 60%);
+  pointer-events: none;
+}
+
+.clock-sweep-nav__logoFrame {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 4.3rem;
+  height: 1.54rem;
+  overflow: hidden;
+}
+
+.clock-sweep-nav__logoImage {
+  position: absolute;
+  top: -266.9%;
+  left: -64.5%;
+  height: 658.6%;
+  max-width: none;
+  user-select: none;
+}
+
+.clock-sweep-nav__nub {
+  position: absolute;
+  top: calc(var(--anchor-center-y) - (var(--nub-height) / 2));
+  left: var(--anchor-x);
+  z-index: 2;
+  width: 6.8rem;
+  height: var(--nub-height);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-top: 0;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0) 72%),
+    linear-gradient(180deg, #fff7fa, #f6e8ee);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 20px rgba(168, 114, 136, 0.12);
+}
+
+.clock-sweep-nav__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+.clock-sweep-nav__panelShell {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.clock-sweep-nav__hoverBridge {
+  position: absolute;
+  top: calc(var(--anchor-center-y) - 1rem);
+  left: var(--anchor-x);
+  width: 9.4rem;
+  height: 4.2rem;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.clock-sweep-nav__panelCrop {
+  position: absolute;
+  top: 0;
+  left: calc(var(--anchor-x) - (var(--dial-size) / 2));
+  width: var(--dial-size);
+  height: calc(var(--dial-size) + 1rem);
+  overflow: visible;
+}
+
+.clock-sweep-nav__dialStage {
+  position: absolute;
+  top: var(--dial-origin-top);
+  left: 0;
+  width: var(--dial-size);
+  height: var(--dial-size);
+  transform-origin: 50% 50%;
+  opacity: 0;
+  filter: drop-shadow(0 18px 32px rgba(190, 150, 168, 0.12));
+}
+
+.clock-sweep-nav__sweepLayer {
+  --clock-sweep-angle: 0deg;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  -webkit-mask-image: conic-gradient(
+    from 0deg,
+    rgba(0, 0, 0, 1) 0deg var(--clock-sweep-angle),
+    rgba(0, 0, 0, 0) calc(var(--clock-sweep-angle) + 0.8deg) 360deg
+  );
+  mask-image: conic-gradient(
+    from 0deg,
+    rgba(0, 0, 0, 1) 0deg var(--clock-sweep-angle),
+    rgba(0, 0, 0, 0) calc(var(--clock-sweep-angle) + 0.8deg) 360deg
+  );
+}
+
+.clock-sweep-nav__dialRotor {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+  transform: rotate(-18deg);
+}
+
+.clock-sweep-nav__dialSurface,
+.clock-sweep-nav__dialRings,
+.clock-sweep-nav__dialSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.clock-sweep-nav__dialSurface {
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0) 19%),
+    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 24%),
+    radial-gradient(circle at 74% 78%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 28%),
+    radial-gradient(circle at 26% 82%, var(--dial-rose-tint), rgba(243, 29, 91, 0) 24%),
+    linear-gradient(
+      165deg,
+      var(--dial-white-1) 0%,
+      var(--dial-white-2) 20%,
+      var(--dial-white-3) 46%,
+      var(--dial-white-4) 72%,
+      var(--dial-white-5) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -16px 28px rgba(255, 255, 255, 0.26),
+    0 24px 48px var(--dial-rose-shadow);
+}
+
+.clock-sweep-nav__dialRings {
+  background:
+    radial-gradient(circle at center, transparent 0 36.5%, rgba(205, 181, 191, 0.22) 36.9%, transparent 37.4%),
+    radial-gradient(circle at center, transparent 0 52%, rgba(205, 181, 191, 0.18) 52.35%, transparent 52.9%),
+    radial-gradient(circle at center, transparent 0 68%, rgba(205, 181, 191, 0.16) 68.3%, transparent 68.9%),
+    radial-gradient(circle at center, transparent 0 83%, rgba(243, 29, 91, 0.06) 83.25%, transparent 83.8%);
+  opacity: 1;
+}
+
+.clock-sweep-nav__dialSheen {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 34%),
+    radial-gradient(circle at 68% 24%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 28%);
+  mix-blend-mode: screen;
+  opacity: 0.88;
+}
+
+.clock-sweep-nav__anchorSpine {
+  position: absolute;
+  top: 0.3rem;
+  left: 50%;
+  width: 7rem;
+  height: 2.18rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 68%),
+    linear-gradient(180deg, #fff8fb, #f3e4eb);
+}
+
+.clock-sweep-nav__menuLayer {
+  position: absolute;
+  top: var(--dial-origin-top);
+  left: calc(var(--anchor-x) - (var(--dial-size) / 2));
+  width: var(--dial-size);
+  height: var(--dial-size);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.clock-sweep-nav__item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.clock-sweep-nav__itemMotion {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transform:
+    rotate(var(--item-start-angle))
+    translateY(calc(var(--item-start-radius) * -1))
+    rotate(calc(var(--item-start-angle) * -1))
+    translate(-50%, -50%)
+    scale(0.96);
+  transform-origin: 0 0;
+}
+
+.clock-sweep-nav__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  pointer-events: auto;
+  text-decoration: none;
+  color: rgba(103, 60, 76, 0.9);
+  font-size: clamp(0.98rem, 0.9rem + 0.36vw, 1.15rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  transition:
+    color 220ms ease,
+    transform 220ms ease,
+    text-shadow 220ms ease;
+}
+
+.clock-sweep-nav__link:hover,
+.clock-sweep-nav__link:focus-visible {
+  color: #8f1e49;
+  outline: none;
+  transform: translateY(-1px) scale(1.04);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.28);
+}
+
+.clock-sweep-nav__link--active {
+  color: #f31d5b;
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialStage {
+  animation: clockDialStageOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) both;
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__sweepLayer {
+  animation: clockDialSweepOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) both;
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialRotor {
+  animation: clockDialRotorOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) both;
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__menuLayer {
+  animation: clockMenuArcOpen 420ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__itemMotion {
+  animation: clockMenuItemEnter 380ms cubic-bezier(0.16, 0.92, 0.24, 1) var(--enter-delay) both;
+}
+
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__dialStage {
+  opacity: 1;
+}
+
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__sweepLayer {
+  --clock-sweep-angle: 360deg;
+}
+
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__dialRotor {
+  transform: rotate(0deg);
+}
+
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__menuLayer {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__itemMotion {
+  opacity: 1;
+  transform:
+    rotate(var(--item-angle))
+    translateY(calc(var(--item-radius) * -1))
+    rotate(calc(var(--item-angle) * -1))
+    translate(-50%, -50%)
+    scale(1);
+}
+
+.clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__menuLayer {
+  opacity: 1;
+  transform: rotate(0deg);
+  animation: clockMenuArcClose 400ms cubic-bezier(0.32, 0, 0.24, 1) both;
+}
+
+.clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__itemMotion {
+  opacity: 1;
+  transform:
+    rotate(var(--item-angle))
+    translateY(calc(var(--item-radius) * -1))
+    rotate(calc(var(--item-angle) * -1))
+    translate(-50%, -50%)
+    scale(1);
+  animation: clockMenuItemExit 340ms cubic-bezier(0.32, 0, 0.24, 1) var(--exit-delay) both;
+}
+
+.clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__dialStage {
+  opacity: 1;
+  animation: clockDialStageClose 820ms cubic-bezier(0.28, 0, 0.22, 1) both;
+}
+
+.clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__sweepLayer {
+  --clock-sweep-angle: 360deg;
+  animation: clockDialSweepClose 820ms cubic-bezier(0.28, 0, 0.22, 1) both;
+}
+
+.clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__dialRotor {
+  transform: rotate(0deg);
+  animation: clockDialRotorClose 820ms cubic-bezier(0.28, 0, 0.22, 1) both;
+}
+
+@keyframes clockDialStageOpen {
+  0% {
+    opacity: 0.18;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes clockDialStageClose {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.14;
+  }
+}
+
+@keyframes clockDialRotorOpen {
+  0% {
+    transform: rotate(-18deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes clockDialRotorClose {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes clockDialSweepOpen {
+  0% {
+    --clock-sweep-angle: 0deg;
+  }
+
+  100% {
+    --clock-sweep-angle: 360deg;
+  }
+}
+
+@keyframes clockDialSweepClose {
+  0% {
+    --clock-sweep-angle: 360deg;
+  }
+
+  100% {
+    --clock-sweep-angle: 0deg;
+  }
+}
+
+@keyframes clockMenuArcOpen {
+  0% {
+    opacity: 0;
+    transform: rotate(-8deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes clockMenuArcClose {
+  0% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes clockMenuItemEnter {
+  0% {
+    opacity: 0;
+    transform:
+      rotate(var(--item-start-angle))
+      translateY(calc(var(--item-start-radius) * -1))
+      rotate(calc(var(--item-start-angle) * -1))
+      translate(-50%, -50%)
+      scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      rotate(var(--item-angle))
+      translateY(calc(var(--item-radius) * -1))
+      rotate(calc(var(--item-angle) * -1))
+      translate(-50%, -50%)
+      scale(1);
+  }
+}
+
+@keyframes clockMenuItemExit {
+  0% {
+    opacity: 1;
+    transform:
+      rotate(var(--item-angle))
+      translateY(calc(var(--item-radius) * -1))
+      rotate(calc(var(--item-angle) * -1))
+      translate(-50%, -50%)
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      rotate(var(--item-start-angle))
+      translateY(calc(var(--item-start-radius) * -1))
+      rotate(calc(var(--item-start-angle) * -1))
+      translate(-50%, -50%)
+      scale(0.97);
+  }
+}
+
+@media (max-width: 1023px) {
+  .clock-sweep-nav {
+    --dial-size: min(78vw, 21rem);
+    --logo-height: 2.96rem;
+    --nub-height: 1.35rem;
+    margin-left: clamp(0.2rem, 1vw, 0.7rem);
+  }
+}
+
+@media (max-width: 639px) {
+  .clock-sweep-nav {
+    --dial-size: min(88vw, 18rem);
+    --logo-height: 2.82rem;
+    --nub-height: 1.28rem;
+    height: calc(var(--dial-size) + 4rem);
+    margin-left: 0;
+  }
+
+  .clock-sweep-nav__logoButton {
+    min-width: 8.4rem;
+    padding: 0 1.16rem;
+  }
+
+  .clock-sweep-nav__logoFrame {
+    width: 4.04rem;
+    height: 1.48rem;
+  }
+
+  .clock-sweep-nav__nub {
+    width: 6.15rem;
+  }
+
+  .clock-sweep-nav__anchorSpine {
+    width: 6.35rem;
+    height: 2.08rem;
+  }
+
+  .clock-sweep-nav__link {
+    font-size: clamp(0.9rem, 3.7vw, 1rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialStage,
+  .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__sweepLayer,
+  .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialRotor,
+  .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__menuLayer,
+  .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__itemMotion,
+  .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__dialStage,
+  .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__sweepLayer,
+  .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__dialRotor,
+  .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__menuLayer,
+  .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__itemMotion {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+}
