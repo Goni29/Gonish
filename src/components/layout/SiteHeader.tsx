@@ -13,7 +13,7 @@ export default function SiteHeader() {
           ? "text-[#F31D5B] after:scale-x-100"
           : "text-brand after:scale-x-100"
         : isHome
-          ? "text-[#8D6F7B] hover:text-[#F31D5B] hover:after:scale-x-100"
+          ? "text-[rgba(58,32,40,0.72)] hover:text-[#F31D5B] hover:after:scale-x-100"
           : "text-ink/62 hover:text-ink hover:after:scale-x-100",
     ].join(" ");
 
@@ -24,18 +24,25 @@ export default function SiteHeader() {
           className={[
             "relative flex min-h-[3.3rem] items-center justify-between gap-4 rounded-[1.4rem] px-4 py-2.5 md:min-h-[3.5rem] md:px-5",
             isHome
-              ? "border border-white bg-white shadow-[0_16px_40px_rgba(20,16,20,0.12)]"
+              ? "border border-[rgba(255,255,255,0.28)] bg-[rgba(248,239,242,0.78)] shadow-[0_16px_40px_rgba(20,16,20,0.12)]"
               : "border border-black/10 bg-white/78 shadow-panel backdrop-blur-xl",
           ].join(" ")}
         >
           <NavLink
             to="/"
-            className={[
-              "relative z-[1] shrink-0 text-[11px] uppercase leading-none tracking-[0.28em] transition-colors duration-300 sm:text-[11px] sm:tracking-[0.34em] md:text-[12px] md:tracking-[0.42em]",
-              isHome ? "text-[#5E4B54] hover:text-[#F31D5B]" : "text-ink hover:text-brand",
-            ].join(" ")}
+            className="relative z-[1] inline-flex shrink-0 items-center transition-opacity duration-300 hover:opacity-80"
+            aria-label="Gonish home"
           >
-            Gonish
+            <span className="relative block h-[1.28rem] w-[3.58rem] overflow-hidden sm:h-[1.36rem] sm:w-[3.8rem] md:h-[1.52rem] md:w-[4.24rem]">
+              <img
+                src="/Gonish.png"
+                alt="Gonish"
+                className="absolute max-w-none select-none"
+                style={{ height: "658.6%", left: "-64.5%", top: "-266.9%" }}
+                loading="eager"
+                draggable={false}
+              />
+            </span>
           </NavLink>
 
           <nav className="relative z-[1] ml-auto min-w-0 py-0.5 md:w-[min(34rem,46vw)] lg:w-[min(37rem,50vw)]">
