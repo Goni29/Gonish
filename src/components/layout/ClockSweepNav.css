@@ -25,7 +25,7 @@
   --dock-shift-x: 0px;
   --dock-shift-y: 0px;
   --dock-shift-open-x: clamp(-8.2rem, -8vw, -4.8rem);
-  --dock-shift-open-y: clamp(-10.5rem, -13vh, -7rem);
+  --dock-shift-open-y: clamp(-12.5rem, -15vh, -9rem);
   --anchor-center-y: calc(var(--logo-top) + (var(--logo-height) / 2));
   --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.5));
   --nub-height: 1.42rem;
@@ -692,7 +692,7 @@
     --logo-height: 2.96rem;
     --nub-height: 1.35rem;
     --dock-shift-open-x: clamp(-5.4rem, -13vw, -3.5rem);
-    --dock-shift-open-y: clamp(-8rem, -12vh, -5.9rem);
+    --dock-shift-open-y: clamp(-10rem, -14vh, -7.9rem);
     margin-left: clamp(0.2rem, 1vw, 0.7rem);
   }
 }
@@ -707,7 +707,7 @@
     --logo-height: 2.82rem;
     --nub-height: 1.28rem;
     --dock-shift-open-x: clamp(-4.2rem, -14vw, -2.6rem);
-    --dock-shift-open-y: clamp(-6.2rem, -14vh, -4.8rem);
+    --dock-shift-open-y: clamp(-8.2rem, -16vh, -6.8rem);
     height: calc(var(--dial-size) + 4rem);
     margin-left: 0;
   }
