@@ -10,7 +10,7 @@
   --logo-top: 0.2rem;
   --logo-height: 2.96rem;
   --anchor-center-y: calc(var(--logo-top) + (var(--logo-height) / 2));
-  --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.54));
+  --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.5));
   --nub-height: 1.42rem;
 
   --dial-white-1: #fffdfd;
