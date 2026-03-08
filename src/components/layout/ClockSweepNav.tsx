@@ -298,7 +298,6 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                     <div className="clock-sweep-nav__dialSurface" />
                     <div className="clock-sweep-nav__dialRings" />
                     <div className="clock-sweep-nav__dialSheen" />
-                    <div className="clock-sweep-nav__anchorSpine" />
                   </div>
                 </div>
               </div>

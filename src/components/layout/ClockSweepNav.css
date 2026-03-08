@@ -245,20 +245,6 @@
   opacity: 0.88;
 }
 
-.clock-sweep-nav__anchorSpine {
-  position: absolute;
-  top: 0.3rem;
-  left: 50%;
-  width: 7rem;
-  height: 2.18rem;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.66);
-  background:
-    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 68%),
-    linear-gradient(180deg, #fff8fb, #f3e4eb);
-}
-
 .clock-sweep-nav__menuLayer {
   position: absolute;
   top: var(--dial-origin-top);
@@ -566,11 +552,6 @@
 
   .clock-sweep-nav__nub {
     width: 6.15rem;
-  }
-
-  .clock-sweep-nav__anchorSpine {
-    width: 6.35rem;
-    height: 2.08rem;
   }
 
   .clock-sweep-nav__link {
