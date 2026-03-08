@@ -9,6 +9,7 @@
   --dial-size: clamp(20.5rem, 24vw, 23.5rem);
   --logo-top: 0.2rem;
   --logo-height: 2.96rem;
+  --disc-open-delay: 332ms;
   --anchor-center-y: calc(var(--logo-top) + (var(--logo-height) / 2));
   --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.5));
   --nub-height: 1.42rem;
@@ -29,6 +30,7 @@
   margin-left: clamp(0.9rem, 2vw, 1.9rem);
   pointer-events: none;
   overflow: visible;
+  isolation: isolate;
 }
 
 .site-header--dock-bottom-right .clock-sweep-nav {
@@ -39,12 +41,21 @@
   );
 }
 
+.clock-sweep-nav__discLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow: visible;
+  pointer-events: none;
+}
+
 .clock-sweep-nav__logoLayer {
   position: absolute;
   top: var(--logo-top);
   left: var(--anchor-x);
-  z-index: 6;
+  z-index: 36;
   transform: translateX(-50%);
+  overflow: visible;
   pointer-events: auto;
 }
 
@@ -75,9 +86,9 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.56),
     0 16px 34px rgba(14, 10, 14, 0.22);
-  transition:
-    box-shadow 280ms ease,
-    transform 280ms ease;
+  transform-origin: 50% 100%;
+  will-change: transform;
+  transition: box-shadow 280ms ease;
 }
 
 .clock-sweep-nav__logoButton--hero {
@@ -108,6 +119,20 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.56),
     0 20px 42px rgba(8, 8, 10, 0.28);
+}
+
+.clock-sweep-nav__logoImpact {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: 0;
+  width: 78%;
+  height: 56%;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.42) 0%, rgba(243, 29, 91, 0.12) 40%, rgba(243, 29, 91, 0) 100%);
+  pointer-events: none;
 }
 
 .clock-sweep-nav__logoGlow {
@@ -161,27 +186,45 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.54),
     0 10px 22px rgba(18, 12, 18, 0.18);
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px) scale(0.82);
+  will-change: transform, opacity;
+}
+
+.clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__nub {
+  animation: clockNubImpactIn 520ms cubic-bezier(0.2, 1, 0.3, 1) 110ms both;
+}
+
+.clock-sweep-nav[data-phase="open"] .clock-sweep-nav__nub {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__nub {
+  animation: clockNubHide 280ms cubic-bezier(0.38, 0, 0.24, 1) both;
 }
 
 .clock-sweep-nav__overlay {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 24;
   pointer-events: auto;
+  overflow: visible;
 }
 
 .clock-sweep-nav__panelShell {
   position: absolute;
   inset: 0;
+  overflow: visible;
   pointer-events: none;
 }
 
 .clock-sweep-nav__hoverBridge {
   position: absolute;
-  top: calc(var(--anchor-center-y) - 1rem);
+  top: calc(var(--anchor-center-y) - 1.2rem);
   left: var(--anchor-x);
-  width: 9.4rem;
-  height: 4.2rem;
+  width: 10.1rem;
+  height: 4.8rem;
   transform: translateX(-50%);
   pointer-events: auto;
 }
@@ -203,6 +246,8 @@
   height: var(--dial-size);
   transform-origin: 50% 50%;
   opacity: 0;
+  transform: translate3d(0, 0, 0) scale(1);
+  will-change: transform, opacity;
   filter: drop-shadow(0 18px 32px rgba(190, 150, 168, 0.12));
 }
 
@@ -344,19 +389,19 @@
 }
 
 .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialStage {
-  animation: clockDialStageOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) both;
+  animation: clockDialStageOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) var(--disc-open-delay) both;
 }
 
 .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__sweepLayer {
-  animation: clockDialSweepOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) both;
+  animation: clockDialSweepOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) var(--disc-open-delay) both;
 }
 
 .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialRotor {
-  animation: clockDialRotorOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) both;
+  animation: clockDialRotorOpen 720ms cubic-bezier(0.18, 1, 0.28, 1) var(--disc-open-delay) both;
 }
 
 .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__menuLayer {
-  animation: clockMenuArcOpen 420ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+  animation: clockMenuArcOpen 420ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--disc-open-delay) + 144ms) both;
 }
 
 .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__itemMotion {
@@ -424,21 +469,30 @@
 
 @keyframes clockDialStageOpen {
   0% {
-    opacity: 0.18;
+    opacity: 0.12;
+    transform: translate3d(0, 16px, 0) scale(0.84);
+  }
+
+  54% {
+    opacity: 0.94;
+    transform: translate3d(0, -5px, 0) scale(1.035);
   }
 
   100% {
     opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes clockDialStageClose {
   0% {
     opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
   100% {
     opacity: 0.14;
+    transform: translate3d(0, 12px, 0) scale(0.88);
   }
 }
 
@@ -479,6 +533,40 @@
 
   100% {
     --clock-sweep-angle: 0deg;
+  }
+}
+
+@keyframes clockNubImpactIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px) scale(0.82);
+  }
+
+  62% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px) scale(0.82);
+  }
+
+  84% {
+    opacity: 0.92;
+    transform: translateX(-50%) translateY(-1px) scale(1.03);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes clockNubHide {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.84);
   }
 }
 
@@ -592,6 +680,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .clock-sweep-nav__nub {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    animation: none;
+  }
+
   .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialStage,
   .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__sweepLayer,
   .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__dialRotor,
