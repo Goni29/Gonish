@@ -57,40 +57,70 @@
   justify-content: center;
   overflow: hidden;
   border-radius: 999px;
-  border: 1px solid rgba(216, 126, 154, 0.3);
-  background: linear-gradient(135deg, rgba(236, 139, 166, 0.96), rgba(198, 74, 110, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background:
+    linear-gradient(
+      132deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.18) 45%,
+      rgba(255, 255, 255, 0.1) 100%
+    ),
+    rgba(248, 240, 246, 0.1);
   padding: 0 1.35rem;
   color: #fff;
   outline: none;
   cursor: pointer;
-  box-shadow: 0 16px 30px rgba(20, 13, 18, 0.14);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    0 16px 34px rgba(14, 10, 14, 0.22);
   transition:
     box-shadow 280ms ease,
     transform 280ms ease;
 }
 
 .clock-sweep-nav__logoButton--hero {
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 16px 32px rgba(8, 8, 10, 0.16);
+  border-color: rgba(255, 255, 255, 0.52);
+  background:
+    linear-gradient(
+      132deg,
+      rgba(255, 255, 255, 0.24) 0%,
+      rgba(255, 255, 255, 0.14) 45%,
+      rgba(255, 255, 255, 0.08) 100%
+    ),
+    rgba(30, 22, 30, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.44),
+    0 16px 36px rgba(8, 8, 10, 0.28);
 }
 
 .clock-sweep-nav__logoButton:focus-visible {
   box-shadow:
-    0 0 0 2px rgba(243, 29, 91, 0.18),
-    0 0 0 5px rgba(243, 29, 91, 0.12),
-    0 18px 34px rgba(20, 13, 18, 0.14);
+    0 0 0 2px rgba(255, 255, 255, 0.4),
+    0 0 0 5px rgba(255, 255, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58),
+    0 20px 40px rgba(14, 10, 14, 0.26);
 }
 
 .clock-sweep-nav[data-phase="opening"] .clock-sweep-nav__logoButton,
 .clock-sweep-nav[data-phase="open"] .clock-sweep-nav__logoButton {
-  box-shadow: 0 18px 40px rgba(8, 8, 10, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    0 20px 42px rgba(8, 8, 10, 0.28);
 }
 
 .clock-sweep-nav__logoGlow {
   position: absolute;
   inset: 1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 60%);
+  background:
+    linear-gradient(
+      138deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.12) 42%,
+      rgba(255, 255, 255, 0) 72%
+    );
   pointer-events: none;
 }
 
@@ -121,14 +151,16 @@
   height: var(--nub-height);
   transform: translateX(-50%);
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.54);
   border-top: 0;
   background:
-    radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0) 72%),
-    linear-gradient(180deg, #fff7fa, #f6e8ee);
+    radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 10px 20px rgba(168, 114, 136, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.54),
+    0 10px 22px rgba(18, 12, 18, 0.18);
 }
 
 .clock-sweep-nav__overlay {
