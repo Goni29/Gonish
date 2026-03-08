@@ -10,12 +10,12 @@ export default function PortfolioPage() {
             eyebrow="Portfolio"
             title={
               <>
-                프로젝트를 고르는 순간부터
+                브랜드의 품격을 증명하는
                 <br />
-                하나의 경험이 되도록.
+                큐레이션된 웹 케이스.
               </>
             }
-            description="프로젝트 하나를 선택하고, 다시 디바이스별 뷰로 들어가는 흐름 자체가 큐레이션처럼 느껴지도록 설계했습니다."
+            description="업종과 목적이 다른 프로젝트를 브랜드 전략, 메시지 품질, 전환 흐름 관점에서 정제해 보여드립니다."
           />
         </div>
       </section>

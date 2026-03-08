@@ -21,7 +21,7 @@ export default function ContactStage() {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [smiling, setSmiling] = useState(false);
   const [statusMessage, setStatusMessage] = useState(
-    "문의 버튼을 누르면 캐릭터가 먼저 반응합니다. `VITE_CONTACT_EMAIL`을 연결하면 메일로 바로 이어집니다.",
+    "프로젝트 목표와 일정, 원하는 분위기를 남겨주시면 정리된 제안으로 회신드립니다.",
   );
   const [canTrackPointer, setCanTrackPointer] = useState(false);
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
@@ -117,13 +117,11 @@ export default function ContactStage() {
       );
 
       window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-      setStatusMessage("메일 앱으로 연결합니다. 캐릭터가 웃는 동안 문의 흐름이 시작됩니다.");
+      setStatusMessage("메일 앱으로 연결하고 있습니다. 남겨주신 내용을 바탕으로 상담을 이어가겠습니다.");
       return;
     }
 
-    setStatusMessage(
-      "연락 채널이 아직 연결되지 않았습니다. `VITE_CONTACT_EMAIL`을 추가하면 이 버튼이 바로 메일 문의로 연결됩니다.",
-    );
+    setStatusMessage("현재 연락 채널을 점검하고 있습니다. 잠시 후 다시 시도해 주세요.");
   };
 
   return (
@@ -189,15 +187,15 @@ export default function ContactStage() {
 
             <div className="order-1 space-y-8 lg:order-2">
               <div className="space-y-5">
-                <p className="eyebrow">Warm but polished interaction</p>
+                <p className="eyebrow">Project conversation</p>
                 <p className="font-display text-[clamp(2.4rem,4.5vw,4.8rem)] leading-[0.96] text-ink">
-                  문의가 시작되는 순간도
+                  첫 대화부터,
                   <br />
-                  기억에 남게 만들고 싶었습니다.
+                  브랜드의 방향이 선명해지도록.
                 </p>
                 <p className="max-w-2xl text-base leading-7 text-ink-muted md:text-lg">
-                  차분한 톤 안에서 조금은 다정한 인상을 남기는 것이 이 페이지의 역할입니다. 커서를
-                  따라보는 작은 시선과 버튼 클릭 후의 미소가 그 첫 인상을 만들어줍니다.
+                  현재 상황과 원하는 결과를 남겨주시면 필요한 범위, 일정, 진행 방식을 정돈된 흐름으로
+                  안내드립니다. 아직 정리되지 않은 아이디어라도 대화 속에서 명확한 방향으로 구조화해드립니다.
                 </p>
               </div>
 
@@ -220,7 +218,7 @@ export default function ContactStage() {
                       name="project"
                       value={form.project}
                       onChange={handleChange}
-                      placeholder="예: 개인 포트폴리오, 랜딩 페이지"
+                      placeholder="예: 프리미엄 브랜드 사이트, 예약형 캠페인 랜딩"
                       className="mt-3 w-full border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink/32"
                     />
                   </label>
@@ -243,7 +241,7 @@ export default function ContactStage() {
                     name="message"
                     value={form.message}
                     onChange={handleChange}
-                    placeholder="프로젝트 목적, 일정, 원하는 인상 등을 자유롭게 적어주세요."
+                    placeholder="현재 상황, 목표, 일정, 꼭 전달하고 싶은 브랜드 톤을 자유롭게 적어주세요."
                     rows={6}
                     className="mt-3 w-full resize-none border-0 bg-transparent p-0 text-base leading-7 text-ink outline-none placeholder:text-ink/32"
                   />

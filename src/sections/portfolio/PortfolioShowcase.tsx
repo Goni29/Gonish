@@ -88,15 +88,15 @@ export default function PortfolioShowcase() {
                 </div>
 
                 <div className="space-y-4 rounded-[1.8rem] border border-black/10 bg-[#171118] p-6 text-white">
-                  <p className="eyebrow text-white/55">Selection note</p>
+                  <p className="eyebrow text-white/55">Curation note</p>
                   <p className="font-display text-3xl leading-tight">
-                    프로젝트를 고른 뒤,
+                    고객이 어디서 보든
                     <br />
-                    디바이스별 인상까지 큐레이션합니다.
+                    같은 품격을 느끼도록.
                   </p>
                   <p className="text-sm leading-6 text-white/72">
-                    같은 프로젝트라도 PC, 태블릿, 모바일에서 강조해야 할 인상은 달라집니다.
-                    Gonish는 그 차이를 하나의 흐름 안에서 정리해 보여줍니다.
+                    같은 프로젝트라도 기기에 따라 고객의 읽는 방식이 달라집니다. Gonish는 PC, 태블릿,
+                    모바일 모두에서 핵심 메시지와 행동 버튼이 균형 있게 보이도록 조정합니다.
                   </p>
                 </div>
               </div>
@@ -205,13 +205,13 @@ function DeviceShowcase({
 
       <div className="space-y-4">
         <div className="rounded-[1.8rem] border border-black/10 bg-white/76 p-5 backdrop-blur-xl">
-          <p className="eyebrow">Current view</p>
+          <p className="eyebrow">View note</p>
           <p className="mt-4 font-display text-3xl leading-tight text-ink">{deviceLabels[device]}</p>
           <p className="mt-4 text-sm leading-6 text-ink-muted">{preview.highlight}</p>
         </div>
 
         <div className="rounded-[1.8rem] border border-black/10 bg-white/76 p-5 backdrop-blur-xl">
-          <p className="eyebrow">Curated note</p>
+          <p className="eyebrow">Refined note</p>
           <p className="mt-4 text-sm leading-6 text-ink-muted">{preview.note}</p>
         </div>
       </div>

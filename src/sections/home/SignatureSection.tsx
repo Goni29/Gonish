@@ -18,13 +18,13 @@ export default function SignatureSection() {
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">
             <p className="font-display text-[clamp(2rem,4vw,3.9rem)] leading-[0.98] text-ink">
-              보기 좋은 화면을 넘어서,
+              단정한 미감을 넘어,
               <br />
-              사람의 결이 느껴지는 브랜드 경험을 지향합니다.
+              선택받는 브랜드 경험을 완성합니다.
             </p>
             <p className="max-w-xl text-base leading-7 text-ink-muted md:text-lg">
-              단정한 구성 안에 분명한 감정을 남기고 싶습니다. 그래서 Gonish의 작업은 화려함보다
-              오래 남는 인상, 빠른 결과보다 더 섬세한 완성도를 목표로 합니다.
+              첫 화면에서 브랜드의 결을 또렷하게 전달하고, 필요한 정보와 문의 동선이 매끄럽게
+              이어지도록 구성합니다. Gonish는 감도와 성과가 함께 남는 결과를 지향합니다.
             </p>
           </div>
         </motion.div>

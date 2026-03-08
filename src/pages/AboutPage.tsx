@@ -10,12 +10,12 @@ export default function AboutPage() {
             eyebrow="About Me"
             title={
               <>
-                감도는 섬세하게,
+                브랜드의 품격을
                 <br />
-                성장은 분명하게.
+                고객의 선택으로 연결합니다.
               </>
             }
-            description="부트캠프를 거치며 기본기를 다졌고, 지금은 빠른 흡수력과 디테일 중심의 태도로 한 사람의 브랜드에 맞는 결과를 만드는 연습을 계속하고 있습니다."
+            description="Gonish는 단정한 미감과 명확한 설계를 바탕으로, 브랜드의 가치가 신뢰와 행동으로 이어지는 경험을 만듭니다."
           />
         </div>
       </section>

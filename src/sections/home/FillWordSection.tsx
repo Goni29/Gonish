@@ -53,34 +53,34 @@ export default function FillWordSection() {
       <div className="shell relative flex h-full items-center">
         <div className="w-full space-y-12">
           <div className="max-w-xl space-y-4">
-            <p className="eyebrow">Parallax text fill</p>
+            <p className="eyebrow">Signature invitation</p>
             <p className="text-base leading-7 text-ink-muted md:text-lg">
-              비어 있던 윤곽이 아래에서부터 차오르며 완성되는 장면으로, 브랜드 컬러가 가장 강하게
-              기억되는 순간을 만듭니다.
+              브랜드의 제안을 가장 선명한 순간에 제시해, 방문자의 결심이 자연스럽게 다음 행동으로
+              이어지도록 구성한 장면입니다.
             </p>
           </div>
 
           <div className="relative">
             <p className="text-outline font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em]">
-              Gonish에
+              Gonish와
               <br />
-              의뢰하세요!
+              완성하세요.
             </p>
 
             <div ref={fillMaskRef} className="absolute inset-0 overflow-hidden">
               <p className="brand-fill font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em]">
-                Gonish에
+                Gonish와
                 <br />
-                의뢰하세요!
+                완성하세요.
               </p>
             </div>
           </div>
 
           <div ref={copyRef} className="max-w-2xl rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl">
             <p className="font-display text-2xl leading-tight text-ink md:text-3xl">
-              한 번 보고 잊히는 사이트보다,
+              한 번 스쳐 가는 화면보다,
               <br />
-              다시 떠오르는 한 장면을 만듭니다.
+              오래 남는 첫인상을 설계합니다.
             </p>
           </div>
         </div>

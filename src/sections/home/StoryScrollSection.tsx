@@ -51,17 +51,17 @@ export default function StoryScrollSection() {
       <div className="shell flex h-full items-center">
         <div className="grid w-full gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-center">
           <div className="space-y-6">
-            <p className="eyebrow">Typography storytelling</p>
+            <p className="eyebrow">Refined messaging</p>
             <p className="font-display text-2xl leading-tight text-ink md:text-3xl">
               스크롤을 내릴수록,
               <br />
-              Gonish의 일하는 방식이
+              고객이 신뢰할 근거가
               <br />
-              한 단어씩 또렷해집니다.
+              더 또렷해집니다.
             </p>
             <p className="max-w-sm text-base leading-7 text-ink-muted">
-              과장된 효과 없이도 충분히 인상적일 수 있도록, 텍스트만으로 리듬과 집중도를 설계한
-              섹션입니다.
+              브랜드 소개부터 신뢰 요소, 행동 제안까지 하나의 서사처럼 이어지도록 정제한 핵심
+              메시지입니다.
             </p>
           </div>
 

@@ -8,7 +8,7 @@ export default function SiteFooter() {
           <div className="space-y-3">
             <p className="eyebrow">Gonish</p>
             <p className="max-w-xl font-display text-2xl leading-tight text-ink md:text-3xl">
-              빠르게, 정교하게, 그리고 한 사람의 결에 맞는 방식으로.
+              브랜드의 품격을 또렷하게 전달하고, 고객의 선택까지 우아하게 연결합니다.
             </p>
           </div>
 
@@ -30,7 +30,7 @@ export default function SiteFooter() {
                 Contact
               </NavLink>
             </div>
-            <p>© {new Date().getFullYear()} Gonish. Premium personal brand portfolio.</p>
+            <p>© {new Date().getFullYear()} Gonish. Curated premium brand portfolio.</p>
           </div>
         </div>
       </div>

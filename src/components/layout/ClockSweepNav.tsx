@@ -1,7 +1,7 @@
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { navigation } from "@/data/siteContent";
 import "./ClockSweepNav.css";
 
@@ -203,6 +203,7 @@ const impactTransition = {
 
 export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const navId = useId();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -1022,6 +1023,12 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
           variants={prefersReducedMotion ? reducedLogoMotionVariants : logoMotionVariants}
           transition={logoTransition}
           onClick={() => {
+            if (isMounted) {
+              closeRequest();
+              navigate("/");
+              return;
+            }
+
             if (!supportsHoverDial) {
               setIsTapOpen((current) => {
                 const next = !current;
