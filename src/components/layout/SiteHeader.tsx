@@ -59,7 +59,7 @@ export default function SiteHeader() {
   }, [location.pathname]);
 
   return (
-    <header className="site-header--dock-bottom-right pointer-events-none fixed bottom-15 right-15 z-50 p-3 sm:bottom-16 sm:right-16 sm:p-4">
+    <header className="site-header--dock-bottom-right pointer-events-none fixed bottom-6 right-6 z-50 p-3 sm:bottom-7 sm:right-7 sm:p-4">
       <div className="pointer-events-none">
         <ClockSweepNav isHeroThemeActive={isHeroThemeActive} />
       </div>
