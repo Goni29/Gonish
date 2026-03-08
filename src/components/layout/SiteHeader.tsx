@@ -59,8 +59,8 @@ export default function SiteHeader() {
   }, [location.pathname]);
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 py-3 sm:py-4">
-      <div className="shell pointer-events-none">
+    <header className="site-header--dock-bottom-right pointer-events-none fixed bottom-13 right-15 z-50 p-3 sm:bottom-14 sm:right-16 sm:p-4">
+      <div className="pointer-events-none">
         <ClockSweepNav isHeroThemeActive={isHeroThemeActive} />
       </div>
     </header>

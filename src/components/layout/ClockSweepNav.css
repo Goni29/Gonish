@@ -31,6 +31,14 @@
   overflow: visible;
 }
 
+.site-header--dock-bottom-right .clock-sweep-nav {
+  --anchor-x: calc(100% - 4.5rem);
+  margin-left: 0;
+  transform: translateY(
+    calc((var(--dial-size) + 4.3rem) - var(--logo-top) - var(--logo-height))
+  );
+}
+
 .clock-sweep-nav__logoLayer {
   position: absolute;
   top: var(--logo-top);
@@ -534,6 +542,10 @@
 }
 
 @media (max-width: 639px) {
+  .site-header--dock-bottom-right .clock-sweep-nav {
+    --anchor-x: calc(100% - 4.2rem);
+  }
+
   .clock-sweep-nav {
     --dial-size: min(88vw, 18rem);
     --logo-height: 2.82rem;
