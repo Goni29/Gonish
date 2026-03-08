@@ -62,10 +62,17 @@ const slotMotionMap: Record<
   DialSlot,
   { angle: number; radius: number; startAngle: number; startRadius: number }
 > = {
-  main: { angle: 248, radius: 130, startAngle: 0, startRadius: 88 },
-  about: { angle: 209, radius: 126, startAngle: 0, startRadius: 88 },
-  portfolio: { angle: 142, radius: 132, startAngle: 0, startRadius: 88 },
-  contact: { angle: 104, radius: 122, startAngle: 0, startRadius: 88 },
+  main: { angle: 304, radius: 124, startAngle: -10, startRadius: 82 },
+  about: { angle: 30, radius: 128, startAngle: 18, startRadius: 84 },
+  portfolio: { angle: 214, radius: 132, startAngle: 104, startRadius: 92 },
+  contact: { angle: 140, radius: 126, startAngle: 76, startRadius: 88 },
+};
+
+const slotOrbitMap: Record<DialSlot, { duration: number }> = {
+  main: { duration: 112 },
+  about: { duration: 126 },
+  portfolio: { duration: 118 },
+  contact: { duration: 104 },
 };
 
 const dialItems = navigation.map((item) => ({
@@ -943,6 +950,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
               >
                 {dialItems.map((item) => {
                   const motion = slotMotionMap[item.slot];
+                  const orbitMotion = slotOrbitMap[item.slot];
 
                   const style = {
                     "--enter-delay": `${menuEntryBaseDelayMs + enterOrder[item.slot] * menuEntryStepDelayMs}ms`,
@@ -951,6 +959,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                     "--item-radius": `${motion.radius}px`,
                     "--item-start-angle": `${motion.startAngle}deg`,
                     "--item-start-radius": `${motion.startRadius}px`,
+                    "--orbit-duration": `${orbitMotion.duration}s`,
                   } as CSSProperties;
 
                   return (
@@ -960,21 +969,25 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                       style={style}
                     >
                       <div className="clock-sweep-nav__itemMotion">
-                        <NavLink
-                          to={item.to}
-                          end={item.to === "/"}
-                          className={({ isActive }) =>
-                            [
-                              "clock-sweep-nav__link",
-                              isActive ? "clock-sweep-nav__link--active" : "",
-                            ]
-                              .filter(Boolean)
-                              .join(" ")
-                          }
-                          onClick={closeRequest}
-                        >
-                          {item.label}
-                        </NavLink>
+                        <span className="clock-sweep-nav__itemFloatX">
+                          <span className="clock-sweep-nav__itemFloatY">
+                            <NavLink
+                              to={item.to}
+                              end={item.to === "/"}
+                              className={({ isActive }) =>
+                                [
+                                  "clock-sweep-nav__link",
+                                  isActive ? "clock-sweep-nav__link--active" : "",
+                                ]
+                                  .filter(Boolean)
+                                  .join(" ")
+                              }
+                              onClick={closeRequest}
+                            >
+                              {item.label}
+                            </NavLink>
+                          </span>
+                        </span>
                       </div>
                     </li>
                   );

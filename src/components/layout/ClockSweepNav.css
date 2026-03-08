@@ -409,6 +409,8 @@
   left: 0;
   top: 0;
   opacity: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
   transform:
     rotate(var(--item-start-angle))
     translateY(calc(var(--item-start-radius) * -1))
@@ -416,6 +418,13 @@
     translate(-50%, -50%)
     scale(0.96);
   transform-origin: 0 0;
+}
+
+.clock-sweep-nav__itemFloatX,
+.clock-sweep-nav__itemFloatY {
+  display: inline-flex;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .clock-sweep-nav__link {
@@ -493,6 +502,11 @@
     rotate(calc(var(--item-angle) * -1))
     translate(-50%, -50%)
     scale(1);
+  animation: clockMenuOrbit var(--orbit-duration) linear infinite;
+}
+
+.clock-sweep-nav__item:is(:hover, :focus-within) .clock-sweep-nav__itemMotion {
+  animation-play-state: paused;
 }
 
 .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__menuLayer {
@@ -698,6 +712,26 @@
   }
 }
 
+@keyframes clockMenuOrbit {
+  0% {
+    transform:
+      rotate(var(--item-angle))
+      translateY(calc(var(--item-radius) * -1))
+      rotate(calc(var(--item-angle) * -1))
+      translate(-50%, -50%)
+      scale(1);
+  }
+
+  100% {
+    transform:
+      rotate(calc(var(--item-angle) + 360deg))
+      translateY(calc(var(--item-radius) * -1))
+      rotate(calc((var(--item-angle) + 360deg) * -1))
+      translate(-50%, -50%)
+      scale(1);
+  }
+}
+
 @media (max-width: 1023px) {
   .clock-sweep-nav {
     --dial-size: min(78vw, 21rem);
@@ -778,5 +812,9 @@
   .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__itemMotion {
     animation-duration: 1ms;
     animation-delay: 0ms;
+  }
+
+  .clock-sweep-nav[data-phase="open"] .clock-sweep-nav__itemMotion {
+    animation: none;
   }
 }
