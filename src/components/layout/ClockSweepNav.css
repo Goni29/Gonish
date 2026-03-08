@@ -4,12 +4,28 @@
   initial-value: 0deg;
 }
 
+@property --dock-shift-x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --dock-shift-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 .clock-sweep-nav {
   --anchor-x: 50%;
   --dial-size: clamp(20.5rem, 24vw, 23.5rem);
   --logo-top: 0.2rem;
   --logo-height: 2.96rem;
   --disc-open-delay: 332ms;
+  --dock-shift-x: 0px;
+  --dock-shift-y: 0px;
+  --dock-shift-open-x: clamp(-8.2rem, -8vw, -4.8rem);
+  --dock-shift-open-y: clamp(-10.5rem, -13vh, -7rem);
   --anchor-center-y: calc(var(--logo-top) + (var(--logo-height) / 2));
   --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.5));
   --nub-height: 1.42rem;
@@ -36,9 +52,41 @@
 .site-header--dock-bottom-right .clock-sweep-nav {
   --anchor-x: calc(100% - 4.5rem);
   margin-left: 0;
-  transform: translateY(
-    calc((var(--dial-size) + 4.3rem) - var(--logo-top) - var(--logo-height))
+  transform: translate3d(
+    var(--dock-shift-x),
+    calc(
+      (var(--dial-size) + 4.3rem) - var(--logo-top) - var(--logo-height) + var(--dock-shift-y)
+    ),
+    0
   );
+  will-change: transform;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-header--dock-bottom-right .clock-sweep-nav[data-phase="opening"] {
+  --dock-shift-x: var(--dock-shift-open-x);
+  --dock-shift-y: var(--dock-shift-open-y);
+  transition-delay: var(--disc-open-delay);
+}
+
+.site-header--dock-bottom-right .clock-sweep-nav[data-phase="open"] {
+  --dock-shift-x: var(--dock-shift-open-x);
+  --dock-shift-y: var(--dock-shift-open-y);
+  transition-delay: 0ms;
+}
+
+.site-header--dock-bottom-right .clock-sweep-nav[data-phase="closing"] {
+  --dock-shift-x: 0px;
+  --dock-shift-y: 0px;
+  transition-delay: 0ms;
+  transition-duration: 260ms;
+}
+
+.site-header--dock-bottom-right .clock-sweep-nav[data-phase="closed"] {
+  --dock-shift-x: 0px;
+  --dock-shift-y: 0px;
+  transition-delay: 0ms;
+  transition-duration: 0ms;
 }
 
 .clock-sweep-nav__discLayer {
@@ -643,6 +691,8 @@
     --dial-size: min(78vw, 21rem);
     --logo-height: 2.96rem;
     --nub-height: 1.35rem;
+    --dock-shift-open-x: clamp(-5.4rem, -13vw, -3.5rem);
+    --dock-shift-open-y: clamp(-8rem, -12vh, -5.9rem);
     margin-left: clamp(0.2rem, 1vw, 0.7rem);
   }
 }
@@ -656,6 +706,8 @@
     --dial-size: min(88vw, 18rem);
     --logo-height: 2.82rem;
     --nub-height: 1.28rem;
+    --dock-shift-open-x: clamp(-4.2rem, -14vw, -2.6rem);
+    --dock-shift-open-y: clamp(-6.2rem, -14vh, -4.8rem);
     height: calc(var(--dial-size) + 4rem);
     margin-left: 0;
   }
@@ -680,6 +732,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .site-header--dock-bottom-right .clock-sweep-nav {
+    transition: none;
+  }
+
+  .site-header--dock-bottom-right .clock-sweep-nav[data-phase="open"] {
+    --dock-shift-x: var(--dock-shift-open-x);
+    --dock-shift-y: var(--dock-shift-open-y);
+  }
+
+  .site-header--dock-bottom-right .clock-sweep-nav[data-phase="closed"] {
+    --dock-shift-x: 0px;
+    --dock-shift-y: 0px;
+  }
+
   .clock-sweep-nav__nub {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
