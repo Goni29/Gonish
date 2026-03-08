@@ -22,6 +22,7 @@
   --logo-top: 0.2rem;
   --logo-height: 2.96rem;
   --disc-open-delay: 332ms;
+  --interaction-zone-size: clamp(26.25rem, 30vw, 28.75rem);
   --dock-shift-x: 0px;
   --dock-shift-y: 0px;
   --dock-shift-open-x: clamp(-8.2rem, -8vw, -4.8rem);
@@ -256,7 +257,7 @@
   position: absolute;
   inset: 0;
   z-index: 24;
-  pointer-events: auto;
+  pointer-events: none;
   overflow: visible;
 }
 
@@ -277,6 +278,16 @@
   pointer-events: auto;
 }
 
+.clock-sweep-nav__interactionZone {
+  position: absolute;
+  top: calc(var(--anchor-center-y) - (var(--interaction-zone-size) / 2));
+  left: calc(var(--anchor-x) - (var(--interaction-zone-size) / 2));
+  width: var(--interaction-zone-size);
+  height: var(--interaction-zone-size);
+  border-radius: 50%;
+  pointer-events: auto;
+}
+
 .clock-sweep-nav__panelCrop {
   position: absolute;
   top: 0;
@@ -284,6 +295,7 @@
   width: var(--dial-size);
   height: calc(var(--dial-size) + 1rem);
   overflow: visible;
+  pointer-events: auto;
 }
 
 .clock-sweep-nav__dialStage {
@@ -380,7 +392,7 @@
   padding: 0;
   list-style: none;
   transform-origin: 50% 50%;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 4;
 }
 
@@ -691,6 +703,7 @@
     --dial-size: min(78vw, 21rem);
     --logo-height: 2.96rem;
     --nub-height: 1.35rem;
+    --interaction-zone-size: clamp(24rem, 38vw, 27rem);
     --dock-shift-open-x: clamp(-5.4rem, -13vw, -3.5rem);
     --dock-shift-open-y: clamp(-10rem, -14vh, -7.9rem);
     margin-left: clamp(0.2rem, 1vw, 0.7rem);
@@ -706,6 +719,7 @@
     --dial-size: min(88vw, 18rem);
     --logo-height: 2.82rem;
     --nub-height: 1.28rem;
+    --interaction-zone-size: clamp(20rem, 82vw, 24rem);
     --dock-shift-open-x: clamp(-4.2rem, -14vw, -2.6rem);
     --dock-shift-open-y: clamp(-8.2rem, -16vh, -6.8rem);
     height: calc(var(--dial-size) + 4rem);

@@ -6,7 +6,17 @@ import { navigation } from "@/data/siteContent";
 import "./ClockSweepNav.css";
 
 const desktopDialQuery = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
-const hoverCloseDelay = 180;
+const hoverCloseDelayBase = 208;
+const hoverCloseDelayOutward = 184;
+const hoverCloseDelayInward = 236;
+const cornerHoldEdgePx = 24;
+const cornerReleaseDistancePx = 84;
+const cornerHoldZoneMinPx = 240;
+const slowExitDwellMs = 540;
+const slowExitOutwardMs = 260;
+const slowExitAwayMs = 220;
+const slowExitDistanceGainPx = 34;
+const slowExitTickMs = 140;
 const discOpenDelayMs = 332;
 const menuEntryBaseDelayMs = 436;
 const menuEntryStepDelayMs = 78;
@@ -15,6 +25,14 @@ const closeTotalMs = 900;
 
 type Phase = "closed" | "opening" | "open" | "closing";
 type DialSlot = "main" | "about" | "portfolio" | "contact";
+type SlowExitTrend = {
+  awayMs: number;
+  lastDistance: number;
+  lastTs: number;
+  outwardMs: number;
+  startDistance: number;
+  startTs: number;
+};
 type ClockSweepNavProps = {
   isHeroThemeActive: boolean;
 };
@@ -181,13 +199,28 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
   const navId = useId();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const logoLayerRef = useRef<HTMLDivElement | null>(null);
+  const panelCropRef = useRef<HTMLDivElement | null>(null);
+  const corridorRef = useRef<HTMLDivElement | null>(null);
+  const interactionZoneRef = useRef<HTMLDivElement | null>(null);
   const suppressNextFocusOpenRef = useRef(false);
+  const pendingCloseAfterOpenRef = useRef(false);
+  const pointerVectorRef = useRef<{ x: number; y: number; dx: number; dy: number } | null>(null);
   const phaseRef = useRef<Phase>("closed");
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeMonitorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const slowExitTrendRef = useRef<SlowExitTrend | null>(null);
   const phaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isLogoHoveredRef = useRef(false);
+  const isDiscHoveredRef = useRef(false);
+  const isCorridorHoveredRef = useRef(false);
+  const isFocusWithinRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
   const [supportsHoverDial, setSupportsHoverDial] = useState(false);
-  const [isPointerInside, setIsPointerInside] = useState(false);
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const [isDiscHovered, setIsDiscHovered] = useState(false);
+  const [isCorridorHovered, setIsCorridorHovered] = useState(false);
+  const [isDesktopOpenRequested, setIsDesktopOpenRequested] = useState(false);
   const [isTapOpen, setIsTapOpen] = useState(false);
   const [isFocusWithin, setIsFocusWithin] = useState(false);
   const [phase, setPhase] = useState<Phase>("closed");
@@ -195,12 +228,27 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
   const phaseCloseTotalMs = prefersReducedMotion ? 120 : closeTotalMs;
 
   phaseRef.current = phase;
+  isLogoHoveredRef.current = isLogoHovered;
+  isDiscHoveredRef.current = isDiscHovered;
+  isCorridorHoveredRef.current = isCorridorHovered;
+  isFocusWithinRef.current = isFocusWithin;
 
   const clearHoverTimer = () => {
     if (hoverTimerRef.current !== null) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = null;
     }
+  };
+
+  const clearCloseMonitor = () => {
+    if (closeMonitorTimerRef.current !== null) {
+      clearTimeout(closeMonitorTimerRef.current);
+      closeMonitorTimerRef.current = null;
+    }
+  };
+
+  const resetSlowExitTrend = () => {
+    slowExitTrendRef.current = null;
   };
 
   const clearPhaseTimer = () => {
@@ -210,50 +258,436 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
     }
   };
 
+  const hasDesktopKeepAlive = () =>
+    isLogoHoveredRef.current ||
+    isDiscHoveredRef.current ||
+    isCorridorHoveredRef.current ||
+    isFocusWithinRef.current;
+
+  const updatePointerVector = (x: number, y: number) => {
+    const previous = pointerVectorRef.current;
+
+    if (!previous) {
+      pointerVectorRef.current = { x, y, dx: 0, dy: 0 };
+      return;
+    }
+
+    pointerVectorRef.current = {
+      x,
+      y,
+      dx: x - previous.x,
+      dy: y - previous.y,
+    };
+  };
+
+  const getCurrentPointerPosition = () => {
+    const pointer = pointerVectorRef.current;
+
+    if (!pointer) {
+      return null;
+    }
+
+    return { x: pointer.x, y: pointer.y };
+  };
+
+  const isPointInsideRect = (
+    point: { x: number; y: number },
+    rect: DOMRect | null | undefined,
+    expand = 0,
+  ) => {
+    if (!rect) {
+      return false;
+    }
+
+    return (
+      point.x >= rect.left - expand &&
+      point.x <= rect.right + expand &&
+      point.y >= rect.top - expand &&
+      point.y <= rect.bottom + expand
+    );
+  };
+
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) {
+      return false;
+    }
+
+    return Boolean(
+      target.closest(
+        ".clock-sweep-nav__logoLayer, .clock-sweep-nav__panelCrop, .clock-sweep-nav__menuLayer, .clock-sweep-nav__hoverBridge, .clock-sweep-nav__interactionZone",
+      ),
+    );
+  };
+
+  const getInteractionAnchorMetrics = (point: { x: number; y: number }) => {
+    const interactionRect = interactionZoneRef.current?.getBoundingClientRect();
+
+    if (!interactionRect) {
+      return null;
+    }
+
+    const centerX = interactionRect.left + interactionRect.width / 2;
+    const centerY = interactionRect.top + interactionRect.height / 2;
+    const radius = interactionRect.width / 2;
+    const distanceFromCenter = Math.hypot(point.x - centerX, point.y - centerY);
+    const outsideDistance = Math.max(0, distanceFromCenter - radius);
+
+    return { centerX, centerY, outsideDistance };
+  };
+
+  const isInsideCoreKeepZones = (point: { x: number; y: number }) =>
+    isPointInsideRect(point, logoLayerRef.current?.getBoundingClientRect(), 10) ||
+    isPointInsideRect(point, corridorRef.current?.getBoundingClientRect(), 16) ||
+    isPointInsideRect(point, panelCropRef.current?.getBoundingClientRect(), 28);
+
+  const updateSlowExitTrendAndShouldClose = (point: { x: number; y: number }) => {
+    const anchor = getInteractionAnchorMetrics(point);
+
+    if (!anchor) {
+      resetSlowExitTrend();
+      return false;
+    }
+
+    const now = performance.now();
+    const currentTrend = slowExitTrendRef.current;
+
+    if (!currentTrend) {
+      slowExitTrendRef.current = {
+        awayMs: 0,
+        lastDistance: anchor.outsideDistance,
+        lastTs: now,
+        outwardMs: 0,
+        startDistance: anchor.outsideDistance,
+        startTs: now,
+      };
+      return false;
+    }
+
+    const deltaMs = Math.max(0, Math.min(140, now - currentTrend.lastTs));
+    const distanceDelta = anchor.outsideDistance - currentTrend.lastDistance;
+
+    if (distanceDelta > 0.35) {
+      currentTrend.outwardMs += deltaMs;
+    } else if (distanceDelta < -0.35) {
+      currentTrend.outwardMs = Math.max(0, currentTrend.outwardMs - deltaMs * 0.9);
+    }
+
+    const pointerVector = pointerVectorRef.current;
+
+    if (pointerVector) {
+      const awayDot =
+        pointerVector.dx * (point.x - anchor.centerX) + pointerVector.dy * (point.y - anchor.centerY);
+
+      if (awayDot > 0.5) {
+        currentTrend.awayMs += deltaMs;
+      } else if (awayDot < -0.4) {
+        currentTrend.awayMs = Math.max(0, currentTrend.awayMs - deltaMs);
+      }
+    }
+
+    currentTrend.lastDistance = anchor.outsideDistance;
+    currentTrend.lastTs = now;
+
+    const dwellMs = now - currentTrend.startTs;
+    const distanceGain = anchor.outsideDistance - currentTrend.startDistance;
+
+    return (
+      dwellMs >= slowExitDwellMs &&
+      distanceGain >= slowExitDistanceGainPx &&
+      currentTrend.outwardMs >= slowExitOutwardMs &&
+      currentTrend.awayMs >= slowExitAwayMs
+    );
+  };
+
+  const shouldKeepOpenAtCorner = (point: { x: number; y: number }) => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    const nearRightEdge = point.x >= window.innerWidth - cornerHoldEdgePx;
+    const nearBottomEdge = point.y >= window.innerHeight - cornerHoldEdgePx;
+
+    if (!nearRightEdge && !nearBottomEdge) {
+      return false;
+    }
+
+    const rootRect = rootRef.current?.getBoundingClientRect();
+    const zoneWidth = Math.max(cornerHoldZoneMinPx, (rootRect?.width ?? 0) + 48);
+    const zoneHeight = Math.max(cornerHoldZoneMinPx, (rootRect?.height ?? 0) + 48);
+    const isInsideCornerZone =
+      point.x >= window.innerWidth - zoneWidth && point.y >= window.innerHeight - zoneHeight;
+
+    if (!isInsideCornerZone) {
+      return false;
+    }
+
+    const movedLeftEnough = point.x <= window.innerWidth - cornerReleaseDistancePx;
+    const movedUpEnough = point.y <= window.innerHeight - cornerReleaseDistancePx;
+
+    return !(movedLeftEnough || movedUpEnough);
+  };
+
+  const getPointerKeepDecision = () => {
+    const point = getCurrentPointerPosition();
+
+    if (!point) {
+      resetSlowExitTrend();
+      return { keepOpen: false, monitorSlowExit: false };
+    }
+
+    if (isInsideCoreKeepZones(point)) {
+      resetSlowExitTrend();
+      return { keepOpen: true, monitorSlowExit: false };
+    }
+
+    const inExtendedZone = isPointInsideRect(point, interactionZoneRef.current?.getBoundingClientRect(), 0);
+    const inCornerHold = shouldKeepOpenAtCorner(point);
+
+    if (!inExtendedZone && !inCornerHold) {
+      resetSlowExitTrend();
+      return { keepOpen: false, monitorSlowExit: false };
+    }
+
+    if (updateSlowExitTrendAndShouldClose(point)) {
+      resetSlowExitTrend();
+      return { keepOpen: false, monitorSlowExit: false };
+    }
+
+    return { keepOpen: true, monitorSlowExit: true };
+  };
+
+  const closeWithIntent = () => {
+    if (phaseRef.current === "opening") {
+      pendingCloseAfterOpenRef.current = true;
+      return;
+    }
+
+    setIsDesktopOpenRequested(false);
+  };
+
+  const scheduleSlowExitMonitor = (delayMs = slowExitTickMs) => {
+    if (!supportsHoverDial || phaseRef.current !== "open") {
+      return;
+    }
+
+    if (closeMonitorTimerRef.current !== null) {
+      return;
+    }
+
+    closeMonitorTimerRef.current = setTimeout(() => {
+      closeMonitorTimerRef.current = null;
+
+      if (hasDesktopKeepAlive()) {
+        resetSlowExitTrend();
+        return;
+      }
+
+      const decision = getPointerKeepDecision();
+
+      if (!decision.keepOpen) {
+        closeWithIntent();
+        return;
+      }
+
+      if (decision.monitorSlowExit) {
+        scheduleSlowExitMonitor(slowExitTickMs);
+      }
+    }, delayMs);
+  };
+
+  const getDirectionalCloseDelay = (event: ReactPointerEvent<HTMLElement>) => {
+    const pointerVector = pointerVectorRef.current;
+    const rootBounds = rootRef.current?.getBoundingClientRect();
+    const pointerPoint = { x: event.clientX, y: event.clientY };
+
+    if (shouldKeepOpenAtCorner(pointerPoint)) {
+      return hoverCloseDelayInward;
+    }
+
+    if (!pointerVector || !rootBounds) {
+      return hoverCloseDelayBase;
+    }
+
+    const dockX = rootBounds.right - 26;
+    const dockY = rootBounds.bottom - 26;
+    const toDockX = dockX - event.clientX;
+    const toDockY = dockY - event.clientY;
+    const dot = pointerVector.dx * toDockX + pointerVector.dy * toDockY;
+
+    if (dot < -28) {
+      return hoverCloseDelayOutward;
+    }
+
+    if (dot > 18) {
+      return hoverCloseDelayInward;
+    }
+
+    return hoverCloseDelayBase;
+  };
+
+  const scheduleDesktopClose = (event?: ReactPointerEvent<HTMLElement>) => {
+    if (!supportsHoverDial) {
+      return;
+    }
+
+    clearHoverTimer();
+    clearCloseMonitor();
+
+    const delay = event ? getDirectionalCloseDelay(event) : hoverCloseDelayBase;
+    hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = null;
+
+      if (hasDesktopKeepAlive()) {
+        resetSlowExitTrend();
+        return;
+      }
+
+      const decision = getPointerKeepDecision();
+
+      if (decision.keepOpen) {
+        if (decision.monitorSlowExit) {
+          scheduleSlowExitMonitor(slowExitTickMs);
+        }
+        return;
+      }
+
+      closeWithIntent();
+    }, delay);
+  };
+
   const closeRequest = () => {
     clearHoverTimer();
-    setIsPointerInside(false);
+    clearCloseMonitor();
+    pendingCloseAfterOpenRef.current = false;
+    resetSlowExitTrend();
+    setIsLogoHovered(false);
+    setIsDiscHovered(false);
+    setIsCorridorHovered(false);
+    setIsDesktopOpenRequested(false);
     setIsTapOpen(false);
     setIsFocusWithin(false);
   };
 
   const closeImmediately = () => {
     clearHoverTimer();
+    clearCloseMonitor();
     clearPhaseTimer();
-    setIsPointerInside(false);
+    pendingCloseAfterOpenRef.current = false;
+    resetSlowExitTrend();
+    setIsLogoHovered(false);
+    setIsDiscHovered(false);
+    setIsCorridorHovered(false);
+    setIsDesktopOpenRequested(false);
     setIsTapOpen(false);
     setIsFocusWithin(false);
     setPhase("closed");
   };
 
-  const openForPointer = () => {
+  const openFromLogoHover = () => {
     if (!supportsHoverDial) {
       return;
     }
 
     clearHoverTimer();
-    setIsPointerInside(true);
+    clearCloseMonitor();
+    pendingCloseAfterOpenRef.current = false;
+    resetSlowExitTrend();
+    setIsDesktopOpenRequested(true);
   };
 
-  const schedulePointerClose = (event: ReactPointerEvent<HTMLElement>) => {
+  const onLogoPointerEnter = () => {
     if (!supportsHoverDial) {
       return;
     }
 
+    setIsLogoHovered(true);
+    openFromLogoHover();
+  };
+
+  const onLogoPointerLeave = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!supportsHoverDial) {
+      return;
+    }
+
+    setIsLogoHovered(false);
+    updatePointerVector(event.clientX, event.clientY);
     const nextTarget = event.relatedTarget;
 
-    if (nextTarget instanceof Node && rootRef.current?.contains(nextTarget)) {
+    if (isInteractiveTarget(nextTarget)) {
+      return;
+    }
+
+    scheduleDesktopClose(event);
+  };
+
+  const onDiscPointerEnter = () => {
+    if (!supportsHoverDial) {
       return;
     }
 
     clearHoverTimer();
-    hoverTimerRef.current = setTimeout(() => {
-      setIsPointerInside(false);
-      hoverTimerRef.current = null;
-    }, hoverCloseDelay);
+    clearCloseMonitor();
+    resetSlowExitTrend();
+    setIsDiscHovered(true);
+
+    if (phaseRef.current === "open" || phaseRef.current === "opening") {
+      setIsDesktopOpenRequested(true);
+    }
   };
 
-  const isRequestedOpen = (supportsHoverDial ? isPointerInside : isTapOpen) || isFocusWithin;
+  const onDiscPointerLeave = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!supportsHoverDial) {
+      return;
+    }
+
+    setIsDiscHovered(false);
+    updatePointerVector(event.clientX, event.clientY);
+    const nextTarget = event.relatedTarget;
+
+    if (isInteractiveTarget(nextTarget)) {
+      return;
+    }
+
+    scheduleDesktopClose(event);
+  };
+
+  const onCorridorPointerEnter = () => {
+    if (!supportsHoverDial) {
+      return;
+    }
+
+    clearHoverTimer();
+    clearCloseMonitor();
+    resetSlowExitTrend();
+    setIsCorridorHovered(true);
+
+    if (phaseRef.current === "open" || phaseRef.current === "opening") {
+      setIsDesktopOpenRequested(true);
+    }
+  };
+
+  const onCorridorPointerLeave = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!supportsHoverDial) {
+      return;
+    }
+
+    setIsCorridorHovered(false);
+    updatePointerVector(event.clientX, event.clientY);
+    const nextTarget = event.relatedTarget;
+
+    if (isInteractiveTarget(nextTarget)) {
+      return;
+    }
+
+    scheduleDesktopClose(event);
+  };
+
+  const trackPointerVector = (event: ReactPointerEvent<HTMLDivElement>) => {
+    updatePointerVector(event.clientX, event.clientY);
+  };
+
+  const isRequestedOpen =
+    (supportsHoverDial ? isDesktopOpenRequested : isTapOpen) || isFocusWithin;
   const isMounted = phase !== "closed";
 
   useEffect(() => {
@@ -277,21 +711,34 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
 
   useEffect(() => () => {
     clearHoverTimer();
+    clearCloseMonitor();
     clearPhaseTimer();
   }, []);
+
+  useEffect(() => {
+    if (!supportsHoverDial) {
+      return;
+    }
+
+    const syncPointerVector = (event: PointerEvent) => {
+      updatePointerVector(event.clientX, event.clientY);
+    };
+
+    document.addEventListener("pointermove", syncPointerVector, { passive: true });
+    return () => document.removeEventListener("pointermove", syncPointerVector);
+  }, [supportsHoverDial]);
 
   useEffect(() => {
     closeImmediately();
   }, [location.pathname, supportsHoverDial]);
 
   useEffect(() => {
-    clearPhaseTimer();
-
     if (isRequestedOpen) {
       if (phaseRef.current === "open" || phaseRef.current === "opening") {
         return;
       }
 
+      clearPhaseTimer();
       setPhase("opening");
       phaseTimerRef.current = setTimeout(() => {
         setPhase("open");
@@ -301,16 +748,64 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
       return;
     }
 
+    if (phaseRef.current === "opening") {
+      pendingCloseAfterOpenRef.current = true;
+      return;
+    }
+
     if (phaseRef.current === "closed" || phaseRef.current === "closing") {
       return;
     }
 
+    clearPhaseTimer();
     setPhase("closing");
     phaseTimerRef.current = setTimeout(() => {
       setPhase("closed");
       phaseTimerRef.current = null;
     }, phaseCloseTotalMs);
   }, [isRequestedOpen, phaseCloseTotalMs, phaseOpenTotalMs]);
+
+  useEffect(() => {
+    if (!supportsHoverDial || phase !== "open" || !pendingCloseAfterOpenRef.current) {
+      return;
+    }
+
+    pendingCloseAfterOpenRef.current = false;
+
+    if (hasDesktopKeepAlive()) {
+      return;
+    }
+
+    clearHoverTimer();
+    hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = null;
+
+      if (hasDesktopKeepAlive()) {
+        resetSlowExitTrend();
+        return;
+      }
+
+      const decision = getPointerKeepDecision();
+
+      if (!decision.keepOpen) {
+        setIsDesktopOpenRequested(false);
+        return;
+      }
+
+      if (decision.monitorSlowExit) {
+        scheduleSlowExitMonitor(slowExitTickMs);
+      }
+    }, hoverCloseDelayOutward);
+  }, [phase, supportsHoverDial]);
+
+  useEffect(() => {
+    if (phase === "open") {
+      return;
+    }
+
+    clearCloseMonitor();
+    resetSlowExitTrend();
+  }, [phase]);
 
   useEffect(() => {
     if (supportsHoverDial || !isMounted) {
@@ -372,6 +867,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
       className={`clock-sweep-nav clock-sweep-nav__navDock clock-sweep-nav--${phase}`}
       data-phase={phase}
       style={navStyle}
+      onPointerMoveCapture={trackPointerVector}
       onFocusCapture={() => {
         if (suppressNextFocusOpenRef.current) {
           suppressNextFocusOpenRef.current = false;
@@ -379,10 +875,13 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
         }
 
         clearHoverTimer();
+        clearCloseMonitor();
+        resetSlowExitTrend();
         setIsFocusWithin(true);
 
         if (supportsHoverDial) {
-          setIsPointerInside(true);
+          pendingCloseAfterOpenRef.current = false;
+          setIsDesktopOpenRequested(true);
         }
       }}
       onBlurCapture={(event) => {
@@ -392,11 +891,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
           setIsFocusWithin(false);
 
           if (supportsHoverDial) {
-            clearHoverTimer();
-            hoverTimerRef.current = setTimeout(() => {
-              setIsPointerInside(false);
-              hoverTimerRef.current = null;
-            }, hoverCloseDelay);
+            scheduleDesktopClose();
           }
         }
       }}
@@ -406,17 +901,30 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
         <div aria-hidden="true" className="clock-sweep-nav__nub" />
 
         {isMounted ? (
-          <nav
-            id={navId}
-            className="clock-sweep-nav__overlay"
-            aria-label="Primary navigation"
-            onPointerEnter={openForPointer}
-            onPointerLeave={schedulePointerClose}
-          >
+          <nav id={navId} className="clock-sweep-nav__overlay" aria-label="Primary navigation">
             <div className="clock-sweep-nav__panelShell">
-              <div aria-hidden="true" className="clock-sweep-nav__hoverBridge" />
+              <div
+                aria-hidden="true"
+                ref={interactionZoneRef}
+                className="clock-sweep-nav__interactionZone"
+                onPointerEnter={onDiscPointerEnter}
+                onPointerLeave={onDiscPointerLeave}
+              />
 
-              <div className="clock-sweep-nav__panelCrop">
+              <div
+                aria-hidden="true"
+                ref={corridorRef}
+                className="clock-sweep-nav__hoverBridge"
+                onPointerEnter={onCorridorPointerEnter}
+                onPointerLeave={onCorridorPointerLeave}
+              />
+
+              <div
+                ref={panelCropRef}
+                className="clock-sweep-nav__panelCrop"
+                onPointerEnter={onDiscPointerEnter}
+                onPointerLeave={onDiscPointerLeave}
+              >
                 <div className="clock-sweep-nav__dialStage">
                   <div className="clock-sweep-nav__sweepLayer">
                     <div className="clock-sweep-nav__dialRotor">
@@ -428,7 +936,11 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                 </div>
               </div>
 
-              <ul className="clock-sweep-nav__menuLayer">
+              <ul
+                className="clock-sweep-nav__menuLayer"
+                onPointerEnter={onDiscPointerEnter}
+                onPointerLeave={onDiscPointerLeave}
+              >
                 {dialItems.map((item) => {
                   const motion = slotMotionMap[item.slot];
 
@@ -474,9 +986,10 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
       </div>
 
       <div
+        ref={logoLayerRef}
         className="clock-sweep-nav__logoLayer"
-        onPointerEnter={openForPointer}
-        onPointerLeave={schedulePointerClose}
+        onPointerEnter={onLogoPointerEnter}
+        onPointerLeave={onLogoPointerLeave}
       >
         <motion.button
           ref={triggerRef}
