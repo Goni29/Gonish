@@ -78,7 +78,7 @@ export default function HeroFilmCanvas() {
       context.restore();
 
       context.save();
-      context.font = `600 ${lineSize}px "Aptos", "Segoe UI", sans-serif`;
+      context.font = `600 ${lineSize}px "Noto Sans KR", "Aptos", "Segoe UI", sans-serif`;
       context.fillStyle = "rgba(20, 16, 20, 0.12)";
       context.textAlign = "left";
       for (let index = -1; index < 5; index += 1) {

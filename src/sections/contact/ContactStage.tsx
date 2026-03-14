@@ -2,6 +2,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import BrandButton from "@/components/ui/BrandButton";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type FormState = {
   message: string;
@@ -189,9 +190,7 @@ export default function ContactStage() {
               <div className="space-y-5">
                 <p className="eyebrow">Project conversation</p>
                 <p className="font-display text-[clamp(2.4rem,4.5vw,4.8rem)] leading-[0.96] text-ink">
-                  첫 대화부터,
-                  <br />
-                  브랜드의 방향이 선명해지도록.
+                  <SmartLineBreak text="첫 대화부터, 브랜드의 방향이 선명해지도록." />
                 </p>
                 <p className="max-w-2xl text-base leading-7 text-ink-muted md:text-lg">
                   현재 상황과 원하는 결과를 남겨주시면 필요한 범위, 일정, 진행 방식을 정돈된 흐름으로

@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import BrandButton from "@/components/ui/BrandButton";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 const cards = [
   {
@@ -28,9 +29,7 @@ export default function ClosingSection() {
             <div className="space-y-6">
               <p className="eyebrow">Continue the story</p>
               <p className="font-display text-[clamp(2.3rem,4vw,4.6rem)] leading-[0.96] text-ink">
-                원하는 페이지에서
-                <br />
-                브랜드의 다음 장면을 확인해보세요.
+                <SmartLineBreak text="원하는 페이지에서 브랜드의 다음 장면을 확인해보세요." />
               </p>
               <BrandButton to="/contact" variant="ghost">
                 프로젝트 상담 시작하기

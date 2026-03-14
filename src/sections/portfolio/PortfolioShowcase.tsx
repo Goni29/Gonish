@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { caseStudies, type CaseStudy, type DeviceKey, type DevicePreview } from "@/data/siteContent";
 
 const deviceLabels: Record<DeviceKey, string> = {
@@ -90,9 +91,7 @@ export default function PortfolioShowcase() {
                 <div className="space-y-4 rounded-[1.8rem] border border-black/10 bg-[#171118] p-6 text-white">
                   <p className="eyebrow text-white/55">Curation note</p>
                   <p className="font-display text-3xl leading-tight">
-                    고객이 어디서 보든
-                    <br />
-                    같은 품격을 느끼도록.
+                    <SmartLineBreak text="고객이 어디서 보든 같은 품격을 느끼도록." />
                   </p>
                   <p className="text-sm leading-6 text-white/72">
                     같은 프로젝트라도 기기에 따라 고객의 읽는 방식이 달라집니다. Gonish는 PC, 태블릿,

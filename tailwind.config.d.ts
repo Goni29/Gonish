@@ -12,8 +12,8 @@ declare const _default: {
                 paper: string;
             };
             fontFamily: {
-                display: [string, string, string, string, string];
-                body: [string, string, string, string, string];
+                display: [string, string, string, string];
+                body: [string, string, string, string, string, string];
                 script: [string, string, string, string, string];
             };
             boxShadow: {

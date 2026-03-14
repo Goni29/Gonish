@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,6 +32,8 @@ export default function FillWordSection() {
           scrub: true,
           pin: true,
           anticipatePin: 1,
+          invalidateOnRefresh: true,
+          fastScrollEnd: false,
         },
       })
         .to(backdrop, { yPercent: -12, ease: "none" }, 0)
@@ -62,25 +65,19 @@ export default function FillWordSection() {
 
           <div className="relative">
             <p className="text-outline font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em]">
-              Gonish와
-              <br />
-              완성하세요.
+              <SmartLineBreak text="Gonish와 완성하세요." maxCharsPerLine={10} autoFit={false} />
             </p>
 
             <div ref={fillMaskRef} className="absolute inset-0 overflow-hidden">
               <p className="brand-fill font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em]">
-                Gonish와
-                <br />
-                완성하세요.
+                <SmartLineBreak text="Gonish와 완성하세요." maxCharsPerLine={10} autoFit={false} />
               </p>
             </div>
           </div>
 
           <div ref={copyRef} className="max-w-2xl rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl">
             <p className="font-display text-2xl leading-tight text-ink md:text-3xl">
-              한 번 스쳐 가는 화면보다,
-              <br />
-              오래 남는 첫인상을 설계합니다.
+              <SmartLineBreak text="한 번 스쳐 가는 화면보다, 오래 남는 첫인상을 설계합니다." />
             </p>
           </div>
         </div>

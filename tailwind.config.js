@@ -12,14 +12,8 @@ export default {
                 paper: "#FFFDFC",
             },
             fontFamily: {
-                display: [
-                    "Iowan Old Style",
-                    "Palatino Linotype",
-                    "Book Antiqua",
-                    "Georgia",
-                    "serif",
-                ],
-                body: ["Aptos", "Segoe UI", "Helvetica Neue", "Arial", "sans-serif"],
+                display: ["Paperozi", "Aptos", "Segoe UI", "sans-serif"],
+                body: ["Noto Sans KR", "Aptos", "Segoe UI", "Helvetica Neue", "Arial", "sans-serif"],
                 script: [
                     "Snell Roundhand",
                     "Segoe Script",

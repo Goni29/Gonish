@@ -18,7 +18,7 @@ export default function SectionHeading({
   return (
     <div className={["space-y-5", isCenter ? "mx-auto max-w-3xl text-center" : "max-w-3xl"].join(" ")}>
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="font-display text-[clamp(2.6rem,5vw,5.8rem)] leading-[0.92] text-ink">
+      <h2 className="break-keep font-display text-[clamp(2.6rem,5vw,5.8rem)] leading-[0.92] text-ink">
         {title}
       </h2>
       {description ? (

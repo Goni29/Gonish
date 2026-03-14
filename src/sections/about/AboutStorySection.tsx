@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import portraitArtwork from "@/assets/portrait-editorial.svg";
 import { aboutMilestones, aboutPrinciples, aboutStats } from "@/data/siteContent";
 
@@ -16,9 +17,7 @@ export default function AboutStorySection() {
               className="space-y-7"
             >
               <p className="font-display text-[clamp(2.2rem,4vw,4rem)] leading-[1] text-ink">
-                브랜드를 소개하는 데서 멈추지 않고,
-                <br />
-                선택받는 흐름까지 완성합니다.
+                <SmartLineBreak text="브랜드를 소개하는 데서 멈추지 않고, 선택받는 흐름까지 완성합니다." />
               </p>
               <div className="space-y-5 text-base leading-7 text-ink-muted md:text-lg">
                 <p>
@@ -45,7 +44,7 @@ export default function AboutStorySection() {
                   className="panel rounded-[1.8rem] p-5"
                 >
                   <p className="text-xs uppercase tracking-[0.32em] text-brand">{item.label}</p>
-                  <p className="mt-4 text-sm leading-6 text-ink-muted">{item.value}</p>
+                  <p className="mt-4 break-keep text-sm leading-6 text-ink-muted">{item.value}</p>
                 </motion.div>
               ))}
             </div>
@@ -61,7 +60,7 @@ export default function AboutStorySection() {
                   className="rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl"
                 >
                   <p className="font-display text-2xl text-ink">{item.title}</p>
-                  <p className="mt-3 text-sm leading-6 text-ink-muted md:text-base">{item.description}</p>
+                  <p className="mt-3 break-keep text-sm leading-6 text-ink-muted md:text-base">{item.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -70,7 +69,7 @@ export default function AboutStorySection() {
               <p className="eyebrow text-white/55">Looking ahead</p>
               <div className="mt-6 space-y-4">
                 {aboutMilestones.map((item) => (
-                  <p key={item} className="text-base leading-7 text-white/74">
+                  <p key={item} className="break-keep text-base leading-7 text-white/74">
                     {item}
                   </p>
                 ))}
@@ -96,14 +95,15 @@ export default function AboutStorySection() {
                     <p className="mt-3 font-display text-3xl leading-none text-ink">Gonish</p>
                   </div>
                   <p className="max-w-[12rem] text-right text-xs uppercase tracking-[0.28em] text-ink/45">
-                    sincere growth
-                    <br />
-                    tailored work
-                    <br />
-                    polished detail
+                    <SmartLineBreak
+                      text="sincere growth tailored work polished detail"
+                      maxCharsPerLine={13}
+                      maxLines={3}
+                      minCharsPerLine={6}
+                    />
                   </p>
                 </div>
-                <p className="text-sm leading-6 text-ink-muted">
+                <p className="break-keep text-sm leading-6 text-ink-muted">
                   현재는 브랜드 무드를 전달하기 위한 에디토리얼 아트워크를 사용하고 있습니다. 추후 실제
                   사진으로 교체하더라도 전체 인상과 톤이 흔들리지 않도록 구조를 정교하게 맞춰두었습니다.
                 </p>

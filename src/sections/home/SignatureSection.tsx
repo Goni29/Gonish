@@ -1,33 +1,228 @@
+import { useLayoutEffect, useRef } from "react";
 import { motion } from "motion/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import StoryScrollSection, {
+  STORY_SCENE_SCROLL_DISTANCE,
+  type StoryScrollSectionHandle,
+  STORY_STEP_COUNT,
+} from "@/sections/home/StoryScrollSection";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const STEP_ANIMATION_LOCK_MS = 560;
+const WHEEL_DELTA_THRESHOLD = 42;
+const SCENE_EDGE_SNAP_OFFSET_PX = 2;
 
 export default function SignatureSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+  const storyRef = useRef<StoryScrollSectionHandle | null>(null);
+  const triggerRef = useRef<ScrollTrigger | null>(null);
+  const activeStepRef = useRef(0);
+  const isAnimatingRef = useRef(false);
+  const isInputLockedRef = useRef(false);
+  const wheelAccumulatorRef = useRef(0);
+  const lockTimerRef = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const stage = stageRef.current;
+    const scene = sceneRef.current;
+
+    if (!section || !stage || !scene) {
+      return undefined;
+    }
+
+    const syncStageHeight = () => {
+      const sceneHeight = Math.ceil(scene.getBoundingClientRect().height);
+      stage.style.minHeight = `${sceneHeight + STORY_SCENE_SCROLL_DISTANCE}px`;
+    };
+
+    const context = gsap.context(() => {
+      syncStageHeight();
+
+      const trigger = ScrollTrigger.create({
+        trigger: stage,
+        start: "top top",
+        end: () => `+=${STORY_SCENE_SCROLL_DISTANCE}`,
+        invalidateOnRefresh: true,
+        onRefreshInit: syncStageHeight,
+        onRefresh: syncStageHeight,
+        onEnter: () => {
+          activeStepRef.current = 0;
+          storyRef.current?.setStepInstant(0);
+        },
+        onEnterBack: () => {
+          const lastStep = STORY_STEP_COUNT - 1;
+          activeStepRef.current = lastStep;
+          storyRef.current?.setStepInstant(lastStep);
+        },
+        onLeaveBack: () => {
+          activeStepRef.current = 0;
+          storyRef.current?.setStepInstant(0);
+        },
+      });
+
+      triggerRef.current = trigger;
+    }, section);
+
+    window.addEventListener("resize", syncStageHeight);
+
+    return () => {
+      window.removeEventListener("resize", syncStageHeight);
+
+      if (lockTimerRef.current) {
+        window.clearTimeout(lockTimerRef.current);
+      }
+      triggerRef.current = null;
+      context.revert();
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const clampStep = (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value));
+
+    const releaseInputLock = () => {
+      isAnimatingRef.current = false;
+      isInputLockedRef.current = false;
+      wheelAccumulatorRef.current = 0;
+    };
+
+    const moveStep = (direction: 1 | -1) => {
+      const currentStep = activeStepRef.current;
+      const nextStep = clampStep(currentStep + direction);
+
+      if (nextStep === currentStep) {
+        return;
+      }
+
+      isAnimatingRef.current = true;
+      isInputLockedRef.current = true;
+      activeStepRef.current = nextStep;
+      storyRef.current?.animateToStep(nextStep);
+
+      // Keep scroll near trigger edges so the next outward scroll exits naturally
+      // instead of forcing a jump.
+      const trigger = triggerRef.current;
+      if (trigger) {
+        if (direction > 0 && nextStep === STORY_STEP_COUNT - 1) {
+          const exitReadyPosition = Math.max(trigger.start + SCENE_EDGE_SNAP_OFFSET_PX, trigger.end - SCENE_EDGE_SNAP_OFFSET_PX);
+          window.scrollTo({ top: exitReadyPosition, behavior: "auto" });
+        } else if (direction < 0 && nextStep === 0) {
+          const enterReadyPosition = trigger.start + SCENE_EDGE_SNAP_OFFSET_PX;
+          window.scrollTo({ top: enterReadyPosition, behavior: "auto" });
+        }
+      }
+
+      if (lockTimerRef.current) {
+        window.clearTimeout(lockTimerRef.current);
+      }
+
+      lockTimerRef.current = window.setTimeout(() => {
+        releaseInputLock();
+      }, STEP_ANIMATION_LOCK_MS);
+    };
+
+    const handoffAtBoundary = (direction: 1 | -1) => {
+      const trigger = triggerRef.current;
+
+      if (!trigger) {
+        return;
+      }
+
+      isInputLockedRef.current = true;
+      isAnimatingRef.current = false;
+      wheelAccumulatorRef.current = 0;
+
+      const targetScroll = direction > 0 ? trigger.end + SCENE_EDGE_SNAP_OFFSET_PX : Math.max(0, trigger.start - SCENE_EDGE_SNAP_OFFSET_PX);
+      window.scrollTo({ top: targetScroll, behavior: "auto" });
+      ScrollTrigger.update();
+
+      window.setTimeout(() => {
+        isInputLockedRef.current = false;
+      }, 120);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      const trigger = triggerRef.current;
+
+      if (!trigger || !trigger.isActive) {
+        return;
+      }
+
+      const deltaY = event.deltaY;
+
+      if (deltaY === 0) {
+        return;
+      }
+
+      const direction = deltaY > 0 ? 1 : -1;
+      const currentStep = activeStepRef.current;
+      const isOutwardBoundaryScroll =
+        (direction > 0 && currentStep === STORY_STEP_COUNT - 1) ||
+        (direction < 0 && currentStep === 0);
+
+      if (isOutwardBoundaryScroll) {
+        event.preventDefault();
+
+        if (isInputLockedRef.current) {
+          return;
+        }
+
+        handoffAtBoundary(direction);
+        return;
+      }
+
+      event.preventDefault();
+
+      if (isInputLockedRef.current || isAnimatingRef.current) {
+        return;
+      }
+
+      wheelAccumulatorRef.current += deltaY;
+
+      if (Math.abs(wheelAccumulatorRef.current) < WHEEL_DELTA_THRESHOLD) {
+        return;
+      }
+
+      const stepDirection = wheelAccumulatorRef.current > 0 ? 1 : -1;
+      wheelAccumulatorRef.current = 0;
+      moveStep(stepDirection);
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+
+      if (lockTimerRef.current) {
+        window.clearTimeout(lockTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <section className="section-space-tight">
+    <section ref={sectionRef} className="section-space-tight">
       <div className="shell">
         <div className="soft-divider" />
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="space-y-10 py-12"
-        >
-          <div className="font-script text-[clamp(5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
-            Gonish
-          </div>
+        <div ref={stageRef} className="relative" style={{ minHeight: `calc(100svh + ${STORY_SCENE_SCROLL_DISTANCE}px)` }}>
+          <motion.div
+            ref={sceneRef}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="sticky top-0 space-y-10 py-12"
+          >
+            <div className="font-script text-[clamp(5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
+              Gonish
+            </div>
 
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">
-            <p className="font-display text-[clamp(2rem,4vw,3.9rem)] leading-[0.98] text-ink">
-              단정한 미감을 넘어,
-              <br />
-              선택받는 브랜드 경험을 완성합니다.
-            </p>
-            <p className="max-w-xl text-base leading-7 text-ink-muted md:text-lg">
-              첫 화면에서 브랜드의 결을 또렷하게 전달하고, 필요한 정보와 문의 동선이 매끄럽게
-              이어지도록 구성합니다. Gonish는 감도와 성과가 함께 남는 결과를 지향합니다.
-            </p>
-          </div>
-        </motion.div>
+            <StoryScrollSection ref={storyRef} />
+          </motion.div>
+        </div>
       </div>
     </section>
   );
