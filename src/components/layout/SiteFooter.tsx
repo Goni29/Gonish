@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 
 export default function SiteFooter() {
   return (
@@ -14,21 +14,21 @@ export default function SiteFooter() {
 
           <div className="flex flex-col gap-3 text-sm text-ink-muted">
             <div className="flex flex-wrap gap-3">
-              <NavLink to="/" className="transition-colors duration-300 hover:text-brand">
+              <Link href="/" className="transition-colors duration-300 hover:text-brand">
                 Main
-              </NavLink>
-              <NavLink to="/about" className="transition-colors duration-300 hover:text-brand">
+              </Link>
+              <Link href="/about" className="transition-colors duration-300 hover:text-brand">
                 About
-              </NavLink>
-              <NavLink
-                to="/portfolio"
+              </Link>
+              <Link
+                href="/portfolio"
                 className="transition-colors duration-300 hover:text-brand"
               >
                 Portfolio
-              </NavLink>
-              <NavLink to="/contact" className="transition-colors duration-300 hover:text-brand">
+              </Link>
+              <Link href="/contact" className="transition-colors duration-300 hover:text-brand">
                 Contact
-              </NavLink>
+              </Link>
             </div>
             <p>© {new Date().getFullYear()} Gonish. Curated premium brand portfolio.</p>
           </div>

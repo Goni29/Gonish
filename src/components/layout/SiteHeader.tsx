@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 import ClockSweepNav from "@/components/layout/ClockSweepNav";
 
 export default function SiteHeader() {
-  const location = useLocation();
+  const pathname = usePathname() ?? "/";
   const [isHeroThemeActive, setIsHeroThemeActive] = useState(true);
 
   useEffect(() => {
-    const isHome = location.pathname === "/";
+    const isHome = pathname === "/";
 
     if (!isHome) {
       setIsHeroThemeActive(false);
@@ -56,7 +56,7 @@ export default function SiteHeader() {
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
     };
-  }, [location.pathname]);
+  }, [pathname]);
 
   return (
     <header className="site-header--dock-bottom-right pointer-events-none fixed bottom-6 right-6 z-50 p-3 sm:bottom-7 sm:right-7 sm:p-4">

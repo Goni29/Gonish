@@ -1,6 +1,5 @@
 import { motion } from "motion/react";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
-import portraitArtwork from "@/assets/portrait-editorial.svg";
 import { aboutMilestones, aboutPrinciples, aboutStats } from "@/data/siteContent";
 
 export default function AboutStorySection() {
@@ -86,7 +85,7 @@ export default function AboutStorySection() {
           >
             <div className="panel overflow-hidden rounded-[2.2rem] p-4 sm:p-5">
               <div className="overflow-hidden rounded-[1.8rem] border border-black/10 bg-[#f4eded]">
-                <img src={portraitArtwork} alt="Gonish portrait artwork" className="w-full object-cover" />
+                <img src="/portrait-editorial.svg" alt="Gonish portrait artwork" className="w-full object-cover" />
               </div>
               <div className="space-y-4 px-2 pb-2 pt-6">
                 <div className="flex items-start justify-between gap-4">

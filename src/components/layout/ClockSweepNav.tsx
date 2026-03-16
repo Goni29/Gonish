@@ -1,7 +1,8 @@
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { navigation } from "@/data/siteContent";
 import "./ClockSweepNav.css";
 
@@ -202,8 +203,8 @@ const impactTransition = {
 };
 
 export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps) {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname() ?? "/";
+  const router = useRouter();
   const navId = useId();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -738,7 +739,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
 
   useEffect(() => {
     closeImmediately();
-  }, [location.pathname, supportsHoverDial]);
+  }, [pathname, supportsHoverDial]);
 
   useEffect(() => {
     if (isRequestedOpen) {
@@ -952,6 +953,10 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                 {dialItems.map((item) => {
                   const motion = slotMotionMap[item.slot];
                   const orbitMotion = slotOrbitMap[item.slot];
+                  const isActive =
+                    item.to === "/"
+                      ? pathname === "/"
+                      : pathname === item.to || pathname.startsWith(`${item.to}/`);
 
                   const style = {
                     "--enter-delay": `${menuEntryBaseDelayMs + enterOrder[item.slot] * menuEntryStepDelayMs}ms`,
@@ -972,10 +977,9 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                       <div className="clock-sweep-nav__itemMotion">
                         <span className="clock-sweep-nav__itemFloatX">
                           <span className="clock-sweep-nav__itemFloatY">
-                            <NavLink
-                              to={item.to}
-                              end={item.to === "/"}
-                              className={({ isActive }) =>
+                            <Link
+                              href={item.to}
+                              className={
                                 [
                                   "clock-sweep-nav__link",
                                   isActive ? "clock-sweep-nav__link--active" : "",
@@ -986,7 +990,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                               onClick={closeRequest}
                             >
                               {item.label}
-                            </NavLink>
+                            </Link>
                           </span>
                         </span>
                       </div>
@@ -1025,7 +1029,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
           onClick={() => {
             if (isMounted) {
               closeRequest();
-              navigate("/");
+              router.push("/");
               return;
             }
 

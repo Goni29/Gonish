@@ -1,3 +1,5 @@
+"use client";
+
 import SectionHeading from "@/components/ui/SectionHeading";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import ContactStage from "@/sections/contact/ContactStage";

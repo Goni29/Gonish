@@ -28,7 +28,7 @@ export default function ContactStage() {
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
   const stageRef = useRef<HTMLDivElement | null>(null);
   const timeoutRef = useRef<number | null>(null);
-  const contactEmail = useMemo(() => import.meta.env.VITE_CONTACT_EMAIL as string | undefined, []);
+  const contactEmail = useMemo(() => process.env.NEXT_PUBLIC_CONTACT_EMAIL, []);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");

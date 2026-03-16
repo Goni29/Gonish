@@ -1,3 +1,5 @@
+"use client";
+
 import ClosingSection from "@/sections/home/ClosingSection";
 import FillWordSection from "@/sections/home/FillWordSection";
 import HeroSection from "@/sections/home/HeroSection";

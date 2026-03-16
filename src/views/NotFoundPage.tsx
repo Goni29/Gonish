@@ -1,3 +1,5 @@
+"use client";
+
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 type BrandButtonProps = {
   children: ReactNode;
@@ -36,7 +36,7 @@ export default function BrandButton({
 
   if (to) {
     return (
-      <Link to={to} className={classes}>
+      <Link href={to} className={classes}>
         {children}
       </Link>
     );
