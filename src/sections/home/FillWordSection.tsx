@@ -5,25 +5,70 @@ import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const FILL_START_PROGRESS = 0.08;
+const WAVE_POINT_COUNT = 18;
+const WAVE_AMPLITUDE = 8.2;
+const PRIMARY_WAVE_CYCLES = 1.45;
+const SECONDARY_WAVE_CYCLES = 2.7;
+const WAVE_PHASE_SPEED = 0.0022;
+const SECONDARY_WAVE_RATIO = 0.42;
+const EMPTY_LEVEL_THRESHOLD = 99.8;
+const FULL_LEVEL_THRESHOLD = 0.2;
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+function getWaveClipPath(level: number, phase: number) {
+  const points: string[] = [];
+
+  for (let index = 0; index <= WAVE_POINT_COUNT; index += 1) {
+    const ratio = index / WAVE_POINT_COUNT;
+    const x = ratio * 100;
+    const primary =
+      Math.sin(ratio * Math.PI * 2 * PRIMARY_WAVE_CYCLES + phase) * WAVE_AMPLITUDE;
+    const secondary =
+      Math.sin(ratio * Math.PI * 2 * SECONDARY_WAVE_CYCLES - phase * 1.25 + 1.4) *
+      (WAVE_AMPLITUDE * SECONDARY_WAVE_RATIO);
+    const y = clamp(level + primary + secondary, 0, 100);
+
+    points.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
+  }
+
+  return `polygon(${points.join(", ")}, 100% 100%, 0% 100%)`;
+}
+
 export default function FillWordSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const fillMaskRef = useRef<HTMLDivElement | null>(null);
-  const copyRef = useRef<HTMLDivElement | null>(null);
-  const backdropRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const fillMask = fillMaskRef.current;
-    const copy = copyRef.current;
-    const backdrop = backdropRef.current;
 
-    if (!section || !fillMask || !copy || !backdrop) {
+    if (!section || !fillMask) {
       return undefined;
     }
 
-    const context = gsap.context(() => {
-      gsap.set(fillMask, { clipPath: "inset(100% 0% 0% 0%)" });
+    const liquidState = { level: 100 };
+    let rafId = 0;
 
+    const updateWave = (time: number) => {
+      let clipPath = "";
+
+      if (liquidState.level >= EMPTY_LEVEL_THRESHOLD) {
+        clipPath = "inset(100% 0% 0% 0%)";
+      } else if (liquidState.level <= FULL_LEVEL_THRESHOLD) {
+        clipPath = "inset(0% 0% 0% 0%)";
+      } else {
+        const phase = time * WAVE_PHASE_SPEED;
+        clipPath = getWaveClipPath(liquidState.level, phase);
+      }
+
+      fillMask.style.setProperty("clip-path", clipPath);
+      fillMask.style.setProperty("-webkit-clip-path", clipPath);
+      rafId = window.requestAnimationFrame(updateWave);
+    };
+
+    const context = gsap.context(() => {
       gsap.timeline({
         scrollTrigger: {
           trigger: section,
@@ -36,12 +81,19 @@ export default function FillWordSection() {
           fastScrollEnd: false,
         },
       })
-        .to(backdrop, { yPercent: -12, ease: "none" }, 0)
-        .to(fillMask, { clipPath: "inset(0% 0% 0% 0%)", ease: "none" }, 0.08)
-        .fromTo(copy, { y: 40, autoAlpha: 0.4 }, { y: -28, autoAlpha: 1, ease: "none" }, 0);
+        .to(liquidState, {
+          level: 0,
+          duration: 1 - FILL_START_PROGRESS,
+          ease: "none",
+        }, FILL_START_PROGRESS);
     }, section);
 
+    rafId = window.requestAnimationFrame(updateWave);
+
     return () => {
+      window.cancelAnimationFrame(rafId);
+      fillMask.style.removeProperty("clip-path");
+      fillMask.style.removeProperty("-webkit-clip-path");
       context.revert();
     };
   }, []);
@@ -49,7 +101,6 @@ export default function FillWordSection() {
   return (
     <section ref={sectionRef} className="relative h-[100svh] overflow-hidden">
       <div
-        ref={backdropRef}
         className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(243,29,91,0.12),transparent_38%),linear-gradient(180deg,#fffdfc_0%,#f6efee_100%)]"
       />
 
@@ -69,13 +120,13 @@ export default function FillWordSection() {
             </p>
 
             <div ref={fillMaskRef} className="absolute inset-0 overflow-hidden">
-              <p className="brand-fill font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em]">
+              <p className="font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em] text-[#f31d5b]">
                 <SmartLineBreak text="Gonish와 완성하세요." maxCharsPerLine={10} autoFit={false} />
               </p>
             </div>
           </div>
 
-          <div ref={copyRef} className="max-w-2xl rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl">
+          <div className="max-w-2xl rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl">
             <p className="font-display text-2xl leading-tight text-ink md:text-3xl">
               <SmartLineBreak text="한 번 스쳐 가는 화면보다, 오래 남는 첫인상을 설계합니다." />
             </p>

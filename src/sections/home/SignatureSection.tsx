@@ -13,6 +13,41 @@ gsap.registerPlugin(ScrollTrigger);
 const STEP_ANIMATION_LOCK_MS = 560;
 const WHEEL_DELTA_THRESHOLD = 42;
 const SCENE_EDGE_SNAP_OFFSET_PX = 2;
+const SCENE_EDGE_READY_THRESHOLD_PX = 28;
+const MIN_STEP_DWELL_MS = 700;
+
+const clampStep = (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value));
+const getStepFromProgress = (progress: number) => clampStep(Math.floor(progress * STORY_STEP_COUNT));
+
+const jumpToScrollInstant = (top: number) => {
+  const root = document.documentElement;
+  const previousInlineBehavior = root.style.scrollBehavior;
+
+  // Override global smooth scrolling for internal scene handoff/snap.
+  root.style.scrollBehavior = "auto";
+  window.scrollTo({ top, behavior: "auto" });
+  root.style.scrollBehavior = previousInlineBehavior;
+};
+
+const getStepAnchorPosition = (trigger: ScrollTrigger, step: number) => {
+  const innerStart = trigger.start + SCENE_EDGE_SNAP_OFFSET_PX;
+  const innerEnd = Math.max(innerStart, trigger.end - SCENE_EDGE_SNAP_OFFSET_PX);
+  const innerRange = innerEnd - innerStart;
+
+  if (STORY_STEP_COUNT <= 1 || innerRange === 0) {
+    return innerStart;
+  }
+
+  const slot = innerRange / STORY_STEP_COUNT;
+  const centeredAnchor = innerStart + slot * (step + 0.5);
+
+  return Math.min(innerEnd, Math.max(innerStart, centeredAnchor));
+};
+
+const getBoundaryReadyPosition = (trigger: ScrollTrigger, direction: 1 | -1) =>
+  direction > 0
+    ? Math.max(trigger.start + SCENE_EDGE_SNAP_OFFSET_PX, trigger.end - SCENE_EDGE_SNAP_OFFSET_PX)
+    : trigger.start + SCENE_EDGE_SNAP_OFFSET_PX;
 
 export default function SignatureSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -21,6 +56,7 @@ export default function SignatureSection() {
   const storyRef = useRef<StoryScrollSectionHandle | null>(null);
   const triggerRef = useRef<ScrollTrigger | null>(null);
   const activeStepRef = useRef(0);
+  const stepEnteredAtRef = useRef(0);
   const isAnimatingRef = useRef(false);
   const isInputLockedRef = useRef(false);
   const wheelAccumulatorRef = useRef(0);
@@ -40,6 +76,22 @@ export default function SignatureSection() {
       stage.style.minHeight = `${sceneHeight + STORY_SCENE_SCROLL_DISTANCE}px`;
     };
 
+    const releaseInputState = () => {
+      isAnimatingRef.current = false;
+      isInputLockedRef.current = false;
+      wheelAccumulatorRef.current = 0;
+
+      if (lockTimerRef.current) {
+        window.clearTimeout(lockTimerRef.current);
+        lockTimerRef.current = null;
+      }
+    };
+
+    const markStepEntered = (step: number) => {
+      activeStepRef.current = step;
+      stepEnteredAtRef.current = window.performance.now();
+    };
+
     const context = gsap.context(() => {
       syncStageHeight();
 
@@ -50,18 +102,37 @@ export default function SignatureSection() {
         invalidateOnRefresh: true,
         onRefreshInit: syncStageHeight,
         onRefresh: syncStageHeight,
+        onUpdate: (self) => {
+          const progress = gsap.utils.clamp(0, 1, self.progress);
+          const syncedStep = getStepFromProgress(progress);
+
+          if (syncedStep === activeStepRef.current) {
+            return;
+          }
+
+          markStepEntered(syncedStep);
+          storyRef.current?.setStepInstant(syncedStep);
+          releaseInputState();
+        },
         onEnter: () => {
-          activeStepRef.current = 0;
+          markStepEntered(0);
           storyRef.current?.setStepInstant(0);
         },
         onEnterBack: () => {
           const lastStep = STORY_STEP_COUNT - 1;
-          activeStepRef.current = lastStep;
+          markStepEntered(lastStep);
           storyRef.current?.setStepInstant(lastStep);
         },
+        onLeave: () => {
+          const lastStep = STORY_STEP_COUNT - 1;
+          markStepEntered(lastStep);
+          storyRef.current?.setStepInstant(lastStep);
+          releaseInputState();
+        },
         onLeaveBack: () => {
-          activeStepRef.current = 0;
+          markStepEntered(0);
           storyRef.current?.setStepInstant(0);
+          releaseInputState();
         },
       });
 
@@ -82,8 +153,6 @@ export default function SignatureSection() {
   }, []);
 
   useLayoutEffect(() => {
-    const clampStep = (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value));
-
     const releaseInputLock = () => {
       isAnimatingRef.current = false;
       isInputLockedRef.current = false;
@@ -101,19 +170,14 @@ export default function SignatureSection() {
       isAnimatingRef.current = true;
       isInputLockedRef.current = true;
       activeStepRef.current = nextStep;
+      stepEnteredAtRef.current = window.performance.now();
       storyRef.current?.animateToStep(nextStep);
 
-      // Keep scroll near trigger edges so the next outward scroll exits naturally
-      // instead of forcing a jump.
       const trigger = triggerRef.current;
       if (trigger) {
-        if (direction > 0 && nextStep === STORY_STEP_COUNT - 1) {
-          const exitReadyPosition = Math.max(trigger.start + SCENE_EDGE_SNAP_OFFSET_PX, trigger.end - SCENE_EDGE_SNAP_OFFSET_PX);
-          window.scrollTo({ top: exitReadyPosition, behavior: "auto" });
-        } else if (direction < 0 && nextStep === 0) {
-          const enterReadyPosition = trigger.start + SCENE_EDGE_SNAP_OFFSET_PX;
-          window.scrollTo({ top: enterReadyPosition, behavior: "auto" });
-        }
+        const stepAnchorPosition = getStepAnchorPosition(trigger, nextStep);
+        jumpToScrollInstant(stepAnchorPosition);
+        ScrollTrigger.update();
       }
 
       if (lockTimerRef.current) {
@@ -136,8 +200,11 @@ export default function SignatureSection() {
       isAnimatingRef.current = false;
       wheelAccumulatorRef.current = 0;
 
-      const targetScroll = direction > 0 ? trigger.end + SCENE_EDGE_SNAP_OFFSET_PX : Math.max(0, trigger.start - SCENE_EDGE_SNAP_OFFSET_PX);
-      window.scrollTo({ top: targetScroll, behavior: "auto" });
+      const targetScroll =
+        direction > 0
+          ? trigger.end + SCENE_EDGE_SNAP_OFFSET_PX
+          : Math.max(0, trigger.start - SCENE_EDGE_SNAP_OFFSET_PX);
+      jumpToScrollInstant(targetScroll);
       ScrollTrigger.update();
 
       window.setTimeout(() => {
@@ -160,6 +227,8 @@ export default function SignatureSection() {
 
       const direction = deltaY > 0 ? 1 : -1;
       const currentStep = activeStepRef.current;
+      const now = window.performance.now();
+      const hasMetMinDwell = now - stepEnteredAtRef.current >= MIN_STEP_DWELL_MS;
       const isOutwardBoundaryScroll =
         (direction > 0 && currentStep === STORY_STEP_COUNT - 1) ||
         (direction < 0 && currentStep === 0);
@@ -171,6 +240,34 @@ export default function SignatureSection() {
           return;
         }
 
+        if (!hasMetMinDwell) {
+          const stayPosition = getStepAnchorPosition(trigger, currentStep);
+          isInputLockedRef.current = true;
+          jumpToScrollInstant(stayPosition);
+          ScrollTrigger.update();
+
+          window.setTimeout(() => {
+            isInputLockedRef.current = false;
+          }, 120);
+          return;
+        }
+
+        const boundaryReadyPosition = getBoundaryReadyPosition(trigger, direction);
+        const distanceToReadyEdge = Math.abs(window.scrollY - boundaryReadyPosition);
+
+        // First outward intent at boundary snaps to the exit-ready edge.
+        // A following outward scroll hands off to the next section.
+        if (distanceToReadyEdge > SCENE_EDGE_READY_THRESHOLD_PX) {
+          isInputLockedRef.current = true;
+          jumpToScrollInstant(boundaryReadyPosition);
+          ScrollTrigger.update();
+
+          window.setTimeout(() => {
+            isInputLockedRef.current = false;
+          }, 120);
+          return;
+        }
+
         handoffAtBoundary(direction);
         return;
       }
@@ -178,6 +275,10 @@ export default function SignatureSection() {
       event.preventDefault();
 
       if (isInputLockedRef.current || isAnimatingRef.current) {
+        return;
+      }
+
+      if (!hasMetMinDwell) {
         return;
       }
 

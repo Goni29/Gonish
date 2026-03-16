@@ -9,30 +9,26 @@ type StoryStep = {
 
 const storySteps: StoryStep[] = [
   {
-    eyebrow: "SIGNATURE STORY",
+    eyebrow: "SIGNATURE DESIGN",
     title: "품격있게",
-    body: "핵심 가치, 신뢰 포인트, 다음 행동을 세 단계로 정리해 스크롤 흐름 안에서 고객의 결심이 자연스럽게 이어지도록 설계했습니다.",
+    body: "브랜드의 분위기와 메시지를 세련되게 정돈해, 첫인상만으로도 신뢰를 전하는 품격 있는 사이트를 만듭니다.",
   },
   {
-    eyebrow: "BRAND MESSAGE",
-    title: "설득력있게",
-    body: "브랜드의 강점을 단순 나열하지 않고, 고객이 바로 이해할 수 있는 언어와 구조로 재배치합니다.",
+    eyebrow: "PRECISE DIRECTION",
+    title: "정확하게",
+    body: "원하는 무드와 목적을 섬세하게 파악해, 불필요한 수정은 줄이고 완성도 높은 결과물로 정확하게 이어갑니다.",
   },
   {
-    eyebrow: "USER FLOW",
-    title: "부드럽게",
-    body: "시선의 흐름과 정보 우선순위를 정리해 이탈 없이 다음 섹션으로 연결되도록 구성합니다.",
-  },
-  {
-    eyebrow: "CONVERSION",
+    eyebrow: "FAST DELIVERY",
     title: "빠르게",
-    body: "핵심 문장과 행동 유도를 정교하게 배치해 짧은 순간 안에 결정을 끌어낼 수 있게 만듭니다.",
+    body: "퀄리티의 기준은 놓치지 않으면서도 진행은 민첩하게, 필요한 시점에 맞춘 빠른 제작으로 만족스러운 결과를 전달합니다.",
   },
 ];
 
 export const STORY_STEP_COUNT = storySteps.length;
 export const STORY_SCROLL_PER_STEP = 450;
-export const STORY_SCENE_SCROLL_DISTANCE = STORY_STEP_COUNT * STORY_SCROLL_PER_STEP;
+const STORY_TRANSITION_COUNT = Math.max(1, STORY_STEP_COUNT - 1);
+export const STORY_SCENE_SCROLL_DISTANCE = STORY_TRANSITION_COUNT * STORY_SCROLL_PER_STEP;
 
 export type StoryScrollSectionHandle = {
   animateToStep: (step: number) => void;
@@ -46,20 +42,37 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
   const eyebrowRefs = useRef<Array<HTMLParagraphElement | null>>([]);
   const bodyRefs = useRef<Array<HTMLParagraphElement | null>>([]);
   const previousStepRef = useRef(0);
+  const transitionRef = useRef<gsap.core.Timeline | null>(null);
 
   const getLayers = () => {
-    const titleNodes = titleRefs.current.filter(Boolean) as HTMLParagraphElement[];
-    const eyebrowNodes = eyebrowRefs.current.filter(Boolean) as HTMLParagraphElement[];
-    const bodyNodes = bodyRefs.current.filter(Boolean) as HTMLParagraphElement[];
+    const titleNodes = titleRefs.current.slice(0, STORY_STEP_COUNT);
+    const eyebrowNodes = eyebrowRefs.current.slice(0, STORY_STEP_COUNT);
+    const bodyNodes = bodyRefs.current.slice(0, STORY_STEP_COUNT);
 
-    if (titleNodes.length !== STORY_STEP_COUNT || eyebrowNodes.length !== STORY_STEP_COUNT || bodyNodes.length !== STORY_STEP_COUNT) {
+    if (
+      titleNodes.length !== STORY_STEP_COUNT ||
+      eyebrowNodes.length !== STORY_STEP_COUNT ||
+      bodyNodes.length !== STORY_STEP_COUNT ||
+      titleNodes.some((node) => !node) ||
+      eyebrowNodes.some((node) => !node) ||
+      bodyNodes.some((node) => !node)
+    ) {
       return null;
     }
 
-    return storySteps.map((_, index) => [titleNodes[index], eyebrowNodes[index], bodyNodes[index]]);
+    return storySteps.map((_, index) => [
+      titleNodes[index] as HTMLParagraphElement,
+      eyebrowNodes[index] as HTMLParagraphElement,
+      bodyNodes[index] as HTMLParagraphElement,
+    ]);
   };
 
   const clampStep = (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value));
+
+  const stopTransition = () => {
+    transitionRef.current?.kill();
+    transitionRef.current = null;
+  };
 
   const setStepInstant = (step: number) => {
     const layers = getLayers();
@@ -68,8 +81,12 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
       return;
     }
 
+    stopTransition();
+
     const nextIndex = clampStep(step);
-    gsap.set(layers.flat(), { autoAlpha: 0, y: 0 });
+    const allNodes = layers.flat();
+    gsap.killTweensOf(allNodes);
+    gsap.set(allNodes, { autoAlpha: 0, y: 0 });
     gsap.set(layers[nextIndex], { autoAlpha: 1, y: 0 });
     previousStepRef.current = nextIndex;
   };
@@ -88,31 +105,45 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
       return;
     }
 
+    stopTransition();
+
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const shiftY = reduceMotion ? 0 : 12;
     const transitionDuration = reduceMotion ? 0.14 : 0.5;
+    const previousLayer = layers[previousIndex];
+    const nextLayer = layers[nextIndex];
+    const allNodes = layers.flat();
+    const hiddenNodes = allNodes.filter((node) => !previousLayer.includes(node) && !nextLayer.includes(node));
 
-    gsap
-      .timeline({ defaults: { ease: "power2.out" } })
+    gsap.killTweensOf(allNodes);
+    gsap.set(hiddenNodes, { autoAlpha: 0, y: 0 });
+    gsap.set(previousLayer, { autoAlpha: 1, y: 0 });
+    gsap.set(nextLayer, { autoAlpha: 0, y: shiftY });
+
+    transitionRef.current = gsap
+      .timeline({
+        defaults: { ease: "power2.out" },
+        onComplete: () => {
+          transitionRef.current = null;
+        },
+      })
       .to(
-        layers[previousIndex],
+        previousLayer,
         {
           autoAlpha: 0,
           y: -shiftY,
           duration: transitionDuration,
+          overwrite: "auto",
         },
         0,
       )
-      .fromTo(
-        layers[nextIndex],
-        {
-          autoAlpha: 0,
-          y: shiftY,
-        },
+      .to(
+        nextLayer,
         {
           autoAlpha: 1,
           y: 0,
           duration: transitionDuration,
+          overwrite: "auto",
         },
         0,
       );
@@ -131,6 +162,10 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
 
   useLayoutEffect(() => {
     setStepInstant(0);
+
+    return () => {
+      stopTransition();
+    };
   }, []);
 
   return (
