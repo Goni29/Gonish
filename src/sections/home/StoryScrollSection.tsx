@@ -1,4 +1,11 @@
-import { forwardRef, useImperativeHandle, useLayoutEffect, useRef, type ForwardedRef } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  type ForwardedRef,
+} from "react";
 import gsap from "gsap";
 
 type StoryStep = {
@@ -29,6 +36,10 @@ export const STORY_STEP_COUNT = storySteps.length;
 export const STORY_SCROLL_PER_STEP = 450;
 const STORY_TRANSITION_COUNT = Math.max(1, STORY_STEP_COUNT - 1);
 export const STORY_SCENE_SCROLL_DISTANCE = STORY_TRANSITION_COUNT * STORY_SCROLL_PER_STEP;
+const STORY_TRANSITION_DURATION = 0.46;
+const STORY_REDUCED_MOTION_DURATION = 0.16;
+const STORY_SHIFT_Y = 10;
+const STORY_ENTER_OFFSET = 0.04;
 
 export type StoryScrollSectionHandle = {
   animateToStep: (step: number) => void;
@@ -44,7 +55,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
   const previousStepRef = useRef(0);
   const transitionRef = useRef<gsap.core.Timeline | null>(null);
 
-  const getLayers = () => {
+  const getLayers = useCallback(() => {
     const titleNodes = titleRefs.current.slice(0, STORY_STEP_COUNT);
     const eyebrowNodes = eyebrowRefs.current.slice(0, STORY_STEP_COUNT);
     const bodyNodes = bodyRefs.current.slice(0, STORY_STEP_COUNT);
@@ -65,16 +76,19 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
       eyebrowNodes[index] as HTMLParagraphElement,
       bodyNodes[index] as HTMLParagraphElement,
     ]);
-  };
+  }, []);
 
-  const clampStep = (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value));
+  const clampStep = useCallback(
+    (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value)),
+    [],
+  );
 
-  const stopTransition = () => {
+  const stopTransition = useCallback(() => {
     transitionRef.current?.kill();
     transitionRef.current = null;
-  };
+  }, []);
 
-  const setStepInstant = (step: number) => {
+  const setStepInstant = useCallback((step: number) => {
     const layers = getLayers();
 
     if (!layers) {
@@ -89,9 +103,9 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
     gsap.set(allNodes, { autoAlpha: 0, y: 0 });
     gsap.set(layers[nextIndex], { autoAlpha: 1, y: 0 });
     previousStepRef.current = nextIndex;
-  };
+  }, [clampStep, getLayers, stopTransition]);
 
-  const animateToStep = (step: number) => {
+  const animateToStep = useCallback((step: number) => {
     const layers = getLayers();
 
     if (!layers) {
@@ -108,8 +122,11 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
     stopTransition();
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const shiftY = reduceMotion ? 0 : 12;
-    const transitionDuration = reduceMotion ? 0.14 : 0.5;
+    const shiftY = reduceMotion ? 0 : STORY_SHIFT_Y;
+    const transitionDuration = reduceMotion
+      ? STORY_REDUCED_MOTION_DURATION
+      : STORY_TRANSITION_DURATION;
+    const ease = reduceMotion ? "none" : "power3.out";
     const previousLayer = layers[previousIndex];
     const nextLayer = layers[nextIndex];
     const allNodes = layers.flat();
@@ -122,7 +139,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
 
     transitionRef.current = gsap
       .timeline({
-        defaults: { ease: "power2.out" },
+        defaults: { ease },
         onComplete: () => {
           transitionRef.current = null;
         },
@@ -132,7 +149,8 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
         {
           autoAlpha: 0,
           y: -shiftY,
-          duration: transitionDuration,
+          duration: transitionDuration * 0.92,
+          force3D: true,
           overwrite: "auto",
         },
         0,
@@ -143,13 +161,14 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
           autoAlpha: 1,
           y: 0,
           duration: transitionDuration,
+          force3D: true,
           overwrite: "auto",
         },
-        0,
+        STORY_ENTER_OFFSET,
       );
 
     previousStepRef.current = nextIndex;
-  };
+  }, [clampStep, getLayers, stopTransition]);
 
   useImperativeHandle(
     ref,
@@ -157,7 +176,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
       animateToStep,
       setStepInstant,
     }),
-    [],
+    [animateToStep, setStepInstant],
   );
 
   useLayoutEffect(() => {
@@ -166,7 +185,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
     return () => {
       stopTransition();
     };
-  }, []);
+  }, [setStepInstant, stopTransition]);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">
@@ -191,7 +210,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
               ref={(node) => {
                 eyebrowRefs.current[index] = node;
               }}
-              className="eyebrow"
+              className="eyebrow will-change-transform"
             >
               {step.eyebrow}
             </p>
@@ -199,7 +218,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
               ref={(node) => {
                 bodyRefs.current[index] = node;
               }}
-              className="max-w-xl text-base leading-7 text-ink-muted md:text-lg"
+              className="max-w-xl text-base leading-7 text-ink-muted will-change-transform md:text-lg"
             >
               {step.body}
             </p>

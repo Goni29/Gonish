@@ -101,10 +101,10 @@ export default function FillWordSection() {
   return (
     <section ref={sectionRef} className="relative h-[100svh] overflow-hidden">
       <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(243,29,91,0.12),transparent_38%),linear-gradient(180deg,#fffdfc_0%,#f6efee_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[url('/FillWordSection.png')] bg-cover bg-center bg-no-repeat"
       />
 
-      <div className="shell relative flex h-full items-center">
+      <div className="shell relative z-10 flex h-full items-center">
         <div className="w-full space-y-12">
           <div className="max-w-xl space-y-4">
             <p className="eyebrow">Signature invitation</p>
