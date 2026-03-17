@@ -1,56 +1,69 @@
 import { useLayoutEffect, useRef } from "react";
-import { motion } from "motion/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import StoryScrollSection, {
   STORY_STEP_COUNT,
   type StoryScrollSectionHandle,
 } from "@/sections/home/StoryScrollSection";
 
-const STEP_ANIMATION_LOCK_MS = 520;
-const WHEEL_GESTURE_IDLE_MS = 170;
-const WHEEL_NOISE_THRESHOLD = 8;
-const ENTRY_TOP_TOLERANCE_PX = 3;
-const REENTRY_RELEASE_OFFSET_PX = 260;
+gsap.registerPlugin(ScrollTrigger);
 
-const clampStep = (value: number) => Math.max(0, Math.min(STORY_STEP_COUNT - 1, value));
-const getSectionAbsoluteTop = (section: HTMLElement) =>
-  window.scrollY + section.getBoundingClientRect().top;
-const isSectionVisible = (rect: DOMRect) => rect.bottom > 0 && rect.top < window.innerHeight;
+const PIN_SCROLL_DISTANCE = Math.max(1800, STORY_STEP_COUNT * 700);
+const SCRUB_SMOOTHING = true;
+const STEP_WINDOW_START = 0.08;
+const STEP_WINDOW_END = 0.82;
+const ANIMATION_FAILSAFE_MS = 900;
+const LEAVE_SUPPRESS_MS = 620;
+const REENTRY_PROGRESS_RELEASE = 0.14;
+const PROGRESS_EPSILON = 0.0005;
+
+type ScrollDirection = 1 | -1 | 0;
+type InteractionMode = "inactive" | "active" | "leaving" | "suppressed";
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const toNormalizedProgress = (progress: number) =>
+  clamp((progress - STEP_WINDOW_START) / (STEP_WINDOW_END - STEP_WINDOW_START), 0, 1);
+
+const progressToStep = (progress: number) => {
+  const lastStep = STORY_STEP_COUNT - 1;
+  if (lastStep <= 0) return 0;
+  const normalized = toNormalizedProgress(progress);
+  return clamp(Math.round(normalized * lastStep), 0, lastStep);
+};
 
 export default function SignatureSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const storyRef = useRef<StoryScrollSectionHandle | null>(null);
+  const triggerRef = useRef<ScrollTrigger | null>(null);
 
-  const activeStepRef = useRef(0);
+  const modeRef = useRef<InteractionMode>("inactive");
+  const leaveDirectionRef = useRef<ScrollDirection>(0);
+  const suppressUntilRef = useRef(0);
+  const resetOnNextEnterRef = useRef(false);
+  const lastProgressRef = useRef(0);
+
+  const currentStepRef = useRef(0);
+  const targetStepRef = useRef(0);
   const isAnimatingRef = useRef(false);
-  const isStepModeActiveRef = useRef(false);
-  const boundaryExitArmedRef = useRef(false);
-  const reentryBlockedDirectionRef = useRef<1 | -1 | 0>(0);
-  const gestureLockRef = useRef(false);
-  const gestureIdleTimerRef = useRef<number | null>(null);
   const animationTimerRef = useRef<number | null>(null);
 
   useLayoutEffect(() => {
-    activeStepRef.current = 0;
-    isAnimatingRef.current = false;
-    isStepModeActiveRef.current = false;
-    boundaryExitArmedRef.current = false;
-    reentryBlockedDirectionRef.current = 0;
-    gestureLockRef.current = false;
-    storyRef.current?.setStepInstant(0);
+    modeRef.current = "inactive";
+    leaveDirectionRef.current = 0;
+    suppressUntilRef.current = 0;
+    resetOnNextEnterRef.current = false;
+    lastProgressRef.current = 0;
 
-    return () => {
-      if (gestureIdleTimerRef.current) window.clearTimeout(gestureIdleTimerRef.current);
-      if (animationTimerRef.current) window.clearTimeout(animationTimerRef.current);
-    };
+    currentStepRef.current = 0;
+    targetStepRef.current = 0;
+    isAnimatingRef.current = false;
+    storyRef.current?.setStepInstant(0);
   }, []);
 
   useLayoutEffect(() => {
-    const clearGestureIdleTimer = () => {
-      if (gestureIdleTimerRef.current) {
-        window.clearTimeout(gestureIdleTimerRef.current);
-        gestureIdleTimerRef.current = null;
-      }
-    };
+    const section = sectionRef.current;
+    if (!section) return undefined;
 
     const clearAnimationTimer = () => {
       if (animationTimerRef.current) {
@@ -59,159 +72,171 @@ export default function SignatureSection() {
       }
     };
 
-    const scheduleGestureUnlock = () => {
-      clearGestureIdleTimer();
-      gestureIdleTimerRef.current = window.setTimeout(() => {
-        gestureLockRef.current = false;
-        gestureIdleTimerRef.current = null;
-      }, WHEEL_GESTURE_IDLE_MS);
-    };
-
-    const lockSectionToTop = (section: HTMLElement) => {
-      const top = section.getBoundingClientRect().top;
-      if (Math.abs(top) <= ENTRY_TOP_TOLERANCE_PX) return;
-      window.scrollTo({ top: getSectionAbsoluteTop(section), behavior: "auto" });
-    };
-
-    const enterStepMode = (section: HTMLElement, direction: 1 | -1) => {
-      lockSectionToTop(section);
-      isStepModeActiveRef.current = true;
-      isAnimatingRef.current = false;
-      boundaryExitArmedRef.current = false;
-      gestureLockRef.current = true;
-
-      const startStep = direction > 0 ? 0 : STORY_STEP_COUNT - 1;
-      activeStepRef.current = startStep;
-      storyRef.current?.setStepInstant(startStep);
-      scheduleGestureUnlock();
-    };
-
-    const leaveStepMode = (direction: 1 | -1) => {
-      isStepModeActiveRef.current = false;
-      isAnimatingRef.current = false;
-      boundaryExitArmedRef.current = false;
-      gestureLockRef.current = false;
-      reentryBlockedDirectionRef.current = direction;
-      clearGestureIdleTimer();
+    const setStepInstant = (step: number) => {
+      const nextStep = clamp(step, 0, STORY_STEP_COUNT - 1);
       clearAnimationTimer();
+      isAnimatingRef.current = false;
+      currentStepRef.current = nextStep;
+      targetStepRef.current = nextStep;
+      storyRef.current?.setStepInstant(nextStep);
     };
 
-    const moveStep = (direction: 1 | -1) => {
-      const currentStep = activeStepRef.current;
-      const nextStep = clampStep(currentStep + direction);
+    const flushStepQueue = () => {
+      if (modeRef.current !== "active") return;
+      if (!triggerRef.current?.isActive) return;
+      if (isAnimatingRef.current) return;
+      if (currentStepRef.current === targetStepRef.current) return;
 
-      if (nextStep === currentStep) return;
-
+      const direction = targetStepRef.current > currentStepRef.current ? 1 : -1;
+      const nextStep = currentStepRef.current + direction;
       isAnimatingRef.current = true;
-      boundaryExitArmedRef.current = false;
-      activeStepRef.current = nextStep;
-      storyRef.current?.animateToStep(nextStep);
+
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        clearAnimationTimer();
+        currentStepRef.current = nextStep;
+        isAnimatingRef.current = false;
+        flushStepQueue();
+      };
 
       clearAnimationTimer();
-      animationTimerRef.current = window.setTimeout(() => {
-        isAnimatingRef.current = false;
-        animationTimerRef.current = null;
-      }, STEP_ANIMATION_LOCK_MS);
+      animationTimerRef.current = window.setTimeout(settle, ANIMATION_FAILSAFE_MS);
+
+      const didStart = storyRef.current?.animateToStep(nextStep, settle);
+      if (!didStart) {
+        settle();
+      }
     };
 
-    const onWheel = (event: WheelEvent) => {
-      const section = sectionRef.current;
-      if (!section) return;
+    const startLeaveSuppression = (direction: Exclude<ScrollDirection, 0>) => {
+      modeRef.current = "leaving";
+      leaveDirectionRef.current = direction;
+      suppressUntilRef.current = performance.now() + LEAVE_SUPPRESS_MS;
+      resetOnNextEnterRef.current = true;
 
-      const deltaY = event.deltaY;
-      if (Math.abs(deltaY) < WHEEL_NOISE_THRESHOLD) return;
+      // Leaving 중 잔여 애니메이션으로 step이 바뀌지 않게 즉시 고정.
+      setStepInstant(currentStepRef.current);
 
-      const direction: 1 | -1 = deltaY > 0 ? 1 : -1;
-      const rect = section.getBoundingClientRect();
-      const projectedTop = rect.top - deltaY;
-      const atTop = Math.abs(rect.top) <= ENTRY_TOP_TOLERANCE_PX;
-      const crossingTop =
-        (direction > 0 && rect.top > ENTRY_TOP_TOLERANCE_PX && projectedTop <= ENTRY_TOP_TOLERANCE_PX) ||
-        (direction < 0 && rect.top < -ENTRY_TOP_TOLERANCE_PX && projectedTop >= -ENTRY_TOP_TOLERANCE_PX);
-
-      if (
-        reentryBlockedDirectionRef.current !== 0 &&
-        (direction !== reentryBlockedDirectionRef.current ||
-          Math.abs(rect.top) > REENTRY_RELEASE_OFFSET_PX)
-      ) {
-        reentryBlockedDirectionRef.current = 0;
-      }
-
-      if (!isStepModeActiveRef.current) {
-        if (!isSectionVisible(rect)) return;
-        if (!atTop && !crossingTop) return;
-        if (reentryBlockedDirectionRef.current === direction) return;
-
-        event.preventDefault();
-        enterStepMode(section, direction);
-        return;
-      }
-
-      if (!isSectionVisible(rect)) {
-        leaveStepMode(direction);
-        return;
-      }
-
-      const currentStep = activeStepRef.current;
-      const isOutwardBoundaryScroll =
-        (direction > 0 && currentStep === STORY_STEP_COUNT - 1) ||
-        (direction < 0 && currentStep === 0);
-      const shouldLeaveOnThisGesture =
-        isOutwardBoundaryScroll &&
-        boundaryExitArmedRef.current &&
-        !gestureLockRef.current &&
-        !isAnimatingRef.current;
-
-      if (shouldLeaveOnThisGesture) {
-        leaveStepMode(direction);
-        return;
-      }
-
-      event.preventDefault();
-      lockSectionToTop(section);
-      scheduleGestureUnlock();
-
-      if (gestureLockRef.current || isAnimatingRef.current) return;
-
-      gestureLockRef.current = true;
-
-      if (isOutwardBoundaryScroll) {
-        boundaryExitArmedRef.current = true;
-        return;
-      }
-
-      moveStep(direction);
+      window.requestAnimationFrame(() => {
+        if (modeRef.current === "leaving") {
+          modeRef.current = "suppressed";
+        }
+      });
     };
 
-    window.addEventListener("wheel", onWheel, { passive: false });
+    const shouldKeepSuppressed = (progress: number) => {
+      if (modeRef.current !== "suppressed") return false;
+      if (performance.now() < suppressUntilRef.current) return true;
+
+      const leaveDirection = leaveDirectionRef.current;
+      if (leaveDirection > 0 && progress > 1 - REENTRY_PROGRESS_RELEASE) return true;
+      if (leaveDirection < 0 && progress < REENTRY_PROGRESS_RELEASE) return true;
+
+      modeRef.current = "inactive";
+      leaveDirectionRef.current = 0;
+      return false;
+    };
+
+    const activateInteraction = (direction: Exclude<ScrollDirection, 0>) => {
+      if (modeRef.current !== "inactive") return;
+      modeRef.current = "active";
+
+      if (resetOnNextEnterRef.current) {
+        const entryStep = direction > 0 ? 0 : STORY_STEP_COUNT - 1;
+        setStepInstant(entryStep);
+        resetOnNextEnterRef.current = false;
+      }
+    };
+
+    const context = gsap.context(() => {
+      triggerRef.current = ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: `+=${PIN_SCROLL_DISTANCE}`,
+        pin: true,
+        pinSpacing: true,
+        scrub: SCRUB_SMOOTHING,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        fastScrollEnd: false,
+        onEnter: (self) => {
+          lastProgressRef.current = self.progress;
+          if (modeRef.current === "leaving") return;
+          if (modeRef.current === "suppressed" && shouldKeepSuppressed(self.progress)) return;
+          activateInteraction(1);
+        },
+        onEnterBack: (self) => {
+          lastProgressRef.current = self.progress;
+          if (modeRef.current === "leaving") return;
+          if (modeRef.current === "suppressed" && shouldKeepSuppressed(self.progress)) return;
+          activateInteraction(-1);
+        },
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const previousProgress = lastProgressRef.current;
+          let direction: ScrollDirection = 0;
+          if (progress > previousProgress + PROGRESS_EPSILON) direction = 1;
+          if (progress < previousProgress - PROGRESS_EPSILON) direction = -1;
+          lastProgressRef.current = progress;
+
+          if (!self.isActive) return;
+          if (modeRef.current === "suppressed" && shouldKeepSuppressed(progress)) return;
+          if (modeRef.current === "leaving") return;
+
+          if (modeRef.current === "inactive") {
+            const entryDirection: Exclude<ScrollDirection, 0> =
+              direction !== 0 ? direction : progress >= 0.5 ? -1 : 1;
+            activateInteraction(entryDirection);
+          }
+
+          if (modeRef.current !== "active") return;
+
+          const nextTargetStep = progressToStep(progress);
+          if (nextTargetStep === targetStepRef.current) return;
+
+          targetStepRef.current = nextTargetStep;
+          flushStepQueue();
+        },
+        onLeave: (self) => {
+          lastProgressRef.current = self.progress;
+          startLeaveSuppression(1);
+        },
+        onLeaveBack: (self) => {
+          lastProgressRef.current = self.progress;
+          startLeaveSuppression(-1);
+        },
+        onRefresh: (self) => {
+          lastProgressRef.current = self.progress;
+        },
+      });
+    }, section);
 
     return () => {
-      window.removeEventListener("wheel", onWheel);
-      clearGestureIdleTimer();
       clearAnimationTimer();
+      triggerRef.current?.kill();
+      triggerRef.current = null;
+      context.revert();
+      modeRef.current = "inactive";
+      isAnimatingRef.current = false;
     };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="section-space-tight relative overflow-hidden bg-[url('/ScrollSection.png')] bg-cover bg-top bg-no-repeat"
+      className="relative h-[100svh] overflow-hidden bg-[url('/ScrollSection.png')] bg-cover bg-top bg-no-repeat"
     >
-      <div className="shell relative z-10">
+      <div className="shell relative z-10 h-full">
         <div className="soft-divider" />
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="space-y-10 py-12"
-        >
+        <div className="space-y-10 py-12">
           <div className="font-script text-[clamp(5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
             Gonish
           </div>
 
           <StoryScrollSection ref={storyRef} />
-        </motion.div>
+        </div>
       </div>
     </section>
   );

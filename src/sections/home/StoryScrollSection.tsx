@@ -42,7 +42,7 @@ const STORY_SHIFT_Y = 10;
 const STORY_ENTER_OFFSET = 0.04;
 
 export type StoryScrollSectionHandle = {
-  animateToStep: (step: number) => void;
+  animateToStep: (step: number, onComplete?: () => void) => boolean;
   setStepInstant: (step: number) => void;
 };
 
@@ -105,18 +105,18 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
     previousStepRef.current = nextIndex;
   }, [clampStep, getLayers, stopTransition]);
 
-  const animateToStep = useCallback((step: number) => {
+  const animateToStep = useCallback((step: number, onComplete?: () => void) => {
     const layers = getLayers();
 
     if (!layers) {
-      return;
+      return false;
     }
 
     const nextIndex = clampStep(step);
     const previousIndex = clampStep(previousStepRef.current);
 
     if (nextIndex === previousIndex) {
-      return;
+      return false;
     }
 
     stopTransition();
@@ -142,6 +142,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
         defaults: { ease },
         onComplete: () => {
           transitionRef.current = null;
+          onComplete?.();
         },
       })
       .to(
@@ -168,6 +169,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
       );
 
     previousStepRef.current = nextIndex;
+    return true;
   }, [clampStep, getLayers, stopTransition]);
 
   useImperativeHandle(
