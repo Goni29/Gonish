@@ -36,10 +36,10 @@ export const STORY_STEP_COUNT = storySteps.length;
 export const STORY_SCROLL_PER_STEP = 450;
 const STORY_TRANSITION_COUNT = Math.max(1, STORY_STEP_COUNT - 1);
 export const STORY_SCENE_SCROLL_DISTANCE = STORY_TRANSITION_COUNT * STORY_SCROLL_PER_STEP;
-const STORY_TRANSITION_DURATION = 0.46;
-const STORY_REDUCED_MOTION_DURATION = 0.16;
-const STORY_SHIFT_Y = 10;
-const STORY_ENTER_OFFSET = 0.04;
+const STORY_TRANSITION_DURATION = 0.28;
+const STORY_REDUCED_MOTION_DURATION = 0.12;
+const STORY_SHIFT_Y = 8;
+const STORY_ENTER_OFFSET = 0.02;
 
 export type StoryScrollSectionHandle = {
   animateToStep: (step: number, onComplete?: () => void) => boolean;

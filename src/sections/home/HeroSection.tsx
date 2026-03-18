@@ -32,7 +32,7 @@ export default function HeroSection() {
 
   return (
     <section id="home-hero" className="relative overflow-hidden bg-black">
-      <div className="relative min-h-[100svh]">
+      <div className="relative h-[100svh]">
         {!videoFailed ? (
           <video
             ref={videoRef}

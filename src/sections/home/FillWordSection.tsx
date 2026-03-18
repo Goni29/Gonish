@@ -76,7 +76,7 @@ export default function FillWordSection() {
           end: "+=1800",
           scrub: true,
           pin: true,
-          anticipatePin: 1,
+          anticipatePin: 0,
           invalidateOnRefresh: true,
           fastScrollEnd: false,
         },

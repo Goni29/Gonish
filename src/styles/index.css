@@ -1,8 +1,5 @@
 @import url("//fonts.googleapis.com/earlyaccess/notosanskr.css");
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @font-face {
   font-family: "Paperozi";
@@ -76,6 +73,19 @@
   font-display: swap;
 }
 
+@theme inline {
+  --color-brand: #F31D5B;
+  --color-ink: #141014;
+  --color-ink-muted: #665C63;
+  --color-ink-soft: #8B8088;
+  --color-paper: #FFFDFC;
+  --color-white: #FFFFFF;
+  --font-display: "Paperozi", "Aptos", "Segoe UI", sans-serif;
+  --font-body: "Noto Sans KR", "Aptos", "Segoe UI", "Helvetica Neue", "Arial", sans-serif;
+  --font-script: "Snell Roundhand", "Segoe Script", "Brush Script MT", "Apple Chancery", cursive;
+  --shadow-panel: 0 32px 120px rgba(20, 16, 20, 0.08);
+}
+
 :root {
   color: #141014;
   background: #fffdfc;
@@ -91,10 +101,10 @@
   }
 
   html {
-    scroll-behavior: smooth;
     background:
       radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
       linear-gradient(180deg, #fffdfd 0%, #f8f3f1 54%, #f5f0ef 100%);
+    overscroll-behavior: none;
   }
 
   body {
@@ -102,6 +112,7 @@
     margin: 0;
     background: transparent;
     color: #141014;
+    overscroll-behavior: none;
   }
 
   p,
