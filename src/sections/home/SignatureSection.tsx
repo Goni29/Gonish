@@ -6,6 +6,9 @@ import StoryScrollSection, {
   STORY_STEP_COUNT,
   type StoryScrollSectionHandle,
 } from "@/sections/home/StoryScrollSection";
+import ProcessCards, {
+  type ProcessCardsHandle,
+} from "@/sections/home/ProcessCards";
 
 gsap.registerPlugin(ScrollTrigger, Observer);
 
@@ -15,6 +18,7 @@ const PIN_SCROLL_DISTANCE = STORY_STEP_COUNT * 700;
 export default function SignatureSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const storyRef = useRef<StoryScrollSectionHandle | null>(null);
+  const cardsRef = useRef<ProcessCardsHandle | null>(null);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -25,6 +29,7 @@ export default function SignatureSection() {
     let trigger: ScrollTrigger;
 
     storyRef.current?.setStepInstant(0);
+    cardsRef.current?.setStepInstant(0);
 
     const goToStep = (step: number) => {
       if (step === currentStep) return;
@@ -33,12 +38,14 @@ export default function SignatureSection() {
       storyRef.current?.animateToStep(step, () => {
         isAnimating = false;
       });
+      cardsRef.current?.animateToStep(step);
     };
 
     const setStepInstant = (step: number) => {
       currentStep = step;
       isAnimating = false;
       storyRef.current?.setStepInstant(step);
+      cardsRef.current?.setStepInstant(step);
     };
 
     // Observer: 휠/터치 한 번 = 한 스텝. preventDefault로 실제 스크롤 차단.
@@ -106,14 +113,22 @@ export default function SignatureSection() {
       ref={sectionRef}
       className="relative h-[100svh] overflow-hidden bg-[url('/ScrollSection.png')] bg-cover bg-top bg-no-repeat"
     >
-      <div className="shell relative z-10 h-full">
-        <div className="soft-divider" />
-        <div className="space-y-10 py-12">
-          <div className="font-script text-[clamp(5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
-            Gonish
-          </div>
+      <div className="relative z-10 flex h-full flex-col">
+        {/* 상단: 기존 텍스트 영역 */}
+        <div className="shell shrink-0">
+          <div className="soft-divider" />
+          <div className="space-y-8 pt-10 pb-2 sm:space-y-10 sm:pt-12">
+            <div className="font-script text-[clamp(5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
+              Gonish
+            </div>
 
-          <StoryScrollSection ref={storyRef} />
+            <StoryScrollSection ref={storyRef} />
+          </div>
+        </div>
+
+        {/* 하단: 프로세스 카드 (풀 와이드, 남은 공간 전부 사용) */}
+        <div className="flex min-h-0 flex-1 px-4 pt-4 pb-6 sm:px-6 sm:pt-5 lg:px-10">
+          <ProcessCards ref={cardsRef} />
         </div>
       </div>
     </section>

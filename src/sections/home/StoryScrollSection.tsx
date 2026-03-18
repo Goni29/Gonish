@@ -21,9 +21,9 @@ const storySteps: StoryStep[] = [
     body: "브랜드의 분위기와 메시지를 세련되게 정돈해, 첫인상만으로도 신뢰를 전하는 품격 있는 사이트를 만듭니다.",
   },
   {
-    eyebrow: "PRECISE DIRECTION",
-    title: "정확하게",
-    body: "원하는 무드와 목적을 섬세하게 파악해, 불필요한 수정은 줄이고 완성도 높은 결과물로 정확하게 이어갑니다.",
+    eyebrow: "PRIVATE DIALOGUE",
+    title: "긴밀하게",
+    body: "1:1 소통으로 브랜드의 결을 깊이 이해하고, 작은 뉘앙스까지 놓치지 않는 맞춤 디렉션을 이어갑니다.",
   },
   {
     eyebrow: "FAST DELIVERY",

@@ -32,7 +32,7 @@ export const navigation = [
   { label: "Contact", to: "/contact" },
 ];
 
-export const homeStoryPhrases = ["품격있게", "빠르게", "전환까지"];
+export const homeStoryPhrases = ["품격있게", "긴밀하게", "빠르게"];
 
 export const homeHighlights = [
   {
