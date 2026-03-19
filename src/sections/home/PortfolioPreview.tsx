@@ -1,30 +1,48 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
+import type { MotionValue } from "motion/react";
 import { motion, useScroll, useTransform } from "motion/react";
 import BrandButton from "@/components/ui/BrandButton";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
-const portfolios = [
+type OrbitProject = {
+  eyebrow: string;
+  offsetClass: string;
+  subtitle: string;
+  summary: string;
+  title: string;
+  to: string;
+};
+
+const orbitProjects: OrbitProject[] = [
   {
-    id: "law-firm",
+    eyebrow: "Trust orbit",
     title: "법무법인",
     subtitle: "신뢰를 시각화하다",
-    eyebrow: "Brand Website",
-    tech: ["Flask", "Jinja2", "Bootstrap"],
+    summary:
+      "권위와 안심이 함께 읽히는 첫 장면을 만들고, 상담 전환까지 단정한 리듬으로 이어지도록 구성했습니다.",
+    to: "/portfolio",
+    offsetClass: "lg:ml-0",
   },
   {
-    id: "hospital",
+    eyebrow: "Care orbit",
     title: "병원",
     subtitle: "안심을 설계하다",
-    eyebrow: "Brand Website",
-    tech: ["Flask", "Bootstrap", "Swiper.js"],
+    summary:
+      "정보의 부담은 낮추고 이해 속도는 높여, 낯선 방문자도 빠르게 신뢰를 느끼게 만드는 흐름을 설계했습니다.",
+    to: "/portfolio",
+    offsetClass: "lg:ml-16",
   },
   {
-    id: "beauty-commerce",
+    eyebrow: "Glow orbit",
     title: "하이엔드 뷰티 커머스",
     subtitle: "감각을 전시하다",
-    eyebrow: "E-Commerce",
-    tech: ["Next.js", "Tailwind CSS", "TypeScript"],
+    summary:
+      "브랜드 무드와 제품 매력이 동시에 남도록 연출해, 짧은 체류에서도 인상과 구매 동기가 자연스럽게 이어집니다.",
+    to: "/portfolio",
+    offsetClass: "lg:ml-8",
   },
 ];
 
@@ -35,54 +53,86 @@ export default function PortfolioPreview() {
     offset: ["start end", "end start"],
   });
 
-  const orbitRotate = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const ringRotate = useTransform(scrollYProgress, [0, 1], [0, 64]);
+  const ringReverse = useTransform(scrollYProgress, [0, 1], [0, -42]);
+  const planetLift = useTransform(scrollYProgress, [0, 1], [-12, 18]);
 
   return (
     <section ref={sectionRef} className="section-space relative overflow-hidden">
-      {/* 배경 장식: 핑크 궤도 링 */}
       <motion.div
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ rotate: orbitRotate }}
-      >
-        <div className="h-[600px] w-[600px] rounded-full border border-brand/8 md:h-[800px] md:w-[800px]" />
-      </motion.div>
+        className="pointer-events-none absolute left-[-8rem] top-20 h-[24rem] w-[24rem] rounded-full bg-brand/[0.08] blur-[120px]"
+        style={{ y: planetLift }}
+      />
       <motion.div
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ rotate: useTransform(orbitRotate, (v) => -v * 0.6) }}
-      >
-        <div className="h-[420px] w-[420px] rounded-full border border-brand/5 md:h-[560px] md:w-[560px]" />
-      </motion.div>
+        className="pointer-events-none absolute right-[-12rem] top-16 h-[28rem] w-[28rem] rounded-full bg-brand/[0.08] blur-[130px]"
+        style={{ y: ringRotate }}
+      />
 
-      {/* 핑크 글로우 배경 */}
-      <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full bg-brand/[0.04] blur-[100px]" />
-
-      <div className="shell relative z-10">
-        <div className="mb-16 space-y-6">
-          <p className="eyebrow">Selected works</p>
-          <motion.h2
-            className="font-display text-[clamp(2.3rem,4vw,4.6rem)] leading-[0.96] text-ink"
-            initial={{ opacity: 0, y: 22 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
-            완성한 프로젝트를 확인해보세요.
-          </motion.h2>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {portfolios.map((item, index) => (
-            <PortfolioCard key={item.id} item={item} index={index} />
-          ))}
-        </div>
-
+      <div className="shell relative z-10 space-y-10">
         <motion.div
-          className="mt-12 flex justify-center"
           initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: true, amount: 0.24 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-4xl space-y-5"
         >
+          <p className="eyebrow">Orbit archive</p>
+          <p className="font-display text-[clamp(2.6rem,5vw,5.8rem)] leading-[0.92] text-ink">
+            <SmartLineBreak text="브랜드가 머무는 궤도마다, 다른 첫인상을 설계합니다." />
+          </p>
+          <p className="max-w-3xl text-base leading-7 text-ink-muted md:text-lg">
+            결과물을 박스처럼 나열하기보다, 업종마다 어떤 감도와 신뢰의 장면을 만들었는지 하나의 핑크
+            오비트 위에서 먼저 보여드립니다.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative overflow-hidden rounded-[3rem] border border-black/8 bg-white/[0.58] px-6 py-8 shadow-[0_28px_110px_rgba(20,16,20,0.08)] backdrop-blur-xl sm:px-8 sm:py-10 lg:px-10 lg:py-12"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(243,29,91,0.08),transparent_24%),radial-gradient(circle_at_76%_28%,rgba(255,194,216,0.4),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.24),rgba(255,255,255,0.08))]" />
+
+          {/* 스파클 별 — planet.svg 스타일 */}
+          <Sparkle cx="10%" cy="12%" size={14} delay={0} />
+          <Sparkle cx="84%" cy="9%" size={10} delay={1.4} />
+          <Sparkle cx="90%" cy="48%" size={12} delay={2.6} />
+          <Sparkle cx="5%" cy="72%" size={9} delay={0.8} />
+          <Sparkle cx="58%" cy="91%" size={11} delay={3} />
+          <Sparkle cx="36%" cy="6%" size={8} delay={2} />
+
+          <div className="relative z-10 grid gap-10 lg:grid-cols-[minmax(0,0.98fr)_minmax(300px,0.82fr)] lg:items-center">
+            <div className="space-y-8 lg:space-y-12">
+              <p className="eyebrow">Selected works</p>
+
+              {orbitProjects.map((project, index) => (
+                <OrbitProjectLine key={project.title} project={project} index={index} />
+              ))}
+
+              <p className="max-w-xl text-sm leading-6 text-ink-muted">
+                홈에서는 각 프로젝트의 분위기와 방향만 먼저 보여드립니다. 상세 케이스에서는 구조와 전환
+                장치를 더 깊게 이어서 확인하실 수 있습니다.
+              </p>
+            </div>
+
+            <div className="flex justify-center lg:justify-end">
+              <OrbitStage ringReverse={ringReverse} ringRotate={ringRotate} planetLift={planetLift} />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"
+        >
+          <p className="max-w-3xl font-display text-[clamp(1.8rem,3vw,3rem)] leading-[0.98] text-ink">
+            <SmartLineBreak text="업종이 달라도, 브랜드를 선택으로 연결하는 설계 기준은 같습니다." />
+          </p>
           <BrandButton to="/portfolio" variant="ghost">
             전체 포트폴리오 보기
           </BrandButton>
@@ -92,62 +142,193 @@ export default function PortfolioPreview() {
   );
 }
 
-function PortfolioCard({
-  item,
+/* ── 스파클 (planet.svg 스타일 4포인트 별) ── */
+function Sparkle({ cx, cy, size, delay }: { cx: string; cy: string; size: number; delay: number }) {
+  const s = size;
+  const h = s / 2;
+  const d = `M${h},0 L${h * 1.15},${h * 0.85} L${s},${h} L${h * 1.15},${h * 1.15} L${h},${s} L${h * 0.85},${h * 1.15} L0,${h} L${h * 0.85},${h * 0.85} Z`;
+
+  return (
+    <motion.div
+      className="pointer-events-none absolute"
+      style={{ left: cx, top: cy }}
+      animate={{ opacity: [0.08, 0.5, 0.08], scale: [0.6, 1.1, 0.6], rotate: [0, 15, 0] }}
+      transition={{ duration: 5, delay, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`}>
+        <defs>
+          <radialGradient id={`sp-${delay}`} cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFDFDF" />
+            <stop offset="100%" stopColor="#FFDFDF" stopOpacity="0.2" />
+          </radialGradient>
+        </defs>
+        <path d={d} fill={`url(#sp-${delay})`} />
+      </svg>
+    </motion.div>
+  );
+}
+
+/* ── 프로젝트 라인 ── */
+function OrbitProjectLine({
+  project,
   index,
 }: {
-  item: (typeof portfolios)[number];
+  project: OrbitProject;
   index: number;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, amount: 0.35 }}
+      transition={{ duration: 0.75, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className={["space-y-3 border-l border-brand/14 pl-5", project.offsetClass].join(" ")}
     >
-      <div className="group relative rounded-[1.6rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-[0_20px_60px_rgba(243,29,91,0.08)]">
-        {/* 궤도 장식 */}
-        <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full border border-brand/8 transition-all duration-500 group-hover:scale-110 group-hover:border-brand/15" />
-        <div className="pointer-events-none absolute -right-3 -top-3 h-3 w-3 rounded-full bg-brand/20 transition-all duration-500 group-hover:bg-brand/40" />
-
-        {/* 넘버링 */}
-        <p className="text-sm uppercase tracking-[0.28em] text-brand">
-          0{index + 1}
-        </p>
-
-        {/* eyebrow */}
-        <p className="eyebrow mt-4">{item.eyebrow}</p>
-
-        {/* 타이틀 */}
-        <h3 className="mt-3 font-display text-2xl tracking-tight text-ink">
-          {item.title}
-        </h3>
-
-        {/* 서브타이틀 */}
-        <p className="mt-2 text-sm leading-6 text-ink-muted">
-          {item.subtitle}
-        </p>
-
-        {/* 기술 스택 */}
-        <div className="mt-5 flex flex-wrap gap-2">
-          {item.tech.map((t) => (
-            <span
-              key={t}
-              className="rounded-full border border-black/8 bg-white/60 px-3 py-1 text-[10px] tracking-wider text-ink-muted"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* 하단 링크 */}
-        <div className="mt-6">
-          <BrandButton to={`/portfolio`} variant="ghost" className="w-full justify-center">
-            자세히 보기
-          </BrandButton>
-        </div>
+      <p className="text-[10px] uppercase tracking-[0.34em] text-brand/72">{project.eyebrow}</p>
+      <div className="space-y-2">
+        <p className="font-display text-[clamp(2rem,3vw,3.1rem)] leading-[0.94] text-ink">{project.title}</p>
+        <p className="text-base leading-7 text-ink-muted">{project.subtitle}</p>
       </div>
+      <p className="max-w-xl text-sm leading-6 text-ink-muted">{project.summary}</p>
+      <Link
+        href={project.to}
+        className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink-muted transition-colors duration-300 hover:text-brand"
+      >
+        자세히 보기
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-black/8 bg-white/70 text-base leading-none text-brand">
+          +
+        </span>
+      </Link>
     </motion.div>
+  );
+}
+
+/* ── 오비트 스테이지 — planet.svg 에셋 활용 ── */
+function OrbitStage({
+  ringReverse,
+  ringRotate,
+  planetLift,
+}: {
+  ringReverse: MotionValue<number>;
+  ringRotate: MotionValue<number>;
+  planetLift: MotionValue<number>;
+}) {
+  return (
+    <div className="relative aspect-square w-full max-w-[320px] md:max-w-[380px]">
+      {/* 외부 타원 궤도 — planet_circle.svg 컬러 (#D29BA7 → #F7C9D8) */}
+      <motion.svg
+        viewBox="0 0 400 400"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        style={{ rotate: ringRotate }}
+      >
+        <defs>
+          <linearGradient id="po-orbit1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D29BA7" stopOpacity="0.3" />
+            <stop offset="50%" stopColor="#E9B9C6" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#F7C9D8" stopOpacity="0.25" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="200" cy="200" rx="192" ry="162" fill="none" stroke="url(#po-orbit1)" strokeWidth="1" strokeDasharray="8 14" transform="rotate(-12 200 200)" />
+        {/* 궤도 위성 */}
+        <circle cx="200" cy="38" r="3.5">
+          <animate attributeName="fill" values="#F0899E;#FDD4C6;#F0899E" dur="4s" repeatCount="indefinite" />
+          <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="22s" repeatCount="indefinite" />
+          <animate attributeName="r" values="3;4.2;3" dur="4s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="38" cy="200" r="2" fill="#FDD4C6" stroke="#F0899E" strokeWidth="0.5" strokeOpacity="0.4">
+          <animateTransform attributeName="transform" type="rotate" from="90 200 200" to="450 200 200" dur="22s" repeatCount="indefinite" />
+        </circle>
+      </motion.svg>
+
+      {/* 중간 타원 궤도 */}
+      <motion.svg
+        viewBox="0 0 400 400"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        style={{ rotate: ringReverse }}
+      >
+        <defs>
+          <linearGradient id="po-orbit2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#E9A5A9" stopOpacity="0.3" />
+            <stop offset="50%" stopColor="#F9C4C7" stopOpacity="0.06" />
+            <stop offset="100%" stopColor="#FFDADD" stopOpacity="0.22" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="200" cy="200" rx="142" ry="120" fill="none" stroke="url(#po-orbit2)" strokeWidth="0.8" strokeDasharray="4 10" transform="rotate(8 200 200)" />
+        <circle cx="200" cy="80" r="2.8" fill="#CB6279" fillOpacity="0.4">
+          <animateTransform attributeName="transform" type="rotate" from="180 200 200" to="540 200 200" dur="16s" repeatCount="indefinite" />
+        </circle>
+      </motion.svg>
+
+      {/* 내부 궤도 */}
+      <motion.svg
+        viewBox="0 0 400 400"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        style={{ rotate: ringRotate }}
+      >
+        <ellipse cx="200" cy="200" rx="90" ry="80" fill="none" stroke="#D9A4B0" strokeOpacity="0.15" strokeWidth="0.5" transform="rotate(-6 200 200)" />
+      </motion.svg>
+
+      {/* 별자리 연결선 */}
+      <svg viewBox="0 0 400 400" className="pointer-events-none absolute inset-0 h-full w-full">
+        <line x1="48" y1="96" x2="110" y2="72" stroke="#E9A5A9" strokeOpacity="0.12" strokeWidth="0.4" />
+        <line x1="110" y1="72" x2="148" y2="128" stroke="#E9A5A9" strokeOpacity="0.08" strokeWidth="0.4" />
+        <line x1="270" y1="292" x2="326" y2="252" stroke="#E9A5A9" strokeOpacity="0.1" strokeWidth="0.4" />
+        <line x1="326" y1="252" x2="348" y2="298" stroke="#E9A5A9" strokeOpacity="0.07" strokeWidth="0.4" />
+      </svg>
+
+      {/* 중심 행성 — planet.svg 사용 */}
+      <motion.div
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{ y: planetLift }}
+      >
+        <motion.img
+          src="/planet.svg"
+          alt=""
+          className="h-[160px] w-[160px] md:h-[180px] md:w-[180px]"
+          draggable={false}
+          animate={{ filter: ["drop-shadow(0 0 24px rgba(243,29,91,0.18))", "drop-shadow(0 0 36px rgba(243,29,91,0.28))", "drop-shadow(0 0 24px rgba(243,29,91,0.18))"] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </motion.div>
+
+      {/* 위성 — planet.svg 컬러 기반 미니 행성 */}
+      <motion.div
+        className="pointer-events-none absolute left-[12%] top-[24%]"
+        style={{ y: ringReverse }}
+      >
+        <svg width="32" height="32" viewBox="0 0 32 32">
+          <defs>
+            <radialGradient id="po-sat1" cx="38%" cy="34%" r="58%">
+              <stop offset="0%" stopColor="#FDD4C6" />
+              <stop offset="65%" stopColor="#F0899E" />
+              <stop offset="100%" stopColor="#CB6279" stopOpacity="0.6" />
+            </radialGradient>
+          </defs>
+          <circle cx="16" cy="16" r="12" fill="url(#po-sat1)" />
+          <ellipse cx="13" cy="13" rx="4.5" ry="3" fill="rgba(255,255,255,0.22)" />
+        </svg>
+      </motion.div>
+
+      <motion.div
+        className="pointer-events-none absolute right-[14%] bottom-[20%]"
+        style={{ y: planetLift }}
+      >
+        <svg width="22" height="22" viewBox="0 0 22 22">
+          <defs>
+            <radialGradient id="po-sat2" cx="40%" cy="36%" r="56%">
+              <stop offset="0%" stopColor="#FDE7EA" />
+              <stop offset="47%" stopColor="#F5A6C3" />
+              <stop offset="100%" stopColor="#D36582" stopOpacity="0.5" />
+            </radialGradient>
+          </defs>
+          <circle cx="11" cy="11" r="8" fill="url(#po-sat2)" />
+          <ellipse cx="9" cy="9" rx="3" ry="2" fill="rgba(255,255,255,0.18)" />
+        </svg>
+      </motion.div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-[10px] uppercase tracking-[0.34em] text-ink-soft">
+        Pink orbit selection
+      </div>
+    </div>
   );
 }
