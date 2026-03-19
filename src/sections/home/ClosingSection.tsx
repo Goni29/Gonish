@@ -32,11 +32,18 @@ const orbitItems: OrbitItem[] = [
     radius: 0.44,
   },
   {
+    title: "Estimate",
+    description: "복잡한 용어 없이 필요한 제작 범위를 함께 정리해볼게요.",
+    to: "/estimate",
+    angle: 160,
+    radius: 0.41,
+  },
+  {
     title: "Contact",
     description: "아이디어를 대화 속에서 다음 단계로 구조화해드립니다.",
     to: "/contact",
-    angle: 100,
-    radius: 0.40,
+    angle: 45,
+    radius: 0.29,
   },
 ];
 

@@ -1,9 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { usePathname } from "next/navigation";
+import { LayoutRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gsap from "gsap";
 import ScrollToTop from "@/components/layout/ScrollToTop";
@@ -11,6 +12,17 @@ import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
 
 gsap.registerPlugin(ScrollTrigger);
+
+function FrozenRouter({ children }: { children: ReactNode }) {
+  const context = useContext(LayoutRouterContext);
+  const frozen = useRef(context).current;
+
+  return (
+    <LayoutRouterContext.Provider value={frozen}>
+      {children}
+    </LayoutRouterContext.Provider>
+  );
+}
 
 const pageTransition = {
   duration: 0.6,
@@ -48,9 +60,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
           exit={{ opacity: 0 }}
           transition={pageTransition}
         >
-          <main className={isHome ? "pt-0" : "pt-24 md:pt-28"}>
-            {children}
-          </main>
+          <FrozenRouter>
+            <main className={isHome ? "pt-0" : "pt-24 md:pt-28"}>
+              {children}
+            </main>
+          </FrozenRouter>
         </motion.div>
       </AnimatePresence>
       <SiteFooter />
