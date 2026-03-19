@@ -31,6 +31,8 @@ type EstimateForm = {
 
 type SingleChoiceField = "pageScope" | "projectType" | "readiness" | "schedule";
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
 const projectTypeOptions: Option[] = [
   { id: "landing", label: "가볍게 소개하는 페이지", description: "서비스나 브랜드 하나를 또렷하게 보여주는 소개형 사이트예요.", price: 45, score: 1 },
   { id: "brand-site", label: "브랜드 홈페이지", description: "브랜드 분위기와 신뢰를 함께 전달하는 일반적인 홈페이지예요.", price: 75, score: 2 },
@@ -101,7 +103,7 @@ function getEstimateBand(score: number) {
   if (score <= 7) {
     return {
       label: "브랜드 홈페이지 범위",
-      explanation: "브랜드 소개, 서비스 안내, 포트폴리오, 문의까지 자연스럽게 이어지는 일반적인 홈페이지 범위예요.",
+      explanation: "브랜드 소개, 서비스 안내, 사례, 문의까지 자연스럽게 이어지는 일반적인 홈페이지 범위예요.",
     };
   }
 
@@ -332,302 +334,313 @@ export default function EstimateConversation() {
 
   return (
     <section className="section-space relative overflow-hidden">
+      {/* Cosmic background glows */}
       <div className="pointer-events-none absolute left-[-10rem] top-20 h-[24rem] w-[24rem] rounded-full bg-brand/[0.08] blur-[120px]" />
-      <div className="pointer-events-none absolute right-[-12rem] top-16 h-[26rem] w-[26rem] rounded-full bg-brand/[0.08] blur-[130px]" />
+      <div className="pointer-events-none absolute right-[-12rem] top-16 h-[26rem] w-[26rem] rounded-full bg-brand/[0.06] blur-[130px]" />
 
       <div className="shell relative z-10">
-        <div className="panel relative overflow-hidden rounded-[2.6rem] px-6 py-7 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(243,29,91,0.08),transparent_24%),radial-gradient(circle_at_82%_24%,rgba(255,194,216,0.32),transparent_20%),linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.02))]" />
-          <div className="pointer-events-none absolute right-10 top-10 h-24 w-24 rounded-full border border-brand/12" />
-          <div className="pointer-events-none absolute right-16 top-16 h-2 w-2 rounded-full bg-brand/28" />
+        <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+          {/* ── Left: Form ── */}
+          <form onSubmit={handleSubmit}>
+            {/* Intro */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease }}
+              className="mb-16 space-y-4"
+            >
+              <p className="eyebrow">Gonish says</p>
+              <p className="font-display text-[clamp(2rem,3vw,2.8rem)] leading-[1] text-ink">
+                견적은 어렵게 시작하지 않아도 괜찮습니다.
+              </p>
+              <p className="max-w-3xl text-sm leading-7 text-ink-muted md:text-base">
+                지금 이 페이지는 정확한 금액을 바로 확정하는 공간이라기보다, 어떤 범위가 필요한지 먼저 정리하는 대화의 시작점이에요.
+                페이지 수는 보통 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이라고 보면 이해가 쉬워요.
+              </p>
+            </motion.div>
 
-          <div className="relative z-10 grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                className="space-y-4"
-              >
-                <MessageBubble
-                  eyebrow="Gonish says"
-                  title="견적은 어렵게 시작하지 않아도 괜찮습니다."
-                  description="지금 이 페이지는 정확한 금액을 바로 확정하는 공간이라기보다, 어떤 범위가 필요한지 먼저 정리하는 대화의 시작점이에요."
-                  helper="페이지 수는 보통 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이라고 보면 이해가 쉬워요. 오른쪽에는 지금 선택 기준의 예상 공개가도 같이 보여드릴게요."
-                />
+            {/* Questions — orbital timeline */}
+            <div className="relative pl-10 sm:pl-12">
+              {/* Vertical orbit line */}
+              <div className="absolute bottom-0 left-[4px] top-0 w-px bg-gradient-to-b from-brand/25 via-brand/12 to-transparent" />
 
-              </motion.div>
-
-              <ConversationBlock
-                eyebrow="Question 01"
-                question="어떤 사이트를 생각하고 계신가요?"
-                description="정확한 용어를 몰라도 괜찮아요. 지금 가장 가까운 느낌 하나를 골라 주세요."
-                helper="예를 들어 ‘브랜드 홈페이지’는 회사나 브랜드의 소개, 분위기, 신뢰를 함께 보여주는 사이트를 말해요."
-              >
-                <div className="grid gap-3 md:grid-cols-2">
-                  {projectTypeOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.id}
-                      selected={form.projectType === option.id}
-                      label={option.label}
-                      description={option.description}
-                      onClick={() => handleSingleChoice("projectType", option.id)}
-                    />
-                  ))}
-                </div>
-              </ConversationBlock>
-
-              <ConversationBlock
-                eyebrow="Question 02"
-                question="생각하고 있는 페이지 규모는 어느 정도인가요?"
-                description="아직 정확하지 않아도 괜찮아요. 지금 떠오르는 범위와 가장 가까운 쪽을 골라 주세요."
-                helper="페이지는 보통 메뉴 수와 비슷하게 생각하시면 쉬워요. 예를 들면 메인 / 소개 / 서비스 / 문의처럼요."
-              >
-                <div className="grid gap-3 md:grid-cols-2">
-                  {pageScopeOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.id}
-                      selected={form.pageScope === option.id}
-                      label={option.label}
-                      description={option.description}
-                      onClick={() => handleSingleChoice("pageScope", option.id)}
-                    />
-                  ))}
-                </div>
-              </ConversationBlock>
-
-              <ConversationBlock
-                eyebrow="Question 03"
-                question="추가로 필요한 기능이 있나요?"
-                description="여러 개를 골라도 괜찮아요. 지금 꼭 필요하다고 느끼는 것만 체크하셔도 충분해요."
-                helper="기능은 단순히 보여주는 것을 넘어서, 사용자가 버튼을 누르거나 정보를 입력했을 때 실제로 동작하는 부분이라고 생각하시면 쉬워요."
-              >
-                <div className="grid gap-3 md:grid-cols-2">
-                  {featureOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.id}
-                      selected={form.features.includes(option.id)}
-                      label={option.label}
-                      description={option.description}
-                      onClick={() => toggleFeature(option.id)}
-                    />
-                  ))}
-                </div>
-              </ConversationBlock>
-
-              <div className="grid gap-6 lg:grid-cols-2">
-                <ConversationBlock
-                  eyebrow="Question 04"
-                  question="자료는 어느 정도 준비되어 있나요?"
-                  description="브랜드 소개 글, 서비스 설명, 사진 자료 같은 준비 상태를 말해요."
-                  helper="이 부분이 비어 있어도 괜찮아요. 어떤 자료가 필요한지부터 같이 정리하면서 시작할 수 있어요."
+              <div className="space-y-16">
+                <QuestionSection
+                  number="01"
+                  question="어떤 사이트를 생각하고 계신가요?"
+                  helper="예를 들어 '브랜드 홈페이지'는 회사나 브랜드의 소개, 분위기, 신뢰를 함께 보여주는 사이트를 말해요."
                 >
-                  <div className="grid gap-3">
-                    {readinessOptions.map((option) => (
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {projectTypeOptions.map((option) => (
                       <ChoiceButton
                         key={option.id}
-                        selected={form.readiness === option.id}
+                        selected={form.projectType === option.id}
                         label={option.label}
                         description={option.description}
-                        onClick={() => handleSingleChoice("readiness", option.id)}
+                        onClick={() => handleSingleChoice("projectType", option.id)}
                       />
                     ))}
                   </div>
-                </ConversationBlock>
+                </QuestionSection>
 
-                <ConversationBlock
-                  eyebrow="Question 05"
-                  question="희망 일정은 어느 정도인가요?"
-                  description="급하게 시작해야 하는지, 조금 여유 있게 완성도를 맞춰 가고 싶은지 알려 주세요."
-                  helper="일정은 금액뿐 아니라 작업 순서와 우선순위에도 영향을 줘요. 빠를수록 먼저 꼭 필요한 범위를 정하는 것이 중요해요."
+                <QuestionSection
+                  number="02"
+                  question="생각하고 있는 페이지 규모는 어느 정도인가요?"
+                  helper="페이지는 보통 메뉴 수와 비슷하게 생각하시면 쉬워요. 예를 들면 메인 / 소개 / 서비스 / 문의처럼요."
                 >
-                  <div className="grid gap-3">
-                    {scheduleOptions.map((option) => (
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {pageScopeOptions.map((option) => (
                       <ChoiceButton
                         key={option.id}
-                        selected={form.schedule === option.id}
+                        selected={form.pageScope === option.id}
                         label={option.label}
                         description={option.description}
-                        onClick={() => handleSingleChoice("schedule", option.id)}
+                        onClick={() => handleSingleChoice("pageScope", option.id)}
                       />
                     ))}
                   </div>
-                </ConversationBlock>
-              </div>
+                </QuestionSection>
 
-              <ConversationBlock
-                eyebrow="Question 06"
-                question="이런 혜택이 가능하실까요?"
-                description="부담 없으신 항목만 골라 주세요. 가능하시면 공개 견적 기준에서 바로 반영해 볼 수 있어요."
-                helper="포트폴리오 소개 가능과 리뷰 작성은 각각 5만 원씩 반영돼요. 두 항목 모두 선택하셔도 공개 견적 기준 최저가는 45만 원 아래로 내려가지 않아요."
-              >
-                <div className="grid gap-3">
-                  {discountOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.id}
-                      selected={form.discounts.includes(option.id)}
-                      label={option.label}
-                      description={option.description}
-                      onClick={() => toggleDiscount(option.id)}
-                    />
-                  ))}
+                <QuestionSection
+                  number="03"
+                  question="추가로 필요한 기능이 있나요?"
+                  helper="기능은 사용자가 버튼을 누르거나 정보를 입력했을 때 실제로 동작하는 부분이라고 생각하시면 쉬워요."
+                >
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {featureOptions.map((option) => (
+                      <ChoiceButton
+                        key={option.id}
+                        selected={form.features.includes(option.id)}
+                        label={option.label}
+                        description={option.description}
+                        onClick={() => toggleFeature(option.id)}
+                      />
+                    ))}
+                  </div>
+                </QuestionSection>
+
+                <div className="grid gap-16 lg:grid-cols-2 lg:gap-12">
+                  <QuestionSection
+                    number="04"
+                    question="자료는 어느 정도 준비되어 있나요?"
+                    helper="이 부분이 비어 있어도 괜찮아요. 어떤 자료가 필요한지부터 같이 정리할 수 있어요."
+                  >
+                    <div className="space-y-2">
+                      {readinessOptions.map((option) => (
+                        <ChoiceButton
+                          key={option.id}
+                          selected={form.readiness === option.id}
+                          label={option.label}
+                          description={option.description}
+                          onClick={() => handleSingleChoice("readiness", option.id)}
+                        />
+                      ))}
+                    </div>
+                  </QuestionSection>
+
+                  <QuestionSection
+                    number="05"
+                    question="희망 일정은 어느 정도인가요?"
+                    helper="일정은 금액뿐 아니라 작업 순서와 우선순위에도 영향을 줘요."
+                  >
+                    <div className="space-y-2">
+                      {scheduleOptions.map((option) => (
+                        <ChoiceButton
+                          key={option.id}
+                          selected={form.schedule === option.id}
+                          label={option.label}
+                          description={option.description}
+                          onClick={() => handleSingleChoice("schedule", option.id)}
+                        />
+                      ))}
+                    </div>
+                  </QuestionSection>
                 </div>
-              </ConversationBlock>
 
-              <ConversationBlock
-                eyebrow="Question 07"
-                question="마지막으로 편하게 설명해 주세요."
-                description="개발 용어 대신 지금 상황과 원하는 결과를 적어주시면 충분해요."
-                helper="예: 지금 사이트가 너무 오래돼 보여요 / 문의가 더 잘 들어오면 좋겠어요 / 브랜드 분위기를 더 고급스럽게 정리하고 싶어요"
-              >
-                <div className="grid gap-4">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="rounded-[1.5rem] border border-black/10 bg-white/76 p-4 backdrop-blur-xl">
-                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Name</span>
+                <QuestionSection
+                  number="06"
+                  question="이런 혜택이 가능하실까요?"
+                  helper="포트폴리오 소개 가능과 리뷰 작성은 각각 5만 원씩 반영돼요. 두 항목 모두 선택하셔도 최저가는 45만 원 아래로 내려가지 않아요."
+                >
+                  <div className="space-y-2">
+                    {discountOptions.map((option) => (
+                      <ChoiceButton
+                        key={option.id}
+                        selected={form.discounts.includes(option.id)}
+                        label={option.label}
+                        description={option.description}
+                        onClick={() => toggleDiscount(option.id)}
+                      />
+                    ))}
+                  </div>
+                </QuestionSection>
+
+                <QuestionSection
+                  number="07"
+                  question="마지막으로 편하게 설명해 주세요."
+                  helper="예: 지금 사이트가 너무 오래돼 보여요 / 문의가 더 잘 들어오면 좋겠어요"
+                >
+                  <div className="space-y-5">
+                    <div className="grid gap-5 md:grid-cols-2">
+                      <label className="group block">
+                        <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Name</span>
+                        <input
+                          name="name"
+                          value={form.name}
+                          onChange={handleTextChange}
+                          placeholder="성함"
+                          className="mt-2 w-full border-0 border-b border-ink/10 bg-transparent pb-2 text-base text-ink outline-none transition-colors placeholder:text-ink/28 focus:border-brand/40"
+                        />
+                      </label>
+                      <label className="group block">
+                        <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Brand</span>
+                        <input
+                          name="brand"
+                          value={form.brand}
+                          onChange={handleTextChange}
+                          placeholder="브랜드명 또는 프로젝트명"
+                          className="mt-2 w-full border-0 border-b border-ink/10 bg-transparent pb-2 text-base text-ink outline-none transition-colors placeholder:text-ink/28 focus:border-brand/40"
+                        />
+                      </label>
+                    </div>
+                    <label className="block">
+                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Reply</span>
                       <input
-                        name="name"
-                        value={form.name}
+                        name="reply"
+                        value={form.reply}
                         onChange={handleTextChange}
-                        placeholder="성함"
-                        className="mt-3 w-full border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink/32"
+                        placeholder="답변 받을 이메일 또는 연락처"
+                        className="mt-2 w-full border-0 border-b border-ink/10 bg-transparent pb-2 text-base text-ink outline-none transition-colors placeholder:text-ink/28 focus:border-brand/40"
                       />
                     </label>
-
-                    <label className="rounded-[1.5rem] border border-black/10 bg-white/76 p-4 backdrop-blur-xl">
-                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Brand</span>
+                    <label className="block">
+                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Goal</span>
                       <input
-                        name="brand"
-                        value={form.brand}
+                        name="goal"
+                        value={form.goal}
                         onChange={handleTextChange}
-                        placeholder="브랜드명 또는 프로젝트명"
-                        className="mt-3 w-full border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink/32"
+                        placeholder="가장 중요하게 바라는 결과 한 가지"
+                        className="mt-2 w-full border-0 border-b border-ink/10 bg-transparent pb-2 text-base text-ink outline-none transition-colors placeholder:text-ink/28 focus:border-brand/40"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Note</span>
+                      <textarea
+                        name="note"
+                        value={form.note}
+                        onChange={handleTextChange}
+                        rows={4}
+                        placeholder="지금 상황, 참고하고 싶은 사이트, 꼭 반영하고 싶은 분위기 등을 편하게 적어주세요."
+                        className="mt-2 w-full resize-none border-0 border-b border-ink/10 bg-transparent pb-2 text-base leading-7 text-ink outline-none transition-colors placeholder:text-ink/28 focus:border-brand/40"
                       />
                     </label>
                   </div>
-
-                  <label className="rounded-[1.5rem] border border-black/10 bg-white/76 p-4 backdrop-blur-xl">
-                    <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Reply</span>
-                    <input
-                      name="reply"
-                      value={form.reply}
-                      onChange={handleTextChange}
-                      placeholder="답변 받을 이메일 또는 연락처"
-                      className="mt-3 w-full border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink/32"
-                    />
-                  </label>
-
-                  <label className="rounded-[1.5rem] border border-black/10 bg-white/76 p-4 backdrop-blur-xl">
-                    <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Goal</span>
-                    <input
-                      name="goal"
-                      value={form.goal}
-                      onChange={handleTextChange}
-                      placeholder="가장 중요하게 바라는 결과 한 가지"
-                      className="mt-3 w-full border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink/32"
-                    />
-                  </label>
-
-                  <label className="rounded-[1.5rem] border border-black/10 bg-white/76 p-4 backdrop-blur-xl">
-                    <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Note</span>
-                    <textarea
-                      name="note"
-                      value={form.note}
-                      onChange={handleTextChange}
-                      rows={5}
-                      placeholder="지금 상황, 참고하고 싶은 사이트, 꼭 반영하고 싶은 분위기 등을 편하게 적어주세요."
-                      className="mt-3 w-full resize-none border-0 bg-transparent p-0 text-base leading-7 text-ink outline-none placeholder:text-ink/32"
-                    />
-                  </label>
-                </div>
-              </ConversationBlock>
-
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <p className="max-w-3xl text-sm leading-6 text-ink-muted">{statusMessage}</p>
-                <BrandButton type="submit">견적 상담 요청하기</BrandButton>
+                </QuestionSection>
               </div>
-            </form>
+            </div>
 
-            <aside className="space-y-4 xl:sticky xl:top-28">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                className="panel rounded-[2rem] p-6"
-              >
+            {/* Submit */}
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease }}
+              className="mt-16 flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
+            >
+              <p className="max-w-2xl text-sm leading-6 text-ink-muted">{statusMessage}</p>
+              <BrandButton type="submit">견적 상담 요청하기</BrandButton>
+            </motion.div>
+          </form>
+
+          {/* ── Right: Aside ── */}
+          <aside className="xl:sticky xl:top-28">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease }}
+              className="panel space-y-8 rounded-[2.2rem] p-6"
+            >
+              {/* Estimated price */}
+              <div>
                 <p className="eyebrow">Estimated price</p>
-                <p className="mt-4 text-[10px] uppercase tracking-[0.32em] text-brand">Launch range</p>
+                <p className="mt-2 text-[10px] uppercase tracking-[0.32em] text-brand">Launch range</p>
                 <p className="mt-3 font-display text-[clamp(2.2rem,3.5vw,3.4rem)] leading-[0.95] text-brand">
                   <SmartLineBreak text={priceEstimate.label} maxCharsPerLine={11} maxLines={3} />
                 </p>
                 <p className="mt-4 text-sm leading-6 text-ink-muted">{priceEstimate.description}</p>
+              </div>
 
-                <div className="mt-5 rounded-[1.5rem] border border-brand/12 bg-[#fff7fa] p-4">
-                  <p className="text-[10px] uppercase tracking-[0.32em] text-brand">현재 범위 해석</p>
-                  <p className="mt-3 font-medium leading-6 text-ink">{estimateBand.label}</p>
-                  <p className="mt-2 text-sm leading-6 text-ink-muted">{estimateBand.explanation}</p>
-                </div>
+              <div className="soft-divider" />
 
-                <div className="mt-4 rounded-[1.5rem] border border-brand/12 bg-white/80 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.32em] text-brand">혜택 조정</p>
-                  <p className="mt-3 text-sm leading-6 text-ink-muted">
-                    {selectedDiscounts.length > 0
-                      ? `${selectedDiscounts.map((discount) => discount.label).join(", ")} 기준으로 총 ${totalDiscount}만 원 조정해서 보고 있어요.`
-                      : "포트폴리오 사용 가능, 리뷰 작성 동의가 괜찮으시면 각각 5만 원씩 공개 견적에 반영할 수 있어요."}
-                  </p>
-                </div>
+              {/* Range interpretation */}
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">현재 범위 해석</p>
+                <p className="mt-3 font-medium leading-6 text-ink">{estimateBand.label}</p>
+                <p className="mt-2 text-sm leading-6 text-ink-muted">{estimateBand.explanation}</p>
+              </div>
 
-                <div className="mt-4 rounded-[1.5rem] border border-black/8 bg-white/72 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
-                  <p className="mt-3 text-sm leading-6 text-ink-muted">
-                    반응형 웹 제작, 기본 문의 흐름, 기본 메일 세팅, 배포 연결까지를 기준으로 보고 있습니다.
-                  </p>
-                </div>
+              <div className="soft-divider" />
 
-                <div className="mt-6 space-y-3 text-sm leading-6 text-ink-muted">
-                  <SummaryLine label="프로젝트 방향" value={selectedType?.label ?? "아직 고르는 중"} />
-                  <SummaryLine label="페이지 규모" value={selectedPageScope?.label ?? "아직 고르는 중"} />
-                  <SummaryLine
-                    label="필요 기능"
-                    value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "지금은 가볍게 시작"}
-                  />
-                  <SummaryLine
-                    label="적용 혜택"
-                    value={selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "아직 선택 안 함"}
-                  />
-                  <SummaryLine label="자료 준비도" value={selectedReadiness?.label ?? "아직 고르는 중"} />
-                  <SummaryLine label="희망 일정" value={selectedSchedule?.label ?? "아직 고르는 중"} />
-                </div>
-              </motion.div>
+              {/* Discount note */}
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">혜택 조정</p>
+                <p className="mt-3 text-sm leading-6 text-ink-muted">
+                  {selectedDiscounts.length > 0
+                    ? `${selectedDiscounts.map((discount) => discount.label).join(", ")} 기준으로 총 ${totalDiscount}만 원 조정해서 보고 있어요.`
+                    : "포트폴리오 사용 가능, 리뷰 작성 동의가 괜찮으시면 각각 5만 원씩 공개 견적에 반영할 수 있어요."}
+                </p>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-[2rem] border border-black/10 bg-white/72 p-5 backdrop-blur-xl"
-              >
+              <div className="soft-divider" />
+
+              {/* Summary */}
+              <div className="space-y-3 text-sm leading-6 text-ink-muted">
+                <SummaryLine label="프로젝트 방향" value={selectedType?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="페이지 규모" value={selectedPageScope?.label ?? "아직 고르는 중"} />
+                <SummaryLine
+                  label="필요 기능"
+                  value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "지금은 가볍게 시작"}
+                />
+                <SummaryLine
+                  label="적용 혜택"
+                  value={selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "아직 선택 안 함"}
+                />
+                <SummaryLine label="자료 준비도" value={selectedReadiness?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="희망 일정" value={selectedSchedule?.label ?? "아직 고르는 중"} />
+              </div>
+
+              <div className="soft-divider" />
+
+              {/* Next steps */}
+              <div>
                 <p className="eyebrow">Next step</p>
                 <div className="mt-4 space-y-3">
                   {nextSteps.map((step) => (
-                    <p key={step} className="text-sm leading-6 text-ink-muted">
-                      {step}
-                    </p>
+                    <div key={step} className="flex items-start gap-3">
+                      <span className="mt-[9px] size-[6px] shrink-0 rounded-full bg-brand/40" />
+                      <p className="text-sm leading-6 text-ink-muted">{step}</p>
+                    </div>
                   ))}
                 </div>
-                <div className="mt-5 rounded-[1.4rem] border border-brand/12 bg-[#fff7fa] p-4">
-                  <p className="text-[10px] uppercase tracking-[0.32em] text-brand">Important note</p>
-                  <p className="mt-3 text-sm leading-6 text-ink-muted">
-                    지금 보이는 금액은 현재 선택 기준의 예상 공개가 범위예요. 도메인, 유료 플러그인, 외부 결제 수수료는 별도로 조정될 수 있습니다.
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-ink-muted">
-                    포트폴리오 소개 가능과 리뷰 작성 동의는 각각 5만 원씩 반영되며, 최종 계약 시 조건 확인 후 확정됩니다.
-                  </p>
-                </div>
-              </motion.div>
-            </aside>
-          </div>
+              </div>
+
+              <div className="soft-divider" />
+
+              {/* Base includes */}
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
+                <p className="mt-3 text-sm leading-6 text-ink-muted">
+                  반응형 웹 제작, 기본 문의 흐름, 기본 메일 세팅, 배포 연결까지를 기준으로 보고 있습니다.
+                </p>
+              </div>
+
+              <p className="text-xs leading-5 text-ink/30">
+                지금 보이는 금액은 예상 공개가 범위예요. 도메인, 유료 플러그인, 외부 결제 수수료는 별도로 조정될 수 있습니다.
+              </p>
+            </motion.div>
+          </aside>
         </div>
       </div>
 
@@ -638,11 +651,11 @@ export default function EstimateConversation() {
         dragElastic={0.1}
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed bottom-6 left-6 z-50 flex items-end gap-3 cursor-grab select-none active:cursor-grabbing"
+        transition={{ duration: 0.6, delay: 0.5, ease }}
+        className="fixed bottom-6 left-6 z-50 flex cursor-grab items-end gap-3 select-none active:cursor-grabbing"
         style={{ touchAction: "none" }}
       >
-        <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none">
+        <div className="pointer-events-none h-16 w-16 shrink-0 sm:h-20 sm:w-20">
           <GonishCharacter isSmiling={isSmiling} className="h-full w-full drop-shadow-lg" />
         </div>
         <AnimatePresence mode="wait">
@@ -651,8 +664,8 @@ export default function EstimateConversation() {
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.95 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="relative max-w-[16rem] sm:max-w-xs rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)]"
+            transition={{ duration: 0.35, ease }}
+            className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
           >
             <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
             {conversationReply}
@@ -663,63 +676,43 @@ export default function EstimateConversation() {
   );
 }
 
-function MessageBubble({
-  description,
-  eyebrow,
-  helper,
-  title,
-}: {
-  description: string;
-  eyebrow: string;
-  helper: string;
-  title: string;
-}) {
-  return (
-    <div className="rounded-[2rem] border border-black/10 bg-white/78 p-5 backdrop-blur-xl sm:p-6">
-      <p className="text-[10px] uppercase tracking-[0.32em] text-brand/78">{eyebrow}</p>
-      <p className="mt-4 font-display text-[clamp(2rem,3vw,2.8rem)] leading-[1] text-ink">{title}</p>
-      <p className="mt-4 text-sm leading-6 text-ink-muted md:text-base">{description}</p>
-      <div className="mt-4 rounded-[1.4rem] border border-brand/12 bg-[#fff7fa] p-4">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-brand">쉽게 이해하면</p>
-        <p className="mt-3 text-sm leading-6 text-ink-muted">{helper}</p>
-      </div>
-    </div>
-  );
-}
+/* ── Sub-components ── */
 
-function ConversationBlock({
+function QuestionSection({
   children,
-  description,
-  eyebrow,
   helper,
+  number,
   question,
 }: {
   children: ReactNode;
-  description: string;
-  eyebrow: string;
   helper: string;
+  number: string;
   question: string;
 }) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="space-y-4 rounded-[2rem] border border-black/10 bg-white/74 p-5 backdrop-blur-xl sm:p-6"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, ease }}
+      className="relative"
     >
-      <div className="space-y-4">
-        <p className="text-[10px] uppercase tracking-[0.32em] text-brand/78">{eyebrow}</p>
-        <p className="font-display text-[clamp(1.9rem,3vw,2.7rem)] leading-[1] text-ink">
-          <SmartLineBreak text={question} maxCharsPerLine={14} maxLines={3} />
-        </p>
-        <p className="text-sm leading-6 text-ink-muted md:text-base">{description}</p>
-        <div className="rounded-[1.4rem] border border-brand/12 bg-[#fff7fa] p-4">
-          <p className="text-[10px] uppercase tracking-[0.32em] text-brand">설명</p>
-          <p className="mt-3 text-sm leading-6 text-ink-muted">{helper}</p>
+      {/* Timeline dot */}
+      <span className="absolute -left-10 top-[6px] flex items-center justify-center sm:-left-12">
+        <span className="relative z-10 size-[10px] rounded-full bg-brand shadow-[0_0_14px_rgba(243,29,91,0.45)]" />
+        <span className="absolute size-[22px] rounded-full bg-brand/10" />
+      </span>
+
+      <div className="space-y-5">
+        <div>
+          <span className="font-display text-[clamp(2.4rem,4vw,3.6rem)] leading-none text-brand/12">{number}</span>
+          <p className="mt-2 font-display text-[clamp(1.6rem,2.5vw,2.2rem)] leading-[1.1] text-ink">
+            <SmartLineBreak text={question} maxCharsPerLine={16} maxLines={3} />
+          </p>
+          <p className="mt-3 text-sm leading-6 text-ink/40">{helper}</p>
         </div>
+        {children}
       </div>
-      {children}
     </motion.section>
   );
 }
@@ -741,14 +734,23 @@ function ChoiceButton({
       onClick={onClick}
       aria-pressed={selected}
       className={[
-        "rounded-[1.5rem] border p-4 text-left transition-all duration-300",
+        "group relative overflow-hidden rounded-2xl py-4 pl-5 pr-4 text-left transition-all duration-300",
         selected
-          ? "border-brand/28 bg-white shadow-[0_18px_44px_rgba(243,29,91,0.12)]"
-          : "border-black/8 bg-white/72 hover:border-brand/18 hover:-translate-y-0.5",
+          ? "bg-brand/[0.06]"
+          : "hover:bg-ink/[0.02]",
       ].join(" ")}
     >
-      <p className={["font-medium leading-6", selected ? "text-brand" : "text-ink"].join(" ")}>{label}</p>
-      <p className="mt-2 text-sm leading-6 text-ink-muted">{description}</p>
+      {/* Left accent bar */}
+      <span
+        className={[
+          "absolute left-0 top-3 bottom-3 w-[3px] rounded-full transition-all duration-300",
+          selected
+            ? "bg-brand shadow-[0_0_10px_rgba(243,29,91,0.35)]"
+            : "bg-ink/8 group-hover:bg-ink/15",
+        ].join(" ")}
+      />
+      <p className={["text-[15px] font-medium leading-6 transition-colors duration-300", selected ? "text-brand" : "text-ink"].join(" ")}>{label}</p>
+      <p className="mt-1.5 text-sm leading-6 text-ink-muted">{description}</p>
     </button>
   );
 }
