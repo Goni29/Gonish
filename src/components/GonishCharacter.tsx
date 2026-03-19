@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from "react";
+
 /**
  * Gonish character inline SVG with switchable eyes.
  *
  * Body from Gonish_character.svg, open eyes from Gonish_character_eye.svg.
  * When `isSmiling` is true the original curved (smiling) eyes show;
- * otherwise the round open eyes are rendered.
+ * otherwise the round open eyes follow the mouse cursor.
  */
 export default function GonishCharacter({
   className,
@@ -12,8 +14,41 @@ export default function GonishCharacter({
   className?: string;
   isSmiling?: boolean;
 }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [eye, setEye] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      if (!svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+
+      // Eyes sit roughly at 50% x, 35% y of the viewBox
+      const cx = rect.left + rect.width * 0.5;
+      const cy = rect.top + rect.height * 0.35;
+      const dx = clientX - cx;
+      const dy = clientY - cy;
+      const angle = Math.atan2(dy, dx);
+      const dist = Math.min(Math.hypot(dx, dy), 300) / 300; // 0‑1
+      const max = 3; // SVG-unit clamp
+
+      setEye({ x: Math.cos(angle) * dist * max, y: Math.sin(angle) * dist * max });
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("touchmove", onMove);
+    };
+  }, []);
+
+  const iris = isSmiling ? undefined : `translate(${eye.x},${eye.y})`;
+
   return (
     <svg
+      ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
       width="200"
       height="200"
@@ -50,12 +85,12 @@ export default function GonishCharacter({
         {/* Eye sockets */}
         <path d="m117.6 69.05c0-6.09 4.27-9.29 9.28-9.29 5.26 0 8.58 4.98 8.58 9.29 0 4.98-4.22 8.76-8.49 8.76-5.22 0-9.37-3.62-9.37-8.76z" fill="#6E0A39" />
         <path d="m76.64 71.71c0-6.09 4.27-8.85 8.95-8.85 5.27 0 8.59 4.53 8.59 8.85 0 5.44-4.16 8.75-8.7 8.75-5.06 0-8.84-3.61-8.84-8.75z" fill="#6E0A39" />
-        {/* Irises */}
-        <path d="m121 66.62c0-2.48 1.91-3.61 3.77-3.61 2.08 0 3.31 1.95 3.31 3.61 0 2.13-1.86 3.48-3.34 3.48-2.14 0-3.74-1.43-3.74-3.48z" fill="#FEFFFE" />
-        <path d="m80.06 69.23c0-2.48 1.55-3.1 3.3-3.1 2.14 0 3.37 1.6 3.37 3.1 0 2.03-1.49 3.25-3.09 3.25-2.03 0-3.58-1.2-3.58-3.25z" fill="#FEFFFE" />
-        {/* Reflections */}
-        <path d="m128.8 73.11c0-1.42 1.06-2.12 2.12-2.12 1.24 0 1.98 1.12 1.98 2.12 0 1.36-1.18 2.14-2.04 2.14-1.34 0-2.06-0.91-2.06-2.14z" fill="#FEFFFE" />
-        <path d="m87.42 75.53c0-1.42 1.07-1.86 1.97-1.86 1.07 0 1.76 1.01 1.76 1.86 0 1.22-1.13 1.91-1.87 1.91-1.13 0-1.86-0.81-1.86-1.91z" fill="#FEFFFE" />
+        {/* Irises (follow mouse) */}
+        <path d="m121 66.62c0-2.48 1.91-3.61 3.77-3.61 2.08 0 3.31 1.95 3.31 3.61 0 2.13-1.86 3.48-3.34 3.48-2.14 0-3.74-1.43-3.74-3.48z" fill="#FEFFFE" transform={iris} />
+        <path d="m80.06 69.23c0-2.48 1.55-3.1 3.3-3.1 2.14 0 3.37 1.6 3.37 3.1 0 2.03-1.49 3.25-3.09 3.25-2.03 0-3.58-1.2-3.58-3.25z" fill="#FEFFFE" transform={iris} />
+        {/* Reflections (follow mouse) */}
+        <path d="m128.8 73.11c0-1.42 1.06-2.12 2.12-2.12 1.24 0 1.98 1.12 1.98 2.12 0 1.36-1.18 2.14-2.04 2.14-1.34 0-2.06-0.91-2.06-2.14z" fill="#FEFFFE" transform={iris} />
+        <path d="m87.42 75.53c0-1.42 1.07-1.86 1.97-1.86 1.07 0 1.76 1.01 1.76 1.86 0 1.22-1.13 1.91-1.87 1.91-1.13 0-1.86-0.81-1.86-1.91z" fill="#FEFFFE" transform={iris} />
       </g>
 
       {/* ── Smiling eyes (from Gonish_character.svg) ── */}

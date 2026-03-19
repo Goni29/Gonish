@@ -1,6 +1,7 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
+import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
@@ -24,57 +25,8 @@ export default function ContactStage() {
   const [statusMessage, setStatusMessage] = useState(
     "프로젝트 목표와 일정, 원하는 분위기를 남겨주시면 정리된 제안으로 회신드립니다.",
   );
-  const [canTrackPointer, setCanTrackPointer] = useState(false);
-  const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
-  const stageRef = useRef<HTMLDivElement | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const contactEmail = useMemo(() => process.env.NEXT_PUBLIC_CONTACT_EMAIL, []);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const updateMatch = () => setCanTrackPointer(mediaQuery.matches);
-
-    updateMatch();
-    mediaQuery.addEventListener("change", updateMatch);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateMatch);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!canTrackPointer) {
-      setPupilOffset({ x: 0, y: 0 });
-      return undefined;
-    }
-
-    const handleMove = (event: MouseEvent) => {
-      const stage = stageRef.current;
-
-      if (!stage) {
-        return;
-      }
-
-      const rect = stage.getBoundingClientRect();
-      const faceCenterX = rect.left + 130;
-      const faceCenterY = rect.bottom - 120;
-      const deltaX = event.clientX - faceCenterX;
-      const deltaY = event.clientY - faceCenterY;
-      const angle = Math.atan2(deltaY, deltaX);
-      const distance = Math.min(8, Math.hypot(deltaX, deltaY) / 40);
-
-      setPupilOffset({
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance,
-      });
-    };
-
-    window.addEventListener("mousemove", handleMove);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMove);
-    };
-  }, [canTrackPointer]);
 
   useEffect(() => {
     return () => {
@@ -128,10 +80,7 @@ export default function ContactStage() {
   return (
     <section className="section-space">
       <div className="shell">
-        <div
-          ref={stageRef}
-          className="panel relative overflow-hidden rounded-[2.3rem] px-6 py-8 sm:px-8 sm:py-10 lg:min-h-[720px] lg:px-12 lg:py-12"
-        >
+        <div className="panel relative overflow-hidden rounded-[2.3rem] px-6 py-8 sm:px-8 sm:py-10 lg:min-h-[720px] lg:px-12 lg:py-12">
           <div className="absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(circle_at_left_bottom,rgba(243,29,91,0.18),transparent_40%)]" />
 
           <div className="grid gap-12 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-end">
@@ -147,42 +96,7 @@ export default function ContactStage() {
               className="relative order-2 flex items-end justify-start lg:order-1 lg:min-h-[440px]"
             >
               <div className="pointer-events-none relative h-[240px] w-[240px] sm:h-[280px] sm:w-[280px]">
-                <svg viewBox="0 0 280 280" className="size-full drop-shadow-[0_24px_60px_rgba(20,16,20,0.12)]">
-                  <defs>
-                    <linearGradient id="face-gradient" x1="0%" x2="100%" y1="0%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" />
-                      <stop offset="100%" stopColor="#ffe8ef" />
-                    </linearGradient>
-                  </defs>
-                  <circle cx="140" cy="140" r="124" fill="#F31D5B" opacity="0.12" />
-                  <circle cx="140" cy="140" r="112" fill="url(#face-gradient)" stroke="rgba(20,16,20,0.08)" />
-                  <circle cx="102" cy="120" r="28" fill="white" />
-                  <circle cx="178" cy="120" r="28" fill="white" />
-                  <circle cx="102" cy="120" r="12" fill="#161116" transform={`translate(${pupilOffset.x} ${pupilOffset.y})`} />
-                  <circle cx="178" cy="120" r="12" fill="#161116" transform={`translate(${pupilOffset.x} ${pupilOffset.y})`} />
-                  <circle cx="102" cy="168" r="8" fill="#FCD1DE" />
-                  <circle cx="178" cy="168" r="8" fill="#FCD1DE" />
-                  {smiling ? (
-                    <path
-                      d="M102 182 C118 206, 162 206, 178 182"
-                      fill="none"
-                      stroke="#161116"
-                      strokeLinecap="round"
-                      strokeWidth="8"
-                    />
-                  ) : (
-                    <path
-                      d="M112 192 C128 186, 152 186, 168 192"
-                      fill="none"
-                      stroke="#161116"
-                      strokeLinecap="round"
-                      strokeWidth="8"
-                    />
-                  )}
-                </svg>
-                <div className="absolute -bottom-2 left-6 rounded-full bg-white/82 px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-ink/55 backdrop-blur-xl">
-                  {canTrackPointer ? "eyes follow you" : "touch friendly mode"}
-                </div>
+                <GonishCharacter isSmiling={smiling} className="size-full drop-shadow-[0_24px_60px_rgba(20,16,20,0.12)]" />
               </div>
             </motion.div>
 
