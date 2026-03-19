@@ -2,7 +2,7 @@
 
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
@@ -269,26 +269,27 @@ export default function EstimateConversation() {
   };
 
   const handleSingleChoice = (field: SingleChoiceField, value: string) => {
+    if (form[field] === value) return;
     setForm((current) => ({ ...current, [field]: value }));
     triggerSmile();
   };
 
   const toggleFeature = (value: string) => {
+    const removing = form.features.includes(value);
     setForm((current) => ({
       ...current,
-      features: current.features.includes(value) ? current.features.filter((item) => item !== value) : [...current.features, value],
+      features: removing ? current.features.filter((item) => item !== value) : [...current.features, value],
     }));
-    triggerSmile();
+    if (!removing) triggerSmile();
   };
 
   const toggleDiscount = (value: string) => {
+    const removing = form.discounts.includes(value);
     setForm((current) => ({
       ...current,
-      discounts: current.discounts.includes(value)
-        ? current.discounts.filter((item) => item !== value)
-        : [...current.discounts, value],
+      discounts: removing ? current.discounts.filter((item) => item !== value) : [...current.discounts, value],
     }));
-    triggerSmile();
+    if (!removing) triggerSmile();
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -356,28 +357,6 @@ export default function EstimateConversation() {
                   helper="페이지 수는 보통 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이라고 보면 이해가 쉬워요. 오른쪽에는 지금 선택 기준의 예상 공개가도 같이 보여드릴게요."
                 />
 
-                <motion.div
-                  drag
-                  dragMomentum={false}
-                  dragElastic={0.1}
-                  whileHover={{ scale: 1.02 }}
-                  className="flex items-end justify-end gap-3 cursor-grab select-none active:cursor-grabbing"
-                  style={{ touchAction: "none" }}
-                >
-                  <motion.div
-                    key={conversationReply}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative max-w-md rounded-[1.6rem] bg-brand px-5 py-4 text-sm leading-6 text-white shadow-[0_18px_42px_rgba(243,29,91,0.22)]"
-                  >
-                    {conversationReply}
-                    <div className="absolute -right-1.5 bottom-5 h-3 w-3 rotate-45 bg-brand" />
-                  </motion.div>
-                  <div className="shrink-0 w-20 h-20 pointer-events-none">
-                    <GonishCharacter isSmiling={isSmiling} className="h-full w-full" />
-                  </div>
-                </motion.div>
               </motion.div>
 
               <ConversationBlock
@@ -651,6 +630,35 @@ export default function EstimateConversation() {
           </div>
         </div>
       </div>
+
+      {/* ── Fixed character + reply (bottom-left) ── */}
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragElastic={0.1}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed bottom-6 left-6 z-50 flex items-end gap-3 cursor-grab select-none active:cursor-grabbing"
+        style={{ touchAction: "none" }}
+      >
+        <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none">
+          <GonishCharacter isSmiling={isSmiling} className="h-full w-full drop-shadow-lg" />
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={conversationReply}
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.95 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="relative max-w-[16rem] sm:max-w-xs rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)]"
+          >
+            <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
+            {conversationReply}
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
     </section>
   );
 }
