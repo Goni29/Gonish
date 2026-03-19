@@ -1,8 +1,9 @@
 "use client";
 
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
+import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
@@ -146,9 +147,23 @@ function getNextSteps(form: EstimateForm) {
 
 export default function EstimateConversation() {
   const [form, setForm] = useState<EstimateForm>(initialForm);
+  const [isSmiling, setIsSmiling] = useState(false);
+  const smilingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [statusMessage, setStatusMessage] = useState(
     "답변 받을 연락처를 남겨주시면 지금 정리한 내용을 바탕으로 다음 단계와 범위를 이어서 안내드릴게요.",
   );
+
+  const triggerSmile = useCallback(() => {
+    setIsSmiling(true);
+    if (smilingTimer.current) clearTimeout(smilingTimer.current);
+    smilingTimer.current = setTimeout(() => setIsSmiling(false), 2000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (smilingTimer.current) clearTimeout(smilingTimer.current);
+    };
+  }, []);
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
   const selectedType = useMemo(() => findOption(projectTypeOptions, form.projectType), [form.projectType]);
@@ -255,6 +270,7 @@ export default function EstimateConversation() {
 
   const handleSingleChoice = (field: SingleChoiceField, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
+    triggerSmile();
   };
 
   const toggleFeature = (value: string) => {
@@ -262,6 +278,7 @@ export default function EstimateConversation() {
       ...current,
       features: current.features.includes(value) ? current.features.filter((item) => item !== value) : [...current.features, value],
     }));
+    triggerSmile();
   };
 
   const toggleDiscount = (value: string) => {
@@ -271,6 +288,7 @@ export default function EstimateConversation() {
         ? current.discounts.filter((item) => item !== value)
         : [...current.discounts, value],
     }));
+    triggerSmile();
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -306,6 +324,7 @@ export default function EstimateConversation() {
       ].join("\n"),
     );
 
+    triggerSmile();
     window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
     setStatusMessage("메일 앱으로 연결하고 있습니다. 정리한 내용을 바탕으로 견적 상담을 이어가겠습니다.");
   };
@@ -337,11 +356,28 @@ export default function EstimateConversation() {
                   helper="페이지 수는 보통 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이라고 보면 이해가 쉬워요. 오른쪽에는 지금 선택 기준의 예상 공개가도 같이 보여드릴게요."
                 />
 
-                <div className="flex justify-end">
-                  <div className="max-w-2xl rounded-[1.6rem] bg-brand px-5 py-4 text-sm leading-6 text-white shadow-[0_18px_42px_rgba(243,29,91,0.22)]">
+                <motion.div
+                  drag
+                  dragMomentum={false}
+                  dragElastic={0.1}
+                  whileHover={{ scale: 1.02 }}
+                  className="flex items-end justify-end gap-3 cursor-grab select-none active:cursor-grabbing"
+                  style={{ touchAction: "none" }}
+                >
+                  <motion.div
+                    key={conversationReply}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative max-w-md rounded-[1.6rem] bg-brand px-5 py-4 text-sm leading-6 text-white shadow-[0_18px_42px_rgba(243,29,91,0.22)]"
+                  >
                     {conversationReply}
+                    <div className="absolute -right-1.5 bottom-5 h-3 w-3 rotate-45 bg-brand" />
+                  </motion.div>
+                  <div className="shrink-0 w-20 h-20 pointer-events-none">
+                    <GonishCharacter isSmiling={isSmiling} className="h-full w-full" />
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
 
               <ConversationBlock
