@@ -2,17 +2,21 @@ import { motion } from "motion/react";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { aboutMilestones, aboutPrinciples, aboutStats } from "@/data/siteContent";
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
 export default function AboutStorySection() {
   return (
     <section className="section-space">
       <div className="shell">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:items-start xl:gap-20">
-          <div className="space-y-12">
+          {/* ── Left column ── */}
+          <div className="space-y-20">
+            {/* ── Narrative ── */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.7, ease }}
               className="space-y-7"
             >
               <p className="font-display text-[clamp(2.2rem,4vw,4rem)] leading-[1] text-ink">
@@ -32,80 +36,139 @@ export default function AboutStorySection() {
               </div>
             </motion.div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              {aboutStats.map((item, index) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  className="panel rounded-[1.8rem] p-5"
-                >
-                  <p className="text-xs uppercase tracking-[0.32em] text-brand">{item.label}</p>
-                  <p className="mt-4 break-keep text-sm leading-6 text-ink-muted">{item.value}</p>
-                </motion.div>
-              ))}
-            </div>
+            {/* ── Orbit Strip (stats) ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease }}
+              className="relative"
+            >
+              {/* Orbit line */}
+              <div className="absolute left-4 right-4 top-[14px] hidden h-px bg-gradient-to-r from-transparent via-brand/20 to-transparent md:block" />
 
-            <div className="space-y-4">
+              <div className="grid gap-10 md:grid-cols-3">
+                {aboutStats.map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.6, delay: index * 0.1, ease }}
+                    className="relative"
+                  >
+                    {/* Glowing dot */}
+                    <div className="relative mb-5 flex items-center">
+                      <span className="relative z-10 size-[10px] rounded-full bg-brand shadow-[0_0_16px_rgba(243,29,91,0.5)]" />
+                      <span className="absolute left-[5px] size-[22px] -translate-x-1/2 -translate-y-0 rounded-full bg-brand/10" />
+                    </div>
+                    <p className="text-xs uppercase tracking-[0.32em] text-brand">{item.label}</p>
+                    <p className="mt-3 break-keep text-sm leading-7 text-ink-muted">{item.value}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* ── Principles (numbered editorial) ── */}
+            <div className="space-y-0">
               {aboutPrinciples.map((item, index) => (
                 <motion.div
                   key={item.title}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 22 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.28 }}
-                  transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  className="rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl"
+                  transition={{ duration: 0.7, delay: index * 0.08, ease }}
                 >
-                  <p className="font-display text-2xl text-ink">{item.title}</p>
-                  <p className="mt-3 break-keep text-sm leading-6 text-ink-muted md:text-base">{item.description}</p>
+                  {index > 0 && <div className="soft-divider my-8" />}
+                  <div className="flex gap-6 md:gap-8">
+                    <span className="font-display text-[clamp(3rem,5vw,4.5rem)] leading-none text-brand/15">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="flex-1 pt-2">
+                      <p className="font-display text-xl leading-tight text-ink md:text-2xl">
+                        {item.title}
+                      </p>
+                      <p className="mt-3 break-keep text-sm leading-7 text-ink-muted md:text-base">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="rounded-[2rem] border border-black/10 bg-[#161116] px-6 py-8 text-white md:px-8">
-              <p className="eyebrow text-white/55">Looking ahead</p>
-              <div className="mt-6 space-y-4">
-                {aboutMilestones.map((item) => (
-                  <p key={item} className="break-keep text-base leading-7 text-white/74">
-                    {item}
-                  </p>
-                ))}
+            {/* ── Orbital Timeline (milestones) ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7, ease }}
+            >
+              <p className="eyebrow mb-8">Looking ahead</p>
+              <div className="relative pl-8">
+                {/* Vertical orbit line */}
+                <div className="absolute bottom-2 left-[4px] top-2 w-px bg-gradient-to-b from-brand/30 via-brand/15 to-transparent" />
+
+                <div className="space-y-8">
+                  {aboutMilestones.map((item, index) => (
+                    <motion.div
+                      key={item}
+                      initial={{ opacity: 0, x: -12 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.6, delay: index * 0.1, ease }}
+                      className="relative"
+                    >
+                      {/* Timeline dot */}
+                      <span className="absolute -left-8 top-[7px] size-[9px] rounded-full border-2 border-brand/40 bg-paper" />
+                      <p className="break-keep text-base leading-7 text-ink-muted">{item}</p>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
+          {/* ── Right column: Portrait aside ── */}
           <motion.aside
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.85, ease }}
             className="lg:sticky lg:top-28"
           >
-            <div className="panel overflow-hidden rounded-[2.2rem] p-4 sm:p-5">
-              <div className="overflow-hidden rounded-[1.8rem] border border-black/10 bg-[#f4eded]">
-                <img src="/portrait-editorial.svg" alt="Gonish portrait artwork" className="w-full object-cover" />
-              </div>
-              <div className="space-y-4 px-2 pb-2 pt-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="eyebrow">Editorial portrait</p>
-                    <p className="mt-3 font-display text-3xl leading-none text-ink">Gonish</p>
+            <div className="relative">
+              {/* Planetary glow */}
+              <div className="absolute -inset-8 rounded-full bg-brand/[0.06] blur-[60px]" />
+
+              <div className="panel relative overflow-hidden rounded-[2.2rem] p-4 sm:p-5">
+                <div className="overflow-hidden rounded-[1.8rem] border border-black/10 bg-[#f4eded]">
+                  <img
+                    src="/portrait-editorial.svg"
+                    alt="Gonish portrait artwork"
+                    className="w-full object-cover"
+                  />
+                </div>
+                <div className="space-y-4 px-2 pb-2 pt-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="eyebrow">Editorial portrait</p>
+                      <p className="mt-3 font-display text-3xl leading-none text-ink">Gonish</p>
+                    </div>
+                    <p className="max-w-[12rem] text-right text-xs uppercase tracking-[0.28em] text-ink/45">
+                      <SmartLineBreak
+                        text="sincere growth tailored work polished detail"
+                        maxCharsPerLine={13}
+                        maxLines={3}
+                        minCharsPerLine={6}
+                      />
+                    </p>
                   </div>
-                  <p className="max-w-[12rem] text-right text-xs uppercase tracking-[0.28em] text-ink/45">
-                    <SmartLineBreak
-                      text="sincere growth tailored work polished detail"
-                      maxCharsPerLine={13}
-                      maxLines={3}
-                      minCharsPerLine={6}
-                    />
+                  <p className="break-keep text-sm leading-6 text-ink-muted">
+                    현재는 브랜드 무드를 전달하기 위한 에디토리얼 아트워크를 사용하고 있습니다. 추후 실제
+                    사진으로 교체하더라도 전체 인상과 톤이 흔들리지 않도록 구조를 정교하게 맞춰두었습니다.
                   </p>
                 </div>
-                <p className="break-keep text-sm leading-6 text-ink-muted">
-                  현재는 브랜드 무드를 전달하기 위한 에디토리얼 아트워크를 사용하고 있습니다. 추후 실제
-                  사진으로 교체하더라도 전체 인상과 톤이 흔들리지 않도록 구조를 정교하게 맞춰두었습니다.
-                </p>
               </div>
             </div>
           </motion.aside>
