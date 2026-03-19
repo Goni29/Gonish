@@ -29,6 +29,7 @@ export const navigation = [
   { label: "Main", to: "/" },
   { label: "About", to: "/about" },
   { label: "Portfolio", to: "/portfolio" },
+  { label: "Estimate", to: "/estimate" },
   { label: "Contact", to: "/contact" },
 ];
 

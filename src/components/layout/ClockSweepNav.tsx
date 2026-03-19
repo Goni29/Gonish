@@ -25,7 +25,7 @@ const openTotalMs = 1140;
 const closeTotalMs = 900;
 
 type Phase = "closed" | "opening" | "open" | "closing";
-type DialSlot = "main" | "about" | "portfolio" | "contact";
+type DialSlot = "main" | "about" | "portfolio" | "estimate" | "contact";
 type SlowExitTrend = {
   awayMs: number;
   lastDistance: number;
@@ -42,36 +42,41 @@ const slotMap: Record<string, DialSlot> = {
   Main: "main",
   About: "about",
   Portfolio: "portfolio",
+  Estimate: "estimate",
   Contact: "contact",
 };
 
 const enterOrder: Record<DialSlot, number> = {
   main: 0,
   about: 1,
-  portfolio: 2,
-  contact: 3,
+  estimate: 2,
+  portfolio: 3,
+  contact: 4,
 };
 
 const exitOrder: Record<DialSlot, number> = {
   contact: 0,
   portfolio: 1,
-  about: 2,
-  main: 3,
+  estimate: 2,
+  about: 3,
+  main: 4,
 };
 
 const slotMotionMap: Record<
   DialSlot,
   { angle: number; radius: number; startAngle: number; startRadius: number }
 > = {
-  main: { angle: 304, radius: 124, startAngle: -10, startRadius: 82 },
-  about: { angle: 30, radius: 128, startAngle: 18, startRadius: 84 },
-  portfolio: { angle: 214, radius: 132, startAngle: 104, startRadius: 92 },
-  contact: { angle: 140, radius: 126, startAngle: 76, startRadius: 88 },
+  main: { angle: 302, radius: 126, startAngle: -14, startRadius: 82 },
+  about: { angle: 24, radius: 130, startAngle: 10, startRadius: 84 },
+  estimate: { angle: 86, radius: 134, startAngle: 44, startRadius: 88 },
+  portfolio: { angle: 226, radius: 136, startAngle: 140, startRadius: 94 },
+  contact: { angle: 152, radius: 126, startAngle: 92, startRadius: 88 },
 };
 
 const slotOrbitMap: Record<DialSlot, { duration: number }> = {
   main: { duration: 112 },
   about: { duration: 126 },
+  estimate: { duration: 132 },
   portfolio: { duration: 118 },
   contact: { duration: 104 },
 };

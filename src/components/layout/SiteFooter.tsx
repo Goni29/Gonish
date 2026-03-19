@@ -1,13 +1,7 @@
 import Link from "next/link";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
-
-const navLinks = [
-  { label: "Main", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Portfolio", href: "/portfolio" },
-  { label: "Contact", href: "/contact" },
-];
+import { navigation } from "@/data/siteContent";
 
 export default function SiteFooter() {
   return (
@@ -47,10 +41,10 @@ export default function SiteFooter() {
 
                 <div className="flex flex-col items-start gap-4 lg:items-end">
                   <div className="flex flex-wrap gap-x-5 gap-y-2 text-[0.95rem] text-ink-muted lg:justify-end">
-                    {navLinks.map((link) => (
+                    {navigation.map((link) => (
                       <Link
                         key={link.label}
-                        href={link.href}
+                        href={link.to}
                         className="transition-colors duration-300 hover:text-brand"
                       >
                         {link.label}
