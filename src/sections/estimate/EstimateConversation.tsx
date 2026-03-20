@@ -333,13 +333,13 @@ export default function EstimateConversation() {
   };
 
   return (
-    <section className="section-space relative overflow-hidden">
+    <section className="section-space relative overflow-x-clip">
       {/* Cosmic background glows */}
       <div className="pointer-events-none absolute left-[-10rem] top-20 h-[24rem] w-[24rem] rounded-full bg-brand/[0.08] blur-[120px]" />
       <div className="pointer-events-none absolute right-[-12rem] top-16 h-[26rem] w-[26rem] rounded-full bg-brand/[0.06] blur-[130px]" />
 
       <div className="shell relative z-10">
-        <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+        <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_360px]">
           {/* ── Left: Form ── */}
           <form onSubmit={handleSubmit}>
             {/* Intro */}
@@ -554,22 +554,41 @@ export default function EstimateConversation() {
           </form>
 
           {/* ── Right: Aside ── */}
-          <aside className="xl:sticky xl:top-28">
+          <aside>
+            {/* Base includes — stays at top, does not follow scroll */}
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, ease }}
+              className="mb-4 space-y-2 px-1"
+            >
+              <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
+              <p className="text-sm leading-6 text-ink-muted">
+                반응형 웹 제작, 기본 문의 흐름, 기본 메일 세팅, 배포 연결까지를 기준으로 보고 있습니다.
+              </p>
+              <p className="text-xs leading-5 text-ink-muted">
+                지금 보이는 금액은 예상 공개가 범위예요. 도메인, 유료 플러그인, 외부 결제 수수료는 별도로 조정될 수 있습니다.
+              </p>
+            </motion.div>
+
+            {/* Sticky panel — follows scroll */}
+            <div className="xl:sticky xl:top-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.7, ease }}
-              className="panel space-y-8 rounded-[2.2rem] p-6"
+              className="panel space-y-5 rounded-[2.2rem] p-5"
             >
               {/* Estimated price */}
               <div>
                 <p className="eyebrow">Estimated price</p>
-                <p className="mt-2 text-[10px] uppercase tracking-[0.32em] text-brand">Launch range</p>
-                <p className="mt-3 font-display text-[clamp(2.2rem,3.5vw,3.4rem)] leading-[0.95] text-brand">
+                <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">Launch range</p>
+                <p className="mt-2 font-display text-[clamp(2rem,3vw,2.8rem)] leading-[0.95] text-brand">
                   <SmartLineBreak text={priceEstimate.label} maxCharsPerLine={11} maxLines={3} />
                 </p>
-                <p className="mt-4 text-sm leading-6 text-ink-muted">{priceEstimate.description}</p>
+                <p className="mt-3 text-sm leading-6 text-ink-muted">{priceEstimate.description}</p>
               </div>
 
               <div className="soft-divider" />
@@ -577,26 +596,14 @@ export default function EstimateConversation() {
               {/* Range interpretation */}
               <div>
                 <p className="text-[10px] uppercase tracking-[0.32em] text-brand">현재 범위 해석</p>
-                <p className="mt-3 font-medium leading-6 text-ink">{estimateBand.label}</p>
-                <p className="mt-2 text-sm leading-6 text-ink-muted">{estimateBand.explanation}</p>
-              </div>
-
-              <div className="soft-divider" />
-
-              {/* Discount note */}
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">혜택 조정</p>
-                <p className="mt-3 text-sm leading-6 text-ink-muted">
-                  {selectedDiscounts.length > 0
-                    ? `${selectedDiscounts.map((discount) => discount.label).join(", ")} 기준으로 총 ${totalDiscount}만 원 조정해서 보고 있어요.`
-                    : "포트폴리오 사용 가능, 리뷰 작성 동의가 괜찮으시면 각각 5만 원씩 공개 견적에 반영할 수 있어요."}
-                </p>
+                <p className="mt-2 font-medium leading-6 text-ink">{estimateBand.label}</p>
+                <p className="mt-1.5 text-sm leading-6 text-ink-muted">{estimateBand.explanation}</p>
               </div>
 
               <div className="soft-divider" />
 
               {/* Summary */}
-              <div className="space-y-3 text-sm leading-6 text-ink-muted">
+              <div className="space-y-2.5 text-sm leading-6 text-ink-muted">
                 <SummaryLine label="프로젝트 방향" value={selectedType?.label ?? "아직 고르는 중"} />
                 <SummaryLine label="페이지 규모" value={selectedPageScope?.label ?? "아직 고르는 중"} />
                 <SummaryLine
@@ -616,7 +623,7 @@ export default function EstimateConversation() {
               {/* Next steps */}
               <div>
                 <p className="eyebrow">Next step</p>
-                <div className="mt-4 space-y-3">
+                <div className="mt-3 space-y-2">
                   {nextSteps.map((step) => (
                     <div key={step} className="flex items-start gap-3">
                       <span className="mt-[9px] size-[6px] shrink-0 rounded-full bg-brand/40" />
@@ -626,20 +633,8 @@ export default function EstimateConversation() {
                 </div>
               </div>
 
-              <div className="soft-divider" />
-
-              {/* Base includes */}
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
-                <p className="mt-3 text-sm leading-6 text-ink-muted">
-                  반응형 웹 제작, 기본 문의 흐름, 기본 메일 세팅, 배포 연결까지를 기준으로 보고 있습니다.
-                </p>
-              </div>
-
-              <p className="text-xs leading-5 text-ink/30">
-                지금 보이는 금액은 예상 공개가 범위예요. 도메인, 유료 플러그인, 외부 결제 수수료는 별도로 조정될 수 있습니다.
-              </p>
             </motion.div>
+            </div>
           </aside>
         </div>
       </div>
