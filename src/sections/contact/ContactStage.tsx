@@ -23,7 +23,7 @@ export default function ContactStage() {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [smiling, setSmiling] = useState(false);
   const [statusMessage, setStatusMessage] = useState(
-    "프로젝트 목표와 일정, 원하는 분위기를 남겨주시면 정리된 제안으로 회신드립니다.",
+    "프로젝트 목표와 일정, 원하는 분위기를 편하게 적어주세요. 정리해서 회신드릴게요.",
   );
   const timeoutRef = useRef<number | null>(null);
   const contactEmail = useMemo(() => process.env.NEXT_PUBLIC_CONTACT_EMAIL, []);
@@ -65,16 +65,16 @@ export default function ContactStage() {
           `프로젝트: ${form.project || "-"}`,
           `원하는 분위기: ${form.tone || "-"}`,
           "",
-          form.message || "문의 내용을 남겨주세요.",
+          form.message || "궁금한 점을 남겨주세요.",
         ].join("\n"),
       );
 
       window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-      setStatusMessage("메일 앱으로 연결하고 있습니다. 남겨주신 내용을 바탕으로 상담을 이어가겠습니다.");
+      setStatusMessage("메일 앱으로 연결할게요. 남겨주신 내용을 바탕으로 곧 회신드릴게요.");
       return;
     }
 
-    setStatusMessage("현재 연락 채널을 점검하고 있습니다. 잠시 후 다시 시도해 주세요.");
+    setStatusMessage("지금 연락 채널을 확인하고 있어요. 잠시 후 다시 시도해 주세요.");
   };
 
   return (
@@ -104,11 +104,11 @@ export default function ContactStage() {
               <div className="space-y-5">
                 <p className="eyebrow">Project conversation</p>
                 <p className="font-display text-[clamp(2.4rem,4.5vw,4.8rem)] leading-[0.96] text-ink">
-                  <SmartLineBreak text="첫 대화부터, 브랜드의 방향이 선명해지도록." />
+                  <SmartLineBreak text="편하게 말씀해 주세요. 방향은 함께 잡아갈게요." />
                 </p>
                 <p className="max-w-2xl text-base leading-7 text-ink-muted md:text-lg">
-                  현재 상황과 원하는 결과를 남겨주시면 필요한 범위, 일정, 진행 방식을 정돈된 흐름으로
-                  안내드립니다. 아직 정리되지 않은 아이디어라도 대화 속에서 명확한 방향으로 구조화해드립니다.
+                  지금 상황이 어떤지, 어떤 결과를 원하시는지만 알려주시면 돼요.
+                  아직 정리 안 된 아이디어라도 괜찮아요. 대화하면서 함께 방향을 잡아드릴게요.
                 </p>
               </div>
 
@@ -154,7 +154,7 @@ export default function ContactStage() {
                     name="message"
                     value={form.message}
                     onChange={handleChange}
-                    placeholder="현재 상황, 목표, 일정, 꼭 전달하고 싶은 브랜드 톤을 자유롭게 적어주세요."
+                    placeholder="지금 상황, 원하는 결과, 일정, 브랜드 분위기 등 자유롭게 적어주세요."
                     rows={6}
                     className="mt-3 w-full resize-none border-0 bg-transparent p-0 text-base leading-7 text-ink outline-none placeholder:text-ink/32"
                   />

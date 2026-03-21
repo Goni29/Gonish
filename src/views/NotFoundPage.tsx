@@ -10,10 +10,10 @@ export default function NotFoundPage() {
         <div className="panel rounded-[2rem] px-6 py-16 text-center md:px-10">
           <p className="eyebrow">404</p>
           <h1 className="mt-5 font-display text-[clamp(2.6rem,6vw,5.4rem)] leading-[0.94] text-ink">
-            <SmartLineBreak text="요청하신 페이지는 현재 열람하실 수 없습니다." />
+            <SmartLineBreak text="앗, 이 페이지는 찾을 수 없어요." />
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-ink-muted md:text-lg">
-            메인 페이지에서 Gonish의 브랜드 방향과 큐레이션된 포트폴리오를 이어서 살펴보실 수 있습니다.
+            메인 페이지에서 Gonish의 작업물과 브랜드 이야기를 확인하실 수 있어요.
           </p>
           <div className="mt-10 flex justify-center">
             <BrandButton to="/">메인 페이지로 이동</BrandButton>

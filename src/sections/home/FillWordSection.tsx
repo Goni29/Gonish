@@ -131,8 +131,8 @@ export default function FillWordSection() {
           <div className="max-w-xl space-y-4">
             <p className="eyebrow">Signature invitation</p>
             <p className="text-base leading-7 text-ink-muted md:text-lg">
-              브랜드의 제안을 가장 선명한 순간에 제시해, 방문자의 결심이 자연스럽게 다음 행동으로
-              이어지도록 구성한 장면입니다.
+              브랜드가 가장 빛나는 순간, 그 느낌을 놓치지 않도록.
+              Gonish가 당신의 브랜드를 완성해드릴게요.
             </p>
           </div>
 

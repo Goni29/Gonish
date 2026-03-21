@@ -11,8 +11,8 @@ export default function ContactPage() {
         <div className="shell">
           <SectionHeading
             eyebrow="Contact Me"
-            title={<SmartLineBreak text="첫 대화부터, 브랜드 방향이 선명해지도록." />}
-            description="아이디어가 완성되지 않아도 괜찮습니다. 현재 상황과 원하는 결과를 남겨주시면, 필요한 범위와 다음 단계를 정제된 제안으로 안내드립니다."
+            title={<SmartLineBreak text="편하게 이야기해 주세요. 방향은 함께 잡아갈게요." />}
+            description="아이디어가 아직 정리되지 않아도 괜찮아요. 지금 상황과 원하는 결과만 알려주시면, 다음 단계를 함께 정리해드릴게요."
           />
         </div>
       </section>

@@ -18,7 +18,7 @@ export default function EstimatePage() {
                 maxLines={3}
               />
             }
-            description="몇 가지 질문에 답하시면 대략적인 제작 범위와 상담에서 함께 확인할 내용을 먼저 정리해드립니다. 개발을 몰라도 괜찮습니다."
+            description="몇 가지 질문에 답해주시면 대략적인 범위와 비용을 먼저 정리해드려요. 개발을 몰라도 전혀 괜찮아요."
           />
         </div>
       </section>

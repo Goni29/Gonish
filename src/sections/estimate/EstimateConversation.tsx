@@ -17,6 +17,7 @@ type Option = {
 
 type EstimateForm = {
   brand: string;
+  domainHosting: string;
   discounts: string[];
   features: string[];
   goal: string;
@@ -29,7 +30,8 @@ type EstimateForm = {
   schedule: string;
 };
 
-type SingleChoiceField = "pageScope" | "projectType" | "readiness" | "schedule";
+type SingleChoiceField = "domainHosting" | "pageScope" | "projectType" | "readiness" | "schedule";
+type NextStepField = SingleChoiceField | "discounts" | "features";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -60,6 +62,14 @@ const scheduleOptions: Option[] = [
   { id: "fast", label: "조금 빠르게 필요해요", description: "일정이 가까워 우선순위를 빠르게 정해야 하는 경우예요.", price: 30, score: 2 },
 ];
 
+const domainHostingOptions: Option[] = [
+  { id: "both-ready", label: "둘 다 있어요", description: "사이트 주소(도메인)와 올릴 공간(호스팅)이 이미 있어서 그대로 연결하면 돼요.", price: 0, score: 0 },
+  { id: "domain-only", label: "주소(도메인)만 있어요", description: "예를 들면 mybrand.com 같은 주소는 있는데, 사이트를 올릴 공간은 아직 없어요.", price: 0, score: 0 },
+  { id: "hosting-only", label: "올릴 공간(호스팅)만 있어요", description: "사이트를 올릴 계정이나 서버는 있는데, 연결할 주소는 아직 없어요.", price: 0, score: 0 },
+  { id: "none", label: "둘 다 아직 없어요", description: "괜찮아요. 새로 추천받고 같이 준비하는 방향으로 진행할 수 있어요.", price: 0, score: 0 },
+  { id: "unsure", label: "무슨 말인지 잘 모르겠어요", description: "전혀 괜찮아요. 상담 때 쉬운 말로 설명드리고 필요한 것만 같이 정리해 드릴게요.", price: 0, score: 0 },
+];
+
 const featureOptions: Option[] = [
   { id: "inquiry", label: "기본 문의 받기", description: "상담 내용과 연락처를 남기는 기본 문의 흐름이에요.", price: 0, score: 0 },
   { id: "gallery", label: "포트폴리오·사진 모음", description: "시공 사례나 작업 사진처럼 여러 이미지를 보여주는 구성이에요.", price: 15, score: 1 },
@@ -76,6 +86,7 @@ const discountOptions: Option[] = [
 
 const initialForm: EstimateForm = {
   brand: "",
+  domainHosting: "",
   discounts: [],
   features: [],
   goal: "",
@@ -95,21 +106,21 @@ function findOption(options: Option[], id: string) {
 function getEstimateBand(score: number) {
   if (score <= 3) {
     return {
-      label: "가벼운 소개형 범위",
-      explanation: "메뉴 수가 많지 않고, 복잡한 기능 없이 브랜드 소개와 문의 연결에 집중하는 경우가 많아요.",
+      label: "가벼운 소개형",
+      explanation: "메뉴가 많지 않고, 브랜드 소개와 문의 연결에 집중하는 심플한 사이트예요.",
     };
   }
 
   if (score <= 7) {
     return {
-      label: "브랜드 홈페이지 범위",
-      explanation: "브랜드 소개, 서비스 안내, 사례, 문의까지 자연스럽게 이어지는 일반적인 홈페이지 범위예요.",
+      label: "브랜드 홈페이지",
+      explanation: "브랜드 소개부터 서비스, 사례, 문의까지 자연스럽게 담기는 가장 일반적인 홈페이지예요.",
     };
   }
 
   return {
-    label: "기능 포함 프로젝트 범위",
-    explanation: "콘텐츠 양이 많거나 예약, 판매, 회원 기능처럼 실제 동작이 들어가는 프로젝트에 가까워요.",
+    label: "기능이 포함된 프로젝트",
+    explanation: "콘텐츠가 많거나 예약, 판매, 회원 기능처럼 실제로 동작하는 부분이 들어가는 프로젝트예요.",
   };
 }
 
@@ -121,38 +132,206 @@ function formatPriceRange(min: number, max: number) {
   return `${min}만 ~ ${max}만 원`;
 }
 
-function getNextSteps(form: EstimateForm) {
-  const steps: string[] = [];
+function getProjectTypeStep(form: EstimateForm) {
+  if (form.projectType === "landing") {
+    return "소개형 사이트라면 방문자가 처음 5초 안에 무엇을 알면 되는지부터 정리하면 흐름이 쉬워져요.";
+  }
+
+  if (form.projectType === "brand-site") {
+    return "브랜드 홈페이지는 보통 브랜드 소개, 서비스, 사례, 문의 흐름으로 잡으면 가장 이해하기 쉬워요.";
+  }
+
+  if (form.projectType === "renewal") {
+    return "리뉴얼이라면 기존 사이트에서 그대로 둘 것과 바꿀 것을 먼저 나누면 범위가 훨씬 빨리 선명해져요.";
+  }
+
+  if (form.projectType === "conversion") {
+    return "문의나 예약이 중요한 사이트라면, 방문자가 어디서 클릭하고 어떤 정보를 남기는지 흐름부터 정하는 게 좋아요.";
+  }
+
+  if (form.projectType === "unsure") {
+    return "방향을 정하는 중이라면 이 사이트로 가장 먼저 얻고 싶은 결과 한 가지만 정해도 출발이 훨씬 쉬워져요.";
+  }
+
+  return "어떤 사이트를 만들고 싶은지 먼저 정하면 전체 견적 흐름이 훨씬 쉬워져요.";
+}
+
+function getPageScopeStep(form: EstimateForm) {
+  if (form.pageScope === "small") {
+    if (form.projectType === "landing") {
+      return "가볍게 소개하는 사이트라면 메인, 소개, 문의 정도의 1~3페이지로 시작해도 충분해 보여요.";
+    }
+
+    if (form.projectType === "brand-site") {
+      return "브랜드 홈페이지를 작게 시작한다면, 핵심 서비스와 신뢰 포인트만 먼저 담아도 충분해요.";
+    }
+
+    return "1~3페이지 규모라면 핵심 소개와 문의 흐름 중심으로 가볍게 시작하기 좋아요.";
+  }
+
+  if (form.pageScope === "medium") {
+    return "4~6페이지 규모라면 브랜드 소개, 서비스, 사례, 문의 흐름으로 잡는 구성이 가장 자연스러워요.";
+  }
+
+  if (form.pageScope === "large") {
+    return "페이지가 많은 편이라면 1차 공개 범위와 나중에 추가할 범위를 먼저 나누는 게 좋아요.";
+  }
+
+  if (form.pageScope === "unknown") {
+    return "페이지 수가 아직 미정이라면 메인, 소개, 문의처럼 꼭 필요한 메뉴부터 먼저 적어보면 충분해요.";
+  }
+
+  return "페이지 규모를 정하면 필요한 작업 범위가 훨씬 또렷해져요.";
+}
+
+function getFeatureStep(form: EstimateForm) {
+  const featureIds = form.features.filter((feature) => feature !== "inquiry");
+
+  if (featureIds.length >= 2) {
+    return "기능이 여러 개 들어가면 이번 오픈에 꼭 필요한 기능과 나중에 붙일 기능을 나누는 게 견적을 가장 선명하게 만들어줘요.";
+  }
+
+  if (featureIds.includes("commerce")) {
+    return "판매 기능이 들어가면 상품 수, 결제 방식, 배송이나 환불 정책까지 같이 봐야 견적이 정확해져요.";
+  }
+
+  if (featureIds.includes("booking")) {
+    return "예약이나 신청 기능은 어떤 정보를 받을지와 접수 후 어떻게 확정할지 먼저 정하면 좋아요.";
+  }
+
+  if (featureIds.includes("member")) {
+    return "로그인·회원 기능은 회원마다 무엇을 보고 무엇을 할 수 있는지부터 정해야 범위가 정확해져요.";
+  }
+
+  if (featureIds.includes("multilingual")) {
+    return "다국어는 몇 개 언어를 동시에 열지와 번역 원고를 누가 준비할지 먼저 정하면 훨씬 쉬워져요.";
+  }
+
+  if (featureIds.includes("gallery")) {
+    return "사진이나 사례가 많다면 카테고리 기준과 대표 이미지 규칙부터 잡아두면 훨씬 정돈돼 보여요.";
+  }
+
+  if (form.features.includes("inquiry")) {
+    return "기본 문의 중심이라면 문의 항목과 답변 받을 이메일 정도만 정해도 가볍게 시작할 수 있어요.";
+  }
+
+  return undefined;
+}
+
+function getReadinessStep(form: EstimateForm) {
+  if (form.readiness === "ready") {
+    return "글과 사진이 거의 준비돼 있다면, 어떤 내용을 어느 페이지에 배치할지만 정리하면 바로 초안으로 넘어갈 수 있어요.";
+  }
+
+  if (form.readiness === "partial") {
+    return "정보는 있으니, 소개 문구와 서비스 설명을 어떤 순서로 보여줄지만 정리하면 훨씬 빨라져요.";
+  }
 
   if (form.readiness === "need-help") {
-    steps.push("어떤 글과 사진이 필요한지 먼저 목록으로 정리해 드릴게요.");
+    return "자료가 아직 없더라도 괜찮아요. 어떤 글과 사진이 필요한지 목록부터 같이 정리해 드릴게요.";
   }
 
-  if (form.features.includes("booking") || form.features.includes("commerce") || form.features.includes("member")) {
-    steps.push("기능이 필요한 경우에는 어디까지 자동화할지부터 정하면 견적이 더 정확해집니다.");
+  return undefined;
+}
+
+function getDomainHostingStep(form: EstimateForm) {
+  if (form.domainHosting === "both-ready") {
+    return "이미 가진 도메인과 호스팅이 있다면, 접속 정보만 확인해서 그대로 연결 가능한지 먼저 봐드릴게요.";
   }
 
-  if (form.pageScope === "large" || form.pageScope === "unknown") {
-    steps.push("메뉴 수가 많거나 아직 미정이라면, 우선순위를 먼저 정하는 것이 가장 중요해요.");
+  if (form.domainHosting === "domain-only") {
+    return "도메인은 있으니, 사이트를 올릴 공간(호스팅)만 예산과 관리 방식에 맞춰 정하면 돼요.";
+  }
+
+  if (form.domainHosting === "hosting-only") {
+    return "호스팅은 있으니, 연결할 사이트 주소(도메인)만 정하면 배포 흐름을 빠르게 잡을 수 있어요.";
+  }
+
+  if (form.domainHosting === "none") {
+    return "도메인과 호스팅이 모두 없다면 예산과 관리 난이도에 맞는 조합부터 추천해 드릴게요.";
+  }
+
+  if (form.domainHosting === "unsure") {
+    return "도메인과 호스팅이 낯설어도 괜찮아요. 지금은 사이트 주소가 이미 있는지만 떠올려도 충분해요.";
+  }
+
+  return undefined;
+}
+
+function getScheduleStep(form: EstimateForm) {
+  if (form.schedule === "relaxed") {
+    return "여유 있는 일정이라면 첫 공개 범위뿐 아니라 브랜드 톤과 디테일까지 차근차근 맞춰가기 좋아요.";
+  }
+
+  if (form.schedule === "normal") {
+    return "1~2개월 일정이라면 먼저 첫 공개 범위를 정하고, 추가 고도화는 2차로 나누는 방식이 가장 안정적이에요.";
   }
 
   if (form.schedule === "fast") {
-    steps.push("빠른 일정일수록 꼭 필요한 범위부터 먼저 정리하는 방식이 안정적이에요.");
+    return "일정이 빠르다면 꼭 필요한 페이지와 기능만 먼저 공개하는 방식으로 잡는 게 가장 안전해요.";
   }
 
-  if (steps.length === 0) {
-    steps.push("지금 정보만으로도 상담에서 꽤 또렷하게 범위를 잡아볼 수 있는 상태예요.");
+  return undefined;
+}
+
+function getDiscountStep(form: EstimateForm) {
+  const hasPortfolio = form.discounts.includes("portfolio");
+  const hasReview = form.discounts.includes("review");
+
+  if (hasPortfolio && hasReview) {
+    return "두 혜택 모두 반영했어요. 마지막으로 원하는 결과만 적어주시면 상담 준비가 거의 끝나요.";
   }
 
-  return steps.slice(0, 3);
+  if (hasPortfolio) {
+    return "포트폴리오 소개 혜택을 반영했어요. 리뷰도 가능하면 추가로 5만 원 더 반영돼요.";
+  }
+
+  if (hasReview) {
+    return "리뷰 혜택을 반영했어요. 포트폴리오 소개도 가능하면 추가로 5만 원 더 반영돼요.";
+  }
+
+  return "혜택은 가능한 항목만 체크하시면 되고, 선택하지 않으셔도 괜찮아요.";
+}
+
+function getNextStep(form: EstimateForm, field: NextStepField) {
+  if (field === "projectType") {
+    return getProjectTypeStep(form);
+  }
+
+  if (field === "pageScope") {
+    return getPageScopeStep(form);
+  }
+
+  if (field === "features") {
+    return getFeatureStep(form) ?? "필요한 기능을 정하면 실제로 어디까지 만들어야 하는지 더 정확해져요.";
+  }
+
+  if (field === "readiness") {
+    return getReadinessStep(form) ?? "자료 준비 상태를 알면 작업 순서와 일정 안내가 훨씬 쉬워져요.";
+  }
+
+  if (field === "schedule") {
+    return getScheduleStep(form) ?? "희망 일정을 정하면 어떤 순서로 진행할지 더 또렷하게 안내할 수 있어요.";
+  }
+
+  if (field === "domainHosting") {
+    return getDomainHostingStep(form) ?? "도메인과 호스팅 준비 여부를 알면 배포 방식까지 함께 정리할 수 있어요.";
+  }
+
+  if (field === "discounts") {
+    return getDiscountStep(form);
+  }
+
+  return "지금 선택한 내용을 바탕으로 다음 단계를 바로 안내해 드릴게요.";
 }
 
 export default function EstimateConversation() {
   const [form, setForm] = useState<EstimateForm>(initialForm);
   const [isSmiling, setIsSmiling] = useState(false);
+  const [lastTouchedField, setLastTouchedField] = useState<NextStepField>("projectType");
   const smilingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [statusMessage, setStatusMessage] = useState(
-    "답변 받을 연락처를 남겨주시면 지금 정리한 내용을 바탕으로 다음 단계와 범위를 이어서 안내드릴게요.",
+    "연락처를 남겨주시면 지금 정리한 내용을 바탕으로 다음 단계를 안내드릴게요.",
   );
 
   const triggerSmile = useCallback(() => {
@@ -172,6 +351,7 @@ export default function EstimateConversation() {
   const selectedPageScope = useMemo(() => findOption(pageScopeOptions, form.pageScope), [form.pageScope]);
   const selectedReadiness = useMemo(() => findOption(readinessOptions, form.readiness), [form.readiness]);
   const selectedSchedule = useMemo(() => findOption(scheduleOptions, form.schedule), [form.schedule]);
+  const selectedDomainHosting = useMemo(() => findOption(domainHostingOptions, form.domainHosting), [form.domainHosting]);
   const selectedFeatures = useMemo(() => featureOptions.filter((option) => form.features.includes(option.id)), [form.features]);
   const selectedDiscounts = useMemo(() => discountOptions.filter((option) => form.discounts.includes(option.id)), [form.discounts]);
 
@@ -202,7 +382,7 @@ export default function EstimateConversation() {
         min: 45,
         max: 80,
         label: formatPriceRange(45, 80),
-        description: "가벼운 소개형 시작가 기준으로 먼저 보셔도 괜찮은 공개 범위예요.",
+        description: "가장 기본적인 소개형 사이트 기준이에요. 항목을 선택하시면 더 정확해져요.",
       };
     }
 
@@ -226,8 +406,8 @@ export default function EstimateConversation() {
       label: formatPriceRange(min, max),
       description:
         selectedDiscounts.length > 0
-          ? "선택하신 혜택까지 반영하면 이 정도 범위에서 시작하는 편이 가장 자연스러워 보여요."
-          : "현재 선택 기준으로 보면 이 정도 범위에서 시작하시는 편이 가장 무리 없어 보여요.",
+          ? "혜택까지 반영하면 이 정도 범위에서 시작하시는 게 좋아 보여요."
+          : "지금 선택하신 기준으로 보면 이 정도 범위에서 시작하시면 좋을 것 같아요.",
     };
   }, [
     form.discounts.length,
@@ -244,26 +424,29 @@ export default function EstimateConversation() {
     selectedType,
   ]);
 
-  const nextSteps = useMemo(() => getNextSteps(form), [form]);
+  const nextStep = useMemo(() => getNextStep(form, lastTouchedField), [form, lastTouchedField]);
 
   const conversationReply = useMemo(() => {
     if (selectedType && !selectedPageScope) {
-      return `${selectedType.label} 방향이군요. 이제 페이지 규모를 보면 범위를 훨씬 더 또렷하게 잡을 수 있어요.`;
+      return `${selectedType.label}을 생각하고 계시군요! 이제 페이지 규모만 알려주시면 범위가 훨씬 선명해져요.`;
     }
     if (selectedType && selectedPageScope && selectedFeatures.length === 0) {
-      return "좋아요. 이제 추가 기능이 필요한지 보면 견적의 무게감을 더 정확히 가늠할 수 있습니다.";
+      return "좋아요! 이제 추가 기능이 필요한지만 보면 비용을 더 정확하게 가늠할 수 있어요.";
     }
     if (selectedFeatures.length > 0 && !selectedReadiness) {
-      return "필요한 동작이 어느 정도 보이기 시작했어요. 다음은 자료 준비 상태를 함께 정리해볼게요.";
+      return "필요한 기능이 보이기 시작했어요. 다음은 자료 준비 상태를 한번 볼까요?";
     }
-    if (selectedReadiness && selectedSchedule && selectedDiscounts.length === 0) {
-      return "여기까지 정리하면 상담에서 거의 바로 방향을 잡을 수 있어요. 원하시면 혜택도 같이 반영해볼게요.";
+    if (selectedReadiness && selectedSchedule && !selectedDomainHosting) {
+      return "좋아요! 마지막으로 사이트 주소와 올릴 공간 준비 여부만 보면 거의 다 정리돼요.";
+    }
+    if (selectedDomainHosting && selectedDiscounts.length === 0) {
+      return "거의 다 왔어요! 혜택도 확인해보시겠어요?";
     }
     if (selectedDiscounts.length > 0) {
-      return "좋아요. 혜택까지 반영해 두었어요. 이제 마지막으로 원하는 결과만 알려주시면 상담 준비가 끝나요.";
+      return "좋아요, 혜택까지 반영했어요! 마지막으로 원하는 결과만 알려주시면 끝이에요.";
     }
-    return "복잡한 개발 용어 대신, 필요한 범위를 대화처럼 하나씩 정리해볼게요.";
-  }, [selectedDiscounts.length, selectedFeatures.length, selectedPageScope, selectedReadiness, selectedSchedule, selectedType]);
+    return "어려운 말 없이, 필요한 것들을 하나씩 편하게 정리해볼게요.";
+  }, [selectedDiscounts.length, selectedDomainHosting, selectedFeatures.length, selectedPageScope, selectedReadiness, selectedSchedule, selectedType]);
 
   const handleTextChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -273,6 +456,7 @@ export default function EstimateConversation() {
   const handleSingleChoice = (field: SingleChoiceField, value: string) => {
     if (form[field] === value) return;
     setForm((current) => ({ ...current, [field]: value }));
+    setLastTouchedField(field);
     triggerSmile();
   };
 
@@ -282,6 +466,7 @@ export default function EstimateConversation() {
       ...current,
       features: removing ? current.features.filter((item) => item !== value) : [...current.features, value],
     }));
+    setLastTouchedField("features");
     if (!removing) triggerSmile();
   };
 
@@ -291,6 +476,7 @@ export default function EstimateConversation() {
       ...current,
       discounts: removing ? current.discounts.filter((item) => item !== value) : [...current.discounts, value],
     }));
+    setLastTouchedField("discounts");
     if (!removing) triggerSmile();
   };
 
@@ -298,12 +484,12 @@ export default function EstimateConversation() {
     event.preventDefault();
 
     if (!form.reply.trim()) {
-      setStatusMessage("답변 받을 연락처만 남겨주셔도, 지금 정리한 내용을 바탕으로 상담을 이어서 안내드릴게요.");
+      setStatusMessage("연락처만 남겨주셔도 돼요. 지금 정리한 내용을 바탕으로 상담을 이어갈게요.");
       return;
     }
 
     if (!contactEmail) {
-      setStatusMessage("현재 견적 상담 채널을 점검하고 있습니다. 잠시 후 다시 시도해 주세요.");
+      setStatusMessage("지금 견적 상담 채널을 확인하고 있어요. 잠시 후 다시 시도해 주세요.");
       return;
     }
 
@@ -317,6 +503,7 @@ export default function EstimateConversation() {
         `페이지 규모: ${selectedPageScope?.label || "-"}`,
         `자료 준비도: ${selectedReadiness?.label || "-"}`,
         `일정: ${selectedSchedule?.label || "-"}`,
+        `도메인/호스팅 준비: ${selectedDomainHosting?.label || "-"}`,
         `예상 공개가: ${priceEstimate.label}`,
         `필요 기능: ${selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "-"}`,
         `할인 혜택: ${selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "-"}`,
@@ -329,7 +516,7 @@ export default function EstimateConversation() {
 
     triggerSmile();
     window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-    setStatusMessage("메일 앱으로 연결하고 있습니다. 정리한 내용을 바탕으로 견적 상담을 이어가겠습니다.");
+    setStatusMessage("메일 앱으로 연결할게요. 정리한 내용을 바탕으로 곧 회신드릴게요.");
   };
 
   return (
@@ -352,11 +539,11 @@ export default function EstimateConversation() {
             >
               <p className="eyebrow">Gonish says</p>
               <p className="font-display text-[clamp(2rem,3vw,2.8rem)] leading-[1] text-ink">
-                견적은 어렵게 시작하지 않아도 괜찮습니다.
+                견적, 어렵게 생각하지 않아도 돼요.
               </p>
               <p className="max-w-3xl text-sm leading-7 text-ink-muted md:text-base">
-                지금 이 페이지는 정확한 금액을 바로 확정하는 공간이라기보다, 어떤 범위가 필요한지 먼저 정리하는 대화의 시작점이에요.
-                페이지 수는 보통 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이라고 보면 이해가 쉬워요.
+                정확한 금액을 바로 정하는 게 아니라, 어떤 것들이 필요한지 먼저 가볍게 정리해보는 거예요.
+                페이지 수는 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이에요.
               </p>
             </motion.div>
 
@@ -460,6 +647,24 @@ export default function EstimateConversation() {
 
                 <QuestionSection
                   number="06"
+                  question="사이트 주소와 올릴 공간은 준비되어 있나요?"
+                  helper="도메인은 mybrand.com 같은 사이트 주소예요. 호스팅은 사이트를 올려둘 공간이에요. 아직 없거나 잘 모르셔도 괜찮아요."
+                >
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {domainHostingOptions.map((option) => (
+                      <ChoiceButton
+                        key={option.id}
+                        selected={form.domainHosting === option.id}
+                        label={option.label}
+                        description={option.description}
+                        onClick={() => handleSingleChoice("domainHosting", option.id)}
+                      />
+                    ))}
+                  </div>
+                </QuestionSection>
+
+                <QuestionSection
+                  number="07"
                   question="이런 혜택이 가능하실까요?"
                   helper="포트폴리오 소개 가능과 리뷰 작성은 각각 5만 원씩 반영돼요. 두 항목 모두 선택하셔도 최저가는 45만 원 아래로 내려가지 않아요."
                 >
@@ -477,7 +682,7 @@ export default function EstimateConversation() {
                 </QuestionSection>
 
                 <QuestionSection
-                  number="07"
+                  number="08"
                   question="마지막으로 편하게 설명해 주세요."
                   helper="예: 지금 사이트가 너무 오래돼 보여요 / 문의가 더 잘 들어오면 좋겠어요"
                 >
@@ -565,10 +770,10 @@ export default function EstimateConversation() {
             >
               <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
               <p className="text-sm leading-6 text-ink-muted">
-                반응형 웹 제작, 기본 문의 흐름, 기본 메일 세팅, 배포 연결까지를 기준으로 보고 있습니다.
+                반응형 웹 제작, 기본 문의 흐름, 메일 세팅, 배포 연결까지 기본으로 포함돼 있어요.
               </p>
               <p className="text-xs leading-5 text-ink-muted">
-                지금 보이는 금액은 예상 공개가 범위예요. 도메인, 유료 플러그인, 외부 결제 수수료는 별도로 조정될 수 있습니다.
+                지금 보이는 금액은 예상 범위예요. 도메인, 호스팅, 유료 플러그인, 외부 결제 수수료는 별도일 수 있어요.
               </p>
             </motion.div>
 
@@ -595,7 +800,7 @@ export default function EstimateConversation() {
 
               {/* Range interpretation */}
               <div>
-                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">현재 범위 해석</p>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">현재 범위</p>
                 <p className="mt-2 font-medium leading-6 text-ink">{estimateBand.label}</p>
                 <p className="mt-1.5 text-sm leading-6 text-ink-muted">{estimateBand.explanation}</p>
               </div>
@@ -608,14 +813,15 @@ export default function EstimateConversation() {
                 <SummaryLine label="페이지 규모" value={selectedPageScope?.label ?? "아직 고르는 중"} />
                 <SummaryLine
                   label="필요 기능"
-                  value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "지금은 가볍게 시작"}
+                  value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "기본만으로 시작"}
                 />
+                <SummaryLine label="자료 준비도" value={selectedReadiness?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="희망 일정" value={selectedSchedule?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="사이트 주소/호스팅" value={selectedDomainHosting?.label ?? "아직 고르는 중"} />
                 <SummaryLine
                   label="적용 혜택"
                   value={selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "아직 선택 안 함"}
                 />
-                <SummaryLine label="자료 준비도" value={selectedReadiness?.label ?? "아직 고르는 중"} />
-                <SummaryLine label="희망 일정" value={selectedSchedule?.label ?? "아직 고르는 중"} />
               </div>
 
               <div className="soft-divider" />
@@ -623,13 +829,9 @@ export default function EstimateConversation() {
               {/* Next steps */}
               <div>
                 <p className="eyebrow">Next step</p>
-                <div className="mt-3 space-y-2">
-                  {nextSteps.map((step) => (
-                    <div key={step} className="flex items-start gap-3">
-                      <span className="mt-[9px] size-[6px] shrink-0 rounded-full bg-brand/40" />
-                      <p className="text-sm leading-6 text-ink-muted">{step}</p>
-                    </div>
-                  ))}
+                <div className="mt-3 flex items-start gap-3">
+                  <span className="mt-[9px] size-[6px] shrink-0 rounded-full bg-brand/40" />
+                  <p className="text-sm leading-6 text-ink-muted">{nextStep}</p>
                 </div>
               </div>
 

@@ -32,7 +32,7 @@ export default function SiteFooter() {
 
                   <p className="font-display text-[clamp(1.9rem,3.4vw,3.1rem)] leading-[0.95] text-ink">
                     <SmartLineBreak
-                      text="브랜드의 품격을 또렷하게 전하고, 선택까지 우아하게 잇습니다."
+                      text="브랜드의 매력을 살리고, 고객의 선택까지 자연스럽게 이어줘요."
                       maxCharsPerLine={18}
                       maxLines={2}
                     />
@@ -61,7 +61,7 @@ export default function SiteFooter() {
               <div className="soft-divider" />
 
               <div className="flex flex-col gap-2 text-sm text-ink-muted lg:flex-row lg:items-center lg:justify-between">
-                <p className="text-[0.92rem]">밝은 첫인상과 자연스러운 전환을 설계하는 프리미엄 웹 스튜디오.</p>
+                <p className="text-[0.92rem]">좋은 첫인상이 자연스럽게 선택으로 이어지는 사이트를 만들어요.</p>
                 <p className="text-xs text-ink-soft">
                   © {new Date().getFullYear()} Gonish. Premium web studio.
                 </p>
