@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { caseStudies, type CaseStudy, type DeviceKey, type DevicePreview } from "@/data/siteContent";
@@ -90,10 +90,10 @@ export default function PortfolioShowcase() {
               style={{ background: `radial-gradient(circle, ${selectedProject.accent}, transparent 70%)` }}
             />
 
-            <div className="relative grid gap-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start xl:gap-16">
-              {/* ── Left: Main content ── */}
+            {/* ── Top: Info + Sidebar ── */}
+            <div className="relative grid gap-12 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start xl:gap-16">
+              {/* Left: Header + Outcomes */}
               <div className="space-y-10">
-                {/* Header */}
                 <div className="space-y-5">
                   <p className="eyebrow">{selectedProject.role}</p>
                   <p className="font-display text-[clamp(2.4rem,4vw,4.2rem)] leading-[0.98] text-ink">
@@ -104,7 +104,6 @@ export default function PortfolioShowcase() {
                   </p>
                 </div>
 
-                {/* Outcomes — dot-separated text list */}
                 <div className="space-y-3">
                   <p className="eyebrow mb-4">Outcomes</p>
                   {selectedProject.outcomes.map((item) => (
@@ -114,53 +113,9 @@ export default function PortfolioShowcase() {
                     </div>
                   ))}
                 </div>
-
-                {/* Device switcher */}
-                <div className="space-y-8">
-                  <div className="flex flex-wrap gap-1">
-                    {(Object.keys(deviceLabels) as DeviceKey[]).map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => setDevice(item)}
-                        className={[
-                          "relative rounded-full px-5 py-2.5 text-[11px] uppercase tracking-[0.28em] transition-all duration-300",
-                          device === item
-                            ? "text-brand"
-                            : "text-ink/40 hover:text-ink/65",
-                        ].join(" ")}
-                      >
-                        {device === item && (
-                          <motion.span
-                            layoutId="device-indicator"
-                            className="absolute inset-0 rounded-full border border-brand/20 bg-brand/[0.06]"
-                            transition={{ duration: 0.35, ease }}
-                          />
-                        )}
-                        <span className="relative">{deviceLabels[item]}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={`${selectedProject.id}-${device}`}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -16 }}
-                      transition={{ duration: 0.45, ease }}
-                    >
-                      <DeviceShowcase
-                        accent={selectedProject.accent}
-                        device={device}
-                        preview={selectedProject.devices[device]}
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
               </div>
 
-              {/* ── Right: Floating annotation ── */}
+              {/* Right: Sticky sidebar */}
               <div className="lg:sticky lg:top-28">
                 <motion.div
                   initial={{ opacity: 0, y: 18 }}
@@ -185,6 +140,51 @@ export default function PortfolioShowcase() {
                 </motion.div>
               </div>
             </div>
+
+            {/* ── Bottom: Full-width device preview ── */}
+            <div className="mt-14 space-y-8">
+              <div className="flex flex-wrap gap-1">
+                {(Object.keys(deviceLabels) as DeviceKey[]).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setDevice(item)}
+                    className={[
+                      "relative rounded-full px-5 py-2.5 text-[11px] uppercase tracking-[0.28em] transition-all duration-300",
+                      device === item
+                        ? "text-brand"
+                        : "text-ink/40 hover:text-ink/65",
+                    ].join(" ")}
+                  >
+                    {device === item && (
+                      <motion.span
+                        layoutId="device-indicator"
+                        className="absolute inset-0 rounded-full border border-brand/20 bg-brand/[0.06]"
+                        transition={{ duration: 0.35, ease }}
+                      />
+                    )}
+                    <span className="relative">{deviceLabels[item]}</span>
+                  </button>
+                ))}
+              </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${selectedProject.id}-${device}`}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.45, ease }}
+                >
+                  <DeviceShowcase
+                    accent={selectedProject.accent}
+                    device={device}
+                    preview={selectedProject.devices[device]}
+                    url={selectedProject.url}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </motion.article>
         </AnimatePresence>
       </div>
@@ -193,23 +193,41 @@ export default function PortfolioShowcase() {
 }
 
 function DeviceShowcase({
-  accent,
   device,
   preview,
+  url,
 }: {
   accent: CaseStudy["accent"];
   device: DeviceKey;
   preview: DevicePreview;
+  url: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width);
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
+
+  /* iframe이 실제로 렌더링할 고정 해상도 */
+  const iframeWidth = device === "pc" ? 1440 : device === "tablet" ? 768 : 390;
+  const iframeHeight = device === "pc" ? 900 : device === "tablet" ? 1024 : 844;
+
+  /* 컨테이너 너비에 맞춰 축소 비율 계산 */
+  const scale = containerWidth > 0 ? containerWidth / iframeWidth : 0.5;
+  const visibleHeight = iframeHeight * scale;
+
   const frameClasses =
     device === "pc"
       ? "w-full rounded-[2.2rem] p-4"
       : device === "tablet"
-        ? "mx-auto w-full max-w-[760px] rounded-[2.4rem] p-4"
-        : "mx-auto w-full max-w-[360px] rounded-[2.2rem] p-3";
-
-  const screenPadding = device === "mobile" ? "p-4" : "p-6";
-  const blockGrid = device === "mobile" ? "grid gap-3" : "grid gap-3 md:grid-cols-2";
+        ? "mx-auto w-full max-w-[860px] rounded-[2.4rem] p-4"
+        : "mx-auto w-full max-w-[420px] rounded-[2.2rem] p-3";
 
   return (
     <div className="space-y-6">
@@ -220,33 +238,30 @@ function DeviceShowcase({
           "border border-black/10 bg-[#181217] shadow-[0_32px_120px_rgba(20,16,20,0.18)]",
         ].join(" ")}
       >
-        <div className={`rounded-[1.8rem] bg-[#fffaf9] ${screenPadding}`}>
-          <div className="mb-4 flex items-center gap-2">
+        <div className="rounded-[1.8rem] bg-[#fffaf9] p-1.5">
+          <div className="mb-0 flex items-center gap-2 px-4 py-2.5">
             <span className="size-2 rounded-full bg-[#ff817d]" />
             <span className="size-2 rounded-full bg-[#ffd76b]" />
             <span className="size-2 rounded-full bg-[#58d17d]" />
           </div>
 
           <div
-            className="rounded-[1.6rem] px-5 py-5 text-white"
-            style={{
-              background: `linear-gradient(145deg, ${accent} 0%, rgba(20,16,20,0.98) 120%)`,
-            }}
+            ref={ref}
+            className="overflow-hidden rounded-[1.4rem]"
+            style={{ height: visibleHeight || 720 }}
           >
-            <p className="text-[10px] uppercase tracking-[0.32em] text-white/58">{preview.eyebrow}</p>
-            <p className="mt-4 font-display text-[clamp(1.8rem,4vw,3rem)] leading-[0.96]">
-              {preview.title}
-            </p>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/76">{preview.description}</p>
-          </div>
-
-          <div className={`mt-4 ${blockGrid}`}>
-            {preview.blocks.map((block) => (
-              <div key={block.label} className="rounded-[1.3rem] border border-black/10 bg-white p-4">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-ink/42">{block.label}</p>
-                <p className="mt-3 font-display text-xl leading-none text-ink">{block.value}</p>
-              </div>
-            ))}
+            <iframe
+              src={url}
+              title={preview.title}
+              className="border-0 origin-top-left"
+              style={{
+                width: iframeWidth,
+                height: iframeHeight,
+                transform: `scale(${scale})`,
+              }}
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin"
+            />
           </div>
         </div>
       </div>

@@ -34,6 +34,7 @@ type SingleChoiceField = "domainHosting" | "pageScope" | "projectType" | "readin
 type NextStepField = SingleChoiceField | "discounts" | "features";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+const defaultCharacterReply = "어려운 말 없이, 필요한 것들을 하나씩 편하게 정리해볼게요.";
 
 const projectTypeOptions: Option[] = [
   { id: "landing", label: "가볍게 소개하는 페이지", description: "서비스나 브랜드 하나를 또렷하게 보여주는 소개형 사이트예요.", price: 45, score: 1 },
@@ -325,10 +326,18 @@ function getNextStep(form: EstimateForm, field: NextStepField) {
   return "지금 선택한 내용을 바탕으로 다음 단계를 바로 안내해 드릴게요.";
 }
 
+function getCharacterReply(form: EstimateForm, field: NextStepField | null) {
+  if (!field) {
+    return defaultCharacterReply;
+  }
+
+  return getNextStep(form, field);
+}
+
 export default function EstimateConversation() {
   const [form, setForm] = useState<EstimateForm>(initialForm);
   const [isSmiling, setIsSmiling] = useState(false);
-  const [lastTouchedField, setLastTouchedField] = useState<NextStepField>("projectType");
+  const [lastTouchedField, setLastTouchedField] = useState<NextStepField | null>(null);
   const smilingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [statusMessage, setStatusMessage] = useState(
     "연락처를 남겨주시면 지금 정리한 내용을 바탕으로 다음 단계를 안내드릴게요.",
@@ -424,29 +433,7 @@ export default function EstimateConversation() {
     selectedType,
   ]);
 
-  const nextStep = useMemo(() => getNextStep(form, lastTouchedField), [form, lastTouchedField]);
-
-  const conversationReply = useMemo(() => {
-    if (selectedType && !selectedPageScope) {
-      return `${selectedType.label}을 생각하고 계시군요! 이제 페이지 규모만 알려주시면 범위가 훨씬 선명해져요.`;
-    }
-    if (selectedType && selectedPageScope && selectedFeatures.length === 0) {
-      return "좋아요! 이제 추가 기능이 필요한지만 보면 비용을 더 정확하게 가늠할 수 있어요.";
-    }
-    if (selectedFeatures.length > 0 && !selectedReadiness) {
-      return "필요한 기능이 보이기 시작했어요. 다음은 자료 준비 상태를 한번 볼까요?";
-    }
-    if (selectedReadiness && selectedSchedule && !selectedDomainHosting) {
-      return "좋아요! 마지막으로 사이트 주소와 올릴 공간 준비 여부만 보면 거의 다 정리돼요.";
-    }
-    if (selectedDomainHosting && selectedDiscounts.length === 0) {
-      return "거의 다 왔어요! 혜택도 확인해보시겠어요?";
-    }
-    if (selectedDiscounts.length > 0) {
-      return "좋아요, 혜택까지 반영했어요! 마지막으로 원하는 결과만 알려주시면 끝이에요.";
-    }
-    return "어려운 말 없이, 필요한 것들을 하나씩 편하게 정리해볼게요.";
-  }, [selectedDiscounts.length, selectedDomainHosting, selectedFeatures.length, selectedPageScope, selectedReadiness, selectedSchedule, selectedType]);
+  const conversationReply = useMemo(() => getCharacterReply(form, lastTouchedField), [form, lastTouchedField]);
 
   const handleTextChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -822,17 +809,6 @@ export default function EstimateConversation() {
                   label="적용 혜택"
                   value={selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "아직 선택 안 함"}
                 />
-              </div>
-
-              <div className="soft-divider" />
-
-              {/* Next steps */}
-              <div>
-                <p className="eyebrow">Next step</p>
-                <div className="mt-3 flex items-start gap-3">
-                  <span className="mt-[9px] size-[6px] shrink-0 rounded-full bg-brand/40" />
-                  <p className="text-sm leading-6 text-ink-muted">{nextStep}</p>
-                </div>
               </div>
 
             </motion.div>

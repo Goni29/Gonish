@@ -22,6 +22,7 @@ export type CaseStudy = {
   role: string;
   summary: string;
   title: string;
+  url: string;
   year: string;
 };
 
@@ -100,6 +101,7 @@ export const caseStudies: CaseStudy[] = [
     description:
       "서비스 가치, 고객 신뢰 요소, 예약 행동을 하나의 흐름으로 정돈해 방문자의 결정 시간을 단축했습니다.",
     accent: "#F31D5B",
+    url: "https://portfolio4-gold-mu.vercel.app/",
     outcomes: [
       "첫 방문자도 서비스 차이를 빠르게 이해",
       "신뢰 정보와 예약 동선이 자연스럽게 연결",
@@ -160,6 +162,7 @@ export const caseStudies: CaseStudy[] = [
     description:
       "기능 나열보다 브랜드 철학과 문제 해결 가치를 전면에 배치해 공감도와 체류 품질을 함께 높였습니다.",
     accent: "#B85A76",
+    url: "https://portfolio3-deploy.vercel.app/",
     outcomes: ["브랜드 서사가 또렷하게 남는 첫인상", "몰입감을 높이는 정제된 콘텐츠 동선", "상담 전환을 돕는 자연스러운 CTA 타이밍"],
     devices: {
       pc: {
@@ -216,6 +219,7 @@ export const caseStudies: CaseStudy[] = [
     description:
       "작업물을 나열하기보다 고객이 맡길 이유를 단계적으로 확인하도록 설계해, 문의 결심까지의 흐름을 정교하게 만들었습니다.",
     accent: "#7B5C7A",
+    url: "https://portfolio2-deploy-tau.vercel.app/",
     outcomes: ["사례 탐색 중 이탈을 줄이는 구조", "전문성과 강점을 빠르게 인지하는 흐름", "문의 전환까지 이어지는 정돈된 여정"],
     devices: {
       pc: {
