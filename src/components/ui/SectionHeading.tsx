@@ -270,15 +270,17 @@ export default function SectionHeading({
       <div className="shell relative z-10">
         <div
           className={[
-            "grid min-h-[100svh] items-center gap-10 py-[clamp(3rem,7vw,5rem)]",
-            isCenter ? "justify-items-center text-center" : "lg:grid-cols-[minmax(0,0.98fr)_minmax(320px,0.82fr)]",
+            "grid min-h-[100svh] items-center gap-12 py-[clamp(3rem,7vw,5rem)] xl:gap-16",
+            isCenter
+              ? "justify-items-center text-center"
+              : "lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.72fr)] xl:grid-cols-[minmax(0,1.14fr)_minmax(320px,0.66fr)]",
           ].join(" ")}
         >
-          <div className={["relative space-y-6", isCenter ? "mx-auto max-w-3xl" : "max-w-4xl"].join(" ")}>
+          <div className={["relative space-y-6", isCenter ? "mx-auto max-w-3xl" : "max-w-5xl xl:max-w-6xl"].join(" ")}>
             <p className="eyebrow">{eyebrow}</p>
 
             <div className="space-y-5">
-              <h1 className="max-w-4xl break-keep font-display text-[clamp(3.1rem,6vw,6.8rem)] leading-[0.88] tracking-[-0.055em] text-ink">
+              <h1 className="max-w-5xl break-keep font-display text-[clamp(3.1rem,6vw,6.8rem)] leading-[0.96] tracking-[-0.055em] text-ink xl:max-w-6xl">
                 {title}
               </h1>
 
@@ -298,7 +300,7 @@ export default function SectionHeading({
             {description ? (
               <div
                 className={[
-                  "max-w-3xl text-base leading-7 text-ink-muted md:text-lg",
+                  "max-w-4xl text-base leading-7 text-ink-muted md:text-lg xl:max-w-5xl",
                   isCenter ? "mx-auto" : "",
                 ].join(" ")}
               >
