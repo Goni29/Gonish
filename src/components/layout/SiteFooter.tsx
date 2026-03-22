@@ -1,6 +1,5 @@
 import Link from "next/link";
 import BrandButton from "@/components/ui/BrandButton";
-import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { navigation } from "@/data/siteContent";
 
 export default function SiteFooter() {
@@ -31,11 +30,9 @@ export default function SiteFooter() {
                   </div>
 
                   <p className="font-display text-[clamp(1.9rem,3.4vw,3.1rem)] leading-[0.95] text-ink">
-                    <SmartLineBreak
-                      text="브랜드의 매력을 살리고, 고객의 선택까지 자연스럽게 이어줘요."
-                      maxCharsPerLine={18}
-                      maxLines={2}
-                    />
+                    당신의 브랜드가
+                    <br />
+                    당신의 생각보다 더 빛나도록
                   </p>
                 </div>
 
@@ -53,7 +50,7 @@ export default function SiteFooter() {
                   </div>
 
                   <BrandButton to="/contact" variant="ghost" className="px-5 py-2.5">
-                    프로젝트 문의
+                    프로젝트 이야기하기
                   </BrandButton>
                 </div>
               </div>
@@ -61,9 +58,9 @@ export default function SiteFooter() {
               <div className="soft-divider" />
 
               <div className="flex flex-col gap-2 text-sm text-ink-muted lg:flex-row lg:items-center lg:justify-between">
-                <p className="text-[0.92rem]">좋은 첫인상이 자연스럽게 선택으로 이어지는 사이트를 만들어요.</p>
+                <p className="text-[0.92rem]">브랜드의 가치를 더 빛나게 설계해드립니다.</p>
                 <p className="text-xs text-ink-soft">
-                  © {new Date().getFullYear()} Gonish. Premium web studio.
+                  © {new Date().getFullYear()} Gonish. Brand-focused web studio.
                 </p>
               </div>
             </div>

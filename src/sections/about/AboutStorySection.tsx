@@ -20,18 +20,18 @@ export default function AboutStorySection() {
               className="space-y-7"
             >
               <p className="font-display text-[clamp(2.2rem,4vw,4rem)] leading-[1] text-ink">
-                <SmartLineBreak text="브랜드를 소개하는 데서 멈추지 않고, 선택받는 흐름까지 완성합니다." />
+                <SmartLineBreak text="보여주는 소개를 넘어, 선택이 일어나는 흐름을 만듭니다." />
               </p>
               <div className="space-y-5 text-base leading-7 text-ink-muted md:text-lg">
                 <p>
-                  고객은 사이트에 들어오는 순간 짧은 시간 안에 브랜드의 가치와 신뢰도를 판단합니다.
-                  Gonish는 그 첫 판단이 긍정적인 선택으로 이어지도록 핵심 메시지와 신뢰 장치를
-                  우선적으로 설계합니다.
+                  사이트는 브랜드를 처음 만나는 자리이자 신뢰가 형성되는 가장 빠른 순간입니다.
+                  Gonish는 그 짧은 시간 안에 브랜드의 결이 또렷하게 읽히고, 다음 행동이 자연스럽게
+                  떠오르도록 화면과 문장을 함께 설계합니다.
                 </p>
                 <p>
-                  프로젝트의 업종과 목적은 달라도 기준은 같습니다. 이해하기 쉬운 정보 구조, 행동하기
-                  편한 문의 동선, 인상이 오래 남는 톤앤매너를 하나의 서사로 정돈해 브랜드 경험의
-                  완성도를 높입니다.
+                  업종과 목적은 달라도 기준은 같습니다. 고객이 궁금해할 정보를 먼저 보이게 하고,
+                  문의나 예약으로 이어질 동선을 매끄럽게 정리해 오래 남는 첫인상과 실제 전환이 함께
+                  일어나도록 만듭니다.
                 </p>
               </div>
             </motion.div>
@@ -104,7 +104,7 @@ export default function AboutStorySection() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, ease }}
             >
-              <p className="eyebrow mb-8">Looking ahead</p>
+              <p className="eyebrow mb-8">Working rhythm</p>
               <div className="relative pl-8">
                 {/* Vertical orbit line */}
                 <div className="absolute bottom-2 left-[4px] top-2 w-px bg-gradient-to-b from-brand/30 via-brand/15 to-transparent" />
@@ -152,12 +152,12 @@ export default function AboutStorySection() {
                 <div className="space-y-4 px-2 pb-2 pt-6">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="eyebrow">Editorial portrait</p>
+                      <p className="eyebrow">Studio note</p>
                       <p className="mt-3 font-display text-3xl leading-none text-ink">Gonish</p>
                     </div>
                     <p className="max-w-[12rem] text-right text-xs uppercase tracking-[0.28em] text-ink/45">
                       <SmartLineBreak
-                        text="sincere growth tailored work polished detail"
+                        text="calm direction refined flow lasting impression"
                         maxCharsPerLine={13}
                         maxLines={3}
                         minCharsPerLine={6}
@@ -165,8 +165,9 @@ export default function AboutStorySection() {
                     </p>
                   </div>
                   <p className="break-keep text-sm leading-6 text-ink-muted">
-                    현재는 브랜드 무드를 전달하기 위한 에디토리얼 아트워크를 사용하고 있습니다. 추후 실제
-                    사진으로 교체하더라도 전체 인상과 톤이 흔들리지 않도록 구조를 정교하게 맞춰두었습니다.
+                    이 이미지는 Gonish의 무드를 상징적으로 보여주기 위한 에디토리얼 아트워크입니다.
+                    이후 실제 사진으로 교체하더라도 지금의 분위기와 균형이 흔들리지 않도록 전체 구조를
+                    먼저 정돈해두었습니다.
                   </p>
                 </div>
               </div>
