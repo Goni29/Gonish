@@ -37,7 +37,7 @@ type NextStepField = SingleChoiceField | "discounts" | "features";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const defaultCharacterReply = "어려운 말 없이, 필요한 것들을 하나씩 편하게 정리해볼게요.";
-const MIN_START_PRICE = 59;
+const MIN_START_PRICE = 60;
 const FAST_TRACK_PERCENT = 15;
 
 const projectTypeOptions: Option[] = [
@@ -45,7 +45,7 @@ const projectTypeOptions: Option[] = [
     id: "landing",
     label: "홍보·브랜드 랜딩 페이지",
     description: "모바일과 PC에서 보기 좋게 만든 소개형 1페이지예요. 문의 남기기와 첫 오픈까지 포함돼요.",
-    price: 59,
+    price: 60,
     score: 1,
   },
   {
@@ -238,6 +238,10 @@ function roundToFive(value: number) {
 
 function formatPriceRange(min: number, max: number) {
   return `${min}만 ~ ${max}만 원`;
+}
+
+function formatPrice(value: number) {
+  return `${value}만 원`;
 }
 
 function getProjectTypeStep(form: EstimateForm) {
@@ -510,7 +514,7 @@ export default function EstimateConversation() {
         max: 95,
         urgentSurcharge: 0,
         label: formatPriceRange(MIN_START_PRICE, 95),
-        description: "기본 랜딩 시작가 기준이에요. 항목을 고를수록 안내 범위가 더 정확해져요.",
+        description: "기본 랜딩 시작가 기준이에요. 항목을 고를수록 기준가가 더 정확해져요.",
       };
     }
 
@@ -529,7 +533,7 @@ export default function EstimateConversation() {
       (selectedSchedule?.price ?? 0) +
       selectedDiscounts.reduce((sum, option) => sum + option.price, 0);
 
-    const min = roundToFive(Math.max(MIN_START_PRICE, discountedBase));
+    const min = roundToFive(Math.max(0, discountedBase));
     const bufferBase = min < 120 ? 20 : min < 240 ? 30 : min < 400 ? 40 : 55;
     const featureBuffer = selectedFeatures.length >= 6 ? 30 : selectedFeatures.length >= 3 ? 15 : 0;
     const largeScopeBuffer =
@@ -544,10 +548,10 @@ export default function EstimateConversation() {
       label: formatPriceRange(min, max),
       description:
         urgentSurcharge > 0
-          ? `긴급 납기 가산(약 ${urgentSurcharge}만 원)이 반영된 범위예요.`
+          ? `긴급 납기 가산이 반영된 선택 기준가예요.`
           : selectedDiscounts.length > 0
-            ? "혜택까지 반영하면 이 정도 범위에서 시작하시는 게 좋아 보여요."
-            : "지금 선택하신 기준으로 보면 이 정도 범위에서 시작하시면 좋아요.",
+            ? "혜택까지 반영한 선택 기준가예요."
+            : "지금 선택하신 내용을 기준으로 계산한 금액이에요.",
     };
   }, [
     form.discounts.length,
@@ -900,14 +904,13 @@ export default function EstimateConversation() {
               {/* Estimated price */}
               <div>
                 <p className="eyebrow">Estimated price</p>
-                <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">Launch range</p>
+                <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">Selected base</p>
                 <p className="mt-2 font-display text-[clamp(2rem,3vw,2.8rem)] leading-[0.95] text-brand">
-                  <SmartLineBreak text={priceEstimate.label} maxCharsPerLine={11} maxLines={3} />
+                  <SmartLineBreak text={formatPrice(priceEstimate.basePrice)} maxCharsPerLine={11} maxLines={3} />
                 </p>
-                <p className="mt-3 text-xs leading-5 text-ink-muted">선택 반영 기준가: 약 {priceEstimate.basePrice}만 원</p>
                 {priceEstimate.urgentSurcharge > 0 ? (
                   <p className="mt-1 text-xs leading-5 text-ink-muted">
-                    긴급 납기 가산: 약 {priceEstimate.urgentSurcharge}만 원
+                    긴급 납기 가산: 약 {formatPrice(priceEstimate.urgentSurcharge)}
                   </p>
                 ) : null}
                 <p className="mt-3 text-sm leading-6 text-ink-muted">{priceEstimate.description}</p>
