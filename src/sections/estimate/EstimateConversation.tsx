@@ -682,8 +682,8 @@ export default function EstimateConversation() {
       <div className="pointer-events-none absolute left-[-8rem] top-28 h-[18rem] w-[18rem] rounded-full bg-brand/[0.05] blur-[110px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-24 h-[20rem] w-[20rem] rounded-full bg-brand/[0.04] blur-[120px]" />
 
-      <div className="shell relative z-10">
-        <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="relative z-10 mx-auto w-[min(1400px,calc(100vw-2rem))] sm:w-[min(1400px,calc(100vw-3rem))] lg:w-[min(1480px,calc(100vw-5rem))]">
+        <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_420px] 2xl:grid-cols-[minmax(0,1fr)_460px]">
           {/* ── Left: Form ── */}
           <form onSubmit={handleSubmit}>
             {/* Intro */}
