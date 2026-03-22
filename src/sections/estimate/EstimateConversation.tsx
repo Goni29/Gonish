@@ -43,36 +43,36 @@ const FAST_TRACK_PERCENT = 15;
 const projectTypeOptions: Option[] = [
   {
     id: "landing",
-    label: "홍보·브랜드 랜딩 페이지",
-    description: "모바일과 PC에서 보기 좋게 만든 소개형 1페이지예요. 문의 남기기와 첫 오픈까지 포함돼요.",
+    label: "원페이지 / 랜딩 페이지",
+    description: "이벤트, 광고, 브랜드 소개처럼 한 페이지 중심으로 구성되는 사이트예요.",
     price: 60,
     score: 1,
   },
   {
     id: "corporate-site",
-    label: "기업형·소개형 사이트",
-    description: "메인과 여러 소개 페이지로 회사·브랜드 정보를 차근차근 보여주는 기본 구성입니다.",
+    label: "기업형 / 소개형 사이트",
+    description: "회사 소개, 서비스 소개, 포트폴리오, 문의 페이지 등 일반적인 다페이지 사이트예요.",
     price: 119,
     score: 2,
   },
   {
     id: "member-site",
     label: "회원 기능 포함 사이트",
-    description: "회원가입, 로그인, 내 정보 화면처럼 사람마다 다르게 보이는 화면이 들어가는 구성이에요.",
+    description: "회원가입, 로그인, 마이페이지처럼 사용자 계정 기능이 필요한 사이트예요.",
     price: 169,
     score: 3,
   },
   {
     id: "webapp",
-    label: "관리자·업무형 웹앱",
-    description: "관리자가 직접 관리할 수 있는 화면과 업무 흐름이 함께 들어가는 서비스형 구성이에요.",
+    label: "관리자 / 업무형 웹앱",
+    description: "운영 화면, 데이터 관리, 업무 처리 기능이 포함되는 웹앱이에요.",
     price: 249,
     score: 4,
   },
   {
     id: "unsure",
-    label: "아직 어떤 유형이 맞는지 모르겠어요",
-    description: "괜찮아요. 목적을 먼저 듣고 가장 가까운 시작 패키지부터 같이 잡아드릴게요.",
+    label: "아직 잘 모르겠어요",
+    description: "필요한 범위가 아직 정리되지 않았다면 상담 과정에서 함께 정리해드릴게요.",
     price: 119,
     score: 2,
   },
@@ -81,68 +81,86 @@ const projectTypeOptions: Option[] = [
 const pageScopeOptions: Option[] = [
   {
     id: "included",
-    label: "기본 패키지 범위 안에서 시작",
-    description: "선택한 프로젝트 유형에 포함된 기본 페이지·화면 범위로 먼저 진행해요.",
+    label: "기본 화면 구성으로 시작",
+    description: "선택한 프로젝트 유형의 기본 페이지/화면 구성으로 먼저 시작하는 방식이에요.",
     price: 0,
     score: 0,
   },
   {
     id: "static-page",
-    label: "정적 페이지 추가",
-    description: "소개 글, 이용 안내처럼 읽는 내용 중심 페이지가 더 필요할 때 선택해요.",
+    label: "추가 정적 페이지",
+    description: "회사 소개, 서비스 소개, 브랜드 소개처럼 정보 전달 중심의 일반 페이지예요.",
     price: 12,
     score: 1,
   },
   {
     id: "form-page",
-    label: "폼 페이지 추가",
-    description: "문의·신청처럼 사용자가 직접 내용을 입력하는 페이지가 더 필요할 때 선택해요.",
+    label: "추가 입력 페이지",
+    description: "문의, 신청, 예약, 접수처럼 사용자가 정보를 입력하는 화면이에요.",
     price: 22,
     score: 1,
   },
   {
     id: "list-detail",
     label: "리스트 + 상세 화면 세트",
-    description: "목록에서 고르고, 눌러서 자세히 보는 흐름이 필요한 화면 구성이에요.",
+    description: "공지사항, 포트폴리오, 게시글, 상품처럼 목록과 상세가 함께 필요한 화면 구성이에요.",
     price: 48,
     score: 2,
   },
   {
     id: "dashboard",
-    label: "대시보드·마이페이지 성격 화면",
-    description: "내 정보나 운영 현황처럼 사람별·관리용 화면이 더 필요할 때 선택해요.",
+    label: "로그인 후 개인화 화면",
+    description: "마이페이지, 내 정보, 활동 내역처럼 로그인 이후 사용자 전용 화면이에요.",
     price: 42,
     score: 2,
   },
   {
     id: "multi-add",
-    label: "추가 화면이 여러 개 예정",
-    description: "추가 페이지/화면이 3개 이상으로 확장될 가능성이 높아요.",
+    label: "추가 화면 3개 이상 예정",
+    description: "기본 범위 외에 필요한 화면이 여러 개라 전체 구성이 더 커질 가능성이 있는 경우예요.",
     price: 84,
     score: 3,
   },
   {
     id: "unknown",
-    label: "추가 화면 범위가 아직 미정",
-    description: "괜찮아요. 필수 화면부터 먼저 잡고, 나머지는 2차로 나누어도 충분해요.",
+    label: "화면 수를 아직 모르겠어요",
+    description: "필요한 화면 수와 구성이 아직 명확하지 않은 경우예요.",
     price: 24,
     score: 2,
   },
 ];
 
 const readinessOptions: Option[] = [
-  { id: "ready", label: "글과 사진이 거의 준비됐어요", description: "소개 문구와 사진 자료가 어느 정도 정리된 상태예요.", price: 0, score: 0 },
-  { id: "partial", label: "조금만 정리하면 될 것 같아요", description: "정보는 있는데, 어떤 식으로 보여줄지 정리가 더 필요한 상태예요.", price: 10, score: 1 },
-  { id: "need-help", label: "무엇을 준비해야 할지도 잘 모르겠어요", description: "괜찮아요. 필요한 자료 목록부터 차근차근 같이 정리해 드릴게요.", price: 25, score: 2 },
+  {
+    id: "ready",
+    label: "자료와 방향이 거의 정리되어 있어요",
+    description: "문구, 이미지, 참고 사이트, 필요한 화면 구성이 어느 정도 준비된 상태예요.",
+    price: 0,
+    score: 0,
+  },
+  {
+    id: "partial",
+    label: "일부만 정리되어 있어요",
+    description: "기본 방향은 있지만 문구나 화면 구성은 함께 정리할 필요가 있어요.",
+    price: 10,
+    score: 1,
+  },
+  {
+    id: "need-help",
+    label: "아직 상담이 많이 필요해요",
+    description: "필요한 기능이나 구성 방향이 아직 명확하지 않아 상담을 통해 함께 정리해야 해요.",
+    price: 25,
+    score: 2,
+  },
 ];
 
 const scheduleOptions: Option[] = [
-  { id: "relaxed", label: "여유 있게 진행하고 싶어요", description: "브랜드 방향과 디테일을 충분히 맞춰 가는 방식이 좋아요.", price: 0, score: 0 },
-  { id: "normal", label: "1~2개월 안에 진행하고 싶어요", description: "가장 일반적인 홈페이지 제작 속도에 가까워요.", price: 0, score: 1 },
+  { id: "relaxed", label: "여유 있게 진행하고 싶어요", description: "일반적인 일정 안에서 차분히 진행해도 괜찮아요.", price: 0, score: 0 },
+  { id: "normal", label: "평균적인 일정으로 진행하고 싶어요", description: "보통 2~4주 내외의 일정으로 생각하고 있어요.", price: 0, score: 1 },
   {
     id: "fast",
-    label: "긴급 납기로 빠르게 필요해요",
-    description: "짧은 일정 안에 핵심 화면부터 먼저 오픈해야 하는 경우예요.",
+    label: "조금 더 빠르게 진행하고 싶어요",
+    description: "일정 압축이 필요한 편이라 우선순위 조정이 필요할 수 있어요.",
     price: 0,
     percent: FAST_TRACK_PERCENT,
     score: 2,
@@ -158,26 +176,40 @@ const domainHostingOptions: Option[] = [
 ];
 
 const featureOptions: Option[] = [
-  { id: "inquiry", label: "문의 남기기", description: "방문자가 이름과 연락처를 남기고 문의를 보낼 수 있어요.", price: 0, score: 0 },
-  { id: "social-login", label: "간편 로그인", description: "구글·카카오 같은 계정으로 빠르게 로그인할 수 있어요.", price: 26, score: 1 },
-  { id: "role-permission", label: "사람별 화면 나누기", description: "일반 사용자, 운영자처럼 보는 화면과 할 일을 나눌 수 있어요.", price: 38, score: 2 },
-  { id: "file-upload", label: "파일 올리기", description: "사진이나 문서를 직접 올릴 수 있어요.", price: 24, score: 1 },
-  { id: "search-filter", label: "찾기·걸러보기", description: "원하는 항목을 검색하거나 조건으로 쉽게 고를 수 있어요.", price: 26, score: 1 },
-  { id: "rich-editor", label: "글쓰기 편집창", description: "공지나 소개 글을 보기 좋게 작성할 수 있어요.", price: 34, score: 2 },
-  { id: "crud-board", label: "공지·게시판 관리", description: "글을 쓰고, 고치고, 지우고, 목록으로 보는 기능이에요.", price: 69, score: 3 },
-  { id: "payment", label: "온라인 결제 받기", description: "사이트 안에서 결제를 받을 수 있어요.", price: 89, score: 3 },
-  { id: "subscription", label: "정기 결제 받기", description: "매달 또는 일정 주기로 결제가 반복되도록 만들 수 있어요.", price: 129, score: 4 },
-  { id: "reservation", label: "예약 받기", description: "날짜와 시간을 골라 예약을 받고 관리할 수 있어요.", price: 95, score: 3 },
-  { id: "notification-email", label: "자동 이메일 보내기", description: "가입·문의·예약 시 안내 메일이 자동으로 가요.", price: 16, score: 1 },
-  { id: "notification-sms", label: "문자·알림 보내기", description: "중요한 알림을 문자나 메신저로 자동 발송할 수 있어요.", price: 29, score: 1 },
-  { id: "map", label: "지도 보여주기", description: "매장 위치나 길찾기 정보를 지도에서 바로 보여줄 수 있어요.", price: 32, score: 1 },
-  { id: "external-api", label: "다른 서비스와 연결", description: "이미 쓰는 다른 서비스와 데이터를 주고받을 수 있어요.", price: 48, score: 2 },
-  { id: "admin-dashboard", label: "관리자 요약 화면", description: "운영자가 한눈에 상황을 볼 수 있는 화면을 만들어요.", price: 59, score: 2 },
-  { id: "admin-module", label: "관리자 목록 관리", description: "회원·문의·상품 같은 목록을 관리자가 직접 관리할 수 있어요.", price: 48, score: 2 },
-  { id: "admin-permission", label: "관리자 권한 나누기", description: "관리자마다 할 수 있는 일을 다르게 설정할 수 있어요.", price: 36, score: 1 },
-  { id: "stats-report", label: "운영 현황 보기", description: "가입, 문의, 매출 같은 흐름을 보기 쉽게 확인할 수 있어요.", price: 54, score: 2 },
-  { id: "excel-export", label: "엑셀로 내려받기", description: "목록 데이터를 엑셀 파일로 저장할 수 있어요.", price: 28, score: 1 },
-  { id: "maintenance", label: "오픈 후 관리 도와주기", description: "오픈 뒤에 작은 수정이나 점검을 도와드리는 옵션이에요.", price: 25, score: 1 },
+  {
+    id: "member-auth",
+    label: "회원가입 / 로그인",
+    description: "이메일 또는 기본 계정 방식으로 회원가입과 로그인이 가능한 기능이에요.",
+    price: 42,
+    score: 2,
+  },
+  { id: "social-login", label: "소셜 로그인", description: "카카오, 구글, 네이버 등 외부 계정으로 로그인하는 기능이에요.", price: 26, score: 1 },
+  { id: "role-permission", label: "사용자 역할 / 권한 분리", description: "일반회원, 파트너, 매니저처럼 사용자 유형별 접근 범위를 나누는 기능이에요.", price: 38, score: 2 },
+  { id: "admin-dashboard", label: "관리자 대시보드", description: "관리자 첫 화면에서 전체 현황을 요약해서 보는 화면이에요. 요약 카드, 최근 항목, 간단한 수치 확인이 포함될 수 있어요.", price: 59, score: 2 },
+  { id: "admin-module", label: "관리자용 업무 관리 모듈", description: "회원 관리, 주문 관리, 예약 관리, 문의 관리처럼 운영자가 업무 데이터를 처리하는 기능 1개예요.", price: 48, score: 2 },
+  { id: "admin-permission", label: "관리자 권한 세분화", description: "운영자 계정마다 볼 수 있는 메뉴와 수정 가능한 범위를 다르게 설정하는 기능이에요.", price: 36, score: 1 },
+  { id: "stats-report", label: "고급 통계 / 리포트", description: "기간별 통계, 필터, 차트, 다운로드처럼 운영 데이터를 더 자세히 분석하는 기능이에요.", price: 54, score: 2 },
+  { id: "crud-board", label: "게시판 / 콘텐츠 관리", description: "공지사항, 블로그, 포트폴리오처럼 콘텐츠를 등록·수정·삭제하는 기능이에요.", price: 69, score: 3 },
+  { id: "payment", label: "온라인 결제", description: "일반적인 1회성 결제를 사이트에서 받을 수 있어요.", price: 89, score: 3 },
+  { id: "subscription", label: "정기 결제 / 구독", description: "매달 또는 일정 주기로 자동 결제가 필요한 경우예요.", price: 129, score: 4 },
+  { id: "map", label: "기본 지도 표시", description: "매장이나 회사 위치처럼 고정된 장소를 사이트에 보여주는 기능이에요.", price: 32, score: 1 },
+  { id: "notification-email", label: "자동 이메일 발송", description: "문의 접수, 신청 완료, 알림 메일처럼 자동으로 이메일을 보내는 기능이에요.", price: 16, score: 1 },
+  { id: "notification-sms", label: "문자 / 알림 발송", description: "신청 완료, 상태 변경, 예약 안내 등을 문자나 알림으로 보내는 기능이에요.", price: 29, score: 1 },
+  { id: "external-api", label: "기타 외부 API 연동 1종", description: "지도, 이메일, 문자 외에 다른 외부 서비스와 연동이 필요한 경우예요.", price: 48, score: 2 },
+];
+
+type FeatureGroup = {
+  id: string;
+  title: string;
+  optionIds: string[];
+};
+
+const featureGroups: FeatureGroup[] = [
+  { id: "member-user", title: "회원 / 사용자 기능", optionIds: ["member-auth", "social-login", "role-permission"] },
+  { id: "admin-ops", title: "운영 / 관리자 기능", optionIds: ["admin-dashboard", "admin-module", "admin-permission", "stats-report"] },
+  { id: "content-data", title: "콘텐츠 / 데이터 기능", optionIds: ["crud-board"] },
+  { id: "payment-biz", title: "결제 / 비즈니스 기능", optionIds: ["payment", "subscription"] },
+  { id: "external-integration", title: "외부 서비스 연동", optionIds: ["map", "notification-email", "notification-sms", "external-api"] },
 ];
 
 const discountOptions: Option[] = [
@@ -208,7 +240,7 @@ function getEstimateBand(score: number) {
   if (score <= 5) {
     return {
       label: "랜딩·소개 중심",
-      explanation: "핵심 소개와 문의 연결 중심으로 시작하는 비교적 가벼운 범위예요.",
+      explanation: "핵심 소개 화면 위주로 시작하는 비교적 가벼운 범위예요.",
     };
   }
 
@@ -222,7 +254,7 @@ function getEstimateBand(score: number) {
   if (score <= 22) {
     return {
       label: "회원·운영 기능 포함",
-      explanation: "가입, 예약, 알림 같은 실제 사용 기능이 함께 들어가는 단계예요.",
+      explanation: "회원, 운영, 콘텐츠 관리 같은 실제 동작 기능이 함께 들어가는 단계예요.",
     };
   }
 
@@ -246,23 +278,23 @@ function formatPrice(value: number) {
 
 function getProjectTypeStep(form: EstimateForm) {
   if (form.projectType === "landing") {
-    return "랜딩형은 방문자가 들어오자마자 무엇을 해야 하는지 한눈에 보이게 정리하면 좋아요.";
+    return "랜딩 페이지는 방문자가 처음 5초 안에 이해할 수 있도록 핵심 메시지와 행동 버튼을 먼저 정하면 좋아요.";
   }
 
   if (form.projectType === "corporate-site") {
-    return "기업형 소개 사이트는 회사 소개, 서비스, 사례, 문의 순서로 잡으면 방문자 입장에서 가장 이해하기 쉬워요.";
+    return "기업형/소개형은 회사 소개, 서비스 소개, 포트폴리오, 문의 흐름으로 잡으면 방문자 입장에서 가장 이해하기 쉬워요.";
   }
 
   if (form.projectType === "member-site") {
-    return "회원 기능이 들어가면 로그인 전/후에 화면이 어떻게 달라지는지부터 잡아두면 범위를 훨씬 정확하게 정리할 수 있어요.";
+    return "회원 기능이 들어가면 로그인 전/후에 화면이 어떻게 달라지는지부터 정리하면 견적 범위가 훨씬 정확해져요.";
   }
 
   if (form.projectType === "webapp") {
-    return "업무형 웹앱은 누가 어떤 화면을 쓰는지 먼저 나누면 전체 구조를 훨씬 쉽게 잡을 수 있어요.";
+    return "업무형 웹앱은 운영자와 사용자 역할을 먼저 나누면 전체 화면 구조와 기능 범위를 훨씬 쉽게 잡을 수 있어요.";
   }
 
   if (form.projectType === "unsure") {
-    return "유형이 아직 애매하다면 이 프로젝트로 가장 먼저 해결하고 싶은 문제 1개만 정해도 시작이 훨씬 쉬워져요.";
+    return "유형이 아직 애매해도 괜찮아요. 가장 먼저 해결하고 싶은 문제 1개만 정하면 상담에서 빠르게 방향을 잡을 수 있어요.";
   }
 
   return "어떤 사이트를 만들고 싶은지 먼저 정하면 전체 견적 흐름이 훨씬 쉬워져요.";
@@ -270,73 +302,75 @@ function getProjectTypeStep(form: EstimateForm) {
 
 function getPageScopeStep(form: EstimateForm) {
   if (form.pageScope === "included") {
-    return "기본 패키지 범위 안에서 시작하면 일정과 비용을 안정적으로 잡기 좋아요.";
+    return "기본 화면 구성으로 시작하면 1차 오픈 범위를 안정적으로 잡기 좋아요.";
   }
 
   if (form.pageScope === "static-page") {
-    return "정적 페이지는 콘텐츠만 확정되면 빠르게 추가할 수 있어서 1차 공개 범위를 넓히기 좋아요.";
+    return "정적 페이지는 정보 전달 중심 화면이라 콘텐츠만 정리되면 비교적 빠르게 범위를 확장할 수 있어요.";
   }
 
   if (form.pageScope === "form-page") {
-    return "입력 페이지는 어떤 칸을 받는지, 제출 후 어떤 안내를 보여줄지만 먼저 정해도 훨씬 쉬워져요.";
+    return "입력 페이지는 어떤 항목을 받을지와 제출 후 안내만 먼저 정하면 화면 범위를 또렷하게 잡을 수 있어요.";
   }
 
   if (form.pageScope === "list-detail") {
-    return "목록+상세 화면은 목록에서 보여줄 항목과 상세에서 보여줄 내용을 먼저 정하면 좋아요.";
+    return "리스트+상세 세트는 화면 구조 범위예요. 화면에서 다룰 항목 종류를 먼저 정하면 이후 기능 설계가 쉬워져요.";
   }
 
   if (form.pageScope === "dashboard") {
-    return "요약 화면은 첫 화면에서 꼭 보여줄 정보 3~5개만 먼저 정해도 방향이 금방 잡혀요.";
+    return "로그인 후 개인화 화면은 사용자별로 무엇이 달라 보여야 하는지부터 정하면 범위를 정확히 잡기 쉬워요.";
   }
 
   if (form.pageScope === "multi-add") {
-    return "추가 화면이 여러 개인 경우엔 1차 공개 화면과 2차 확장 화면을 나누면 일정과 예산을 안정적으로 관리할 수 있어요.";
+    return "추가 화면이 3개 이상이면 1차 오픈 화면과 2차 확장 화면을 나눠서 일정과 예산을 관리하는 방식이 안정적이에요.";
   }
 
   if (form.pageScope === "unknown") {
-    return "추가 화면이 아직 미정이라면 지금 꼭 필요한 화면 2~3개만 먼저 확정해도 견적이 훨씬 정확해져요.";
+    return "화면 수가 아직 미정이라면 꼭 필요한 화면 2~3개만 먼저 확정해도 초기 견적 정확도가 크게 올라가요.";
   }
 
-  return "추가 화면 범위를 정하면 필요한 작업 범위가 훨씬 또렷해져요.";
+  return "추가 화면은 화면 수와 구성 범위를 정하는 단계예요. 실제 동작 기능은 다음 항목에서 선택하면 돼요.";
 }
 
 function getFeatureStep(form: EstimateForm) {
-  const featureIds = form.features.filter((feature) => feature !== "inquiry");
+  const featureIds = form.features;
 
-  if (featureIds.length >= 6) {
-    return "기능이 많이 들어가는 프로젝트예요. 1차 오픈 기능과 2차 확장 기능을 나누면 일정과 비용을 훨씬 현실적으로 설계할 수 있어요.";
+  if (featureIds.length >= 7) {
+    return "기능 항목이 많은 프로젝트예요. 핵심 기능 1차 오픈과 확장 기능 2차 오픈으로 나누면 일정과 견적이 훨씬 현실적으로 정리돼요.";
   }
 
-  if (featureIds.length >= 3) {
-    return "기능이 여러 개 들어가면 우선순위를 나눠서 핵심 기능부터 오픈하는 방식이 견적을 가장 선명하게 만들어줘요.";
+  if (featureIds.length >= 4) {
+    return "기능이 여러 개 들어가면 우선순위를 나눠 핵심 기능부터 열고, 고도화 기능을 다음 단계로 분리하면 견적이 선명해져요.";
   }
 
   if (featureIds.includes("payment") || featureIds.includes("subscription")) {
-    return "결제 기능은 결제가 안 됐을 때 어떻게 안내할지까지 정해두면 진행이 훨씬 안정적이에요.";
+    return "결제 기능은 결제 실패/취소/환불 흐름까지 함께 정리해 두면 실제 운영에서 훨씬 안정적으로 사용할 수 있어요.";
   }
 
-  if (featureIds.includes("reservation")) {
-    return "예약 기능은 가능한 시간, 취소 방법, 중복 예약 처리만 먼저 정해도 범위가 또렷해져요.";
+  if (
+    featureIds.includes("admin-module") ||
+    featureIds.includes("admin-dashboard") ||
+    featureIds.includes("admin-permission") ||
+    featureIds.includes("stats-report")
+  ) {
+    return "관리자 영역은 대시보드(요약), 업무 모듈(처리), 권한(접근 범위), 리포트(분석)처럼 역할을 나눠 정리하면 중복 없이 설계할 수 있어요.";
   }
 
-  if (featureIds.includes("external-api")) {
-    return "다른 서비스와 연결하는 기능은 연결 실패 시 안내 방법을 미리 정하면 운영이 훨씬 편해져요.";
+  if (featureIds.includes("crud-board")) {
+    return "게시판/콘텐츠 관리는 등록·수정·삭제 로직이 핵심이에요. 리스트+상세 화면 구성과는 별개로 동작 기능 범위로 보면 좋아요.";
   }
 
-  if (featureIds.includes("admin-module") || featureIds.includes("admin-dashboard") || featureIds.includes("admin-permission")) {
-    return "관리자 기능은 누가 무엇을 수정할 수 있는지만 먼저 정하면 실수가 크게 줄어요.";
+  if (
+    featureIds.includes("external-api") ||
+    featureIds.includes("notification-email") ||
+    featureIds.includes("notification-sms") ||
+    featureIds.includes("map")
+  ) {
+    return "외부 연동 기능은 서비스별 인증 방식과 발송/연결 실패 시 처리 방법을 미리 정하면 운영이 훨씬 편해져요.";
   }
 
-  if (featureIds.includes("crud-board") || featureIds.includes("rich-editor")) {
-    return "글쓰기 기능은 꼭 필요한 입력칸과 수정 절차만 먼저 정해도 충분히 시작할 수 있어요.";
-  }
-
-  if (featureIds.includes("search-filter") || featureIds.includes("stats-report")) {
-    return "찾기·현황 기능은 꼭 필요한 조건 몇 가지만 먼저 정하면 화면이 복잡해지지 않아요.";
-  }
-
-  if (form.features.includes("inquiry")) {
-    return "기본 문의 중심이라면 문의 항목과 답변 받을 이메일 정도만 정해도 가볍게 시작할 수 있어요.";
+  if (featureIds.includes("member-auth") || featureIds.includes("social-login") || featureIds.includes("role-permission")) {
+    return "회원/권한 기능은 어떤 사용자 유형이 있는지 먼저 정해두면 화면과 기능 설계를 훨씬 정확하게 시작할 수 있어요.";
   }
 
   return undefined;
@@ -344,15 +378,15 @@ function getFeatureStep(form: EstimateForm) {
 
 function getReadinessStep(form: EstimateForm) {
   if (form.readiness === "ready") {
-    return "글과 사진이 거의 준비돼 있다면, 어떤 내용을 어느 페이지에 배치할지만 정리하면 바로 초안으로 넘어갈 수 있어요.";
+    return "자료와 방향이 거의 준비된 상태라면 화면별 배치만 정리해도 바로 설계 초안으로 넘어갈 수 있어요.";
   }
 
   if (form.readiness === "partial") {
-    return "정보는 있으니, 소개 문구와 서비스 설명을 어떤 순서로 보여줄지만 정리하면 훨씬 빨라져요.";
+    return "일부만 정리된 상태라면 소개 문구 우선순위와 핵심 화면 구성부터 함께 맞추면 빠르게 진행할 수 있어요.";
   }
 
   if (form.readiness === "need-help") {
-    return "자료가 아직 없더라도 괜찮아요. 어떤 글과 사진이 필요한지 목록부터 같이 정리해 드릴게요.";
+    return "상담이 많이 필요한 단계여도 괜찮아요. 필요한 자료 목록과 기능 우선순위를 먼저 같이 정리해드릴게요.";
   }
 
   return undefined;
@@ -384,15 +418,15 @@ function getDomainHostingStep(form: EstimateForm) {
 
 function getScheduleStep(form: EstimateForm) {
   if (form.schedule === "relaxed") {
-    return "여유 있는 일정이라면 첫 공개 범위뿐 아니라 브랜드 톤과 디테일까지 차근차근 맞춰가기 좋아요.";
+    return "여유 있는 일정은 기획과 화면 디테일까지 충분히 조율하면서 안정적으로 진행하기 좋아요.";
   }
 
   if (form.schedule === "normal") {
-    return "1~2개월 일정이라면 먼저 첫 공개 범위를 정하고, 추가 고도화는 2차로 나누는 방식이 가장 안정적이에요.";
+    return "평균 일정은 핵심 범위를 먼저 오픈하고 세부 고도화를 다음 단계로 분리할 때 가장 안정적이에요.";
   }
 
   if (form.schedule === "fast") {
-    return "일정이 빠르면 꼭 필요한 화면부터 먼저 열고, 나머지는 다음 단계로 나누는 방식이 가장 안전해요.";
+    return "빠른 일정은 우선순위 조정이 필요해요. 꼭 필요한 화면과 기능부터 먼저 여는 방식이 가장 안전해요.";
   }
 
   return undefined;
@@ -427,7 +461,7 @@ function getNextStep(form: EstimateForm, field: NextStepField) {
   }
 
   if (field === "features") {
-    return getFeatureStep(form) ?? "필요한 기능을 정하면 실제로 어디까지 만들어야 하는지 더 정확해져요.";
+    return getFeatureStep(form) ?? "추가 기능은 화면 위에서 실제로 동작하는 로직/권한/연동 범위를 정하는 단계예요.";
   }
 
   if (field === "readiness") {
@@ -463,7 +497,7 @@ export default function EstimateConversation() {
   const [lastTouchedField, setLastTouchedField] = useState<NextStepField | null>(null);
   const smilingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [statusMessage, setStatusMessage] = useState(
-    "연락처를 남겨주시면 지금 정리한 내용을 바탕으로 다음 단계를 안내드릴게요.",
+    "선택하신 내용을 바탕으로 더 정확한 범위와 일정, 최종 견적을 함께 정리해드릴게요.",
   );
 
   const triggerSmile = useCallback(() => {
@@ -514,7 +548,7 @@ export default function EstimateConversation() {
         max: 95,
         urgentSurcharge: 0,
         label: formatPriceRange(MIN_START_PRICE, 95),
-        description: "기본 랜딩 시작가 기준이에요. 항목을 고를수록 기준가가 더 정확해져요.",
+        description: "기본 시작가예요. 항목을 선택할수록 선택 반영 기준가가 더 정확해져요.",
       };
     }
 
@@ -548,10 +582,10 @@ export default function EstimateConversation() {
       label: formatPriceRange(min, max),
       description:
         urgentSurcharge > 0
-          ? `긴급 납기 가산이 반영된 선택 기준가예요.`
+          ? "빠른 일정 반영 기준가예요."
           : selectedDiscounts.length > 0
             ? "혜택까지 반영한 선택 기준가예요."
-            : "지금 선택하신 내용을 기준으로 계산한 금액이에요.",
+            : "선택하신 범위를 기준으로 계산한 예상 시작가예요.",
     };
   }, [
     form.discounts.length,
@@ -606,7 +640,7 @@ export default function EstimateConversation() {
     event.preventDefault();
 
     if (!form.reply.trim()) {
-      setStatusMessage("연락처만 남겨주셔도 돼요. 지금 정리한 내용을 바탕으로 상담을 이어갈게요.");
+      setStatusMessage("연락처만 남겨주셔도 괜찮아요. 지금 정리된 범위를 바탕으로 상담을 이어갈게요.");
       return;
     }
 
@@ -621,14 +655,15 @@ export default function EstimateConversation() {
         `이름: ${form.name || "-"}`,
         `브랜드명: ${form.brand || "-"}`,
         `답변 받을 연락처: ${form.reply || "-"}`,
-        `프로젝트 방향: ${selectedType?.label || "-"}`,
-        `추가 화면 범위: ${selectedPageScope?.label || "-"}`,
-        `자료 준비도: ${selectedReadiness?.label || "-"}`,
-        `일정: ${selectedSchedule?.label || "-"}`,
+        `프로젝트 유형: ${selectedType?.label || "-"}`,
+        `추가 화면 구성: ${selectedPageScope?.label || "-"}`,
+        `자료 준비 상태: ${selectedReadiness?.label || "-"}`,
+        `희망 일정: ${selectedSchedule?.label || "-"}`,
         `도메인/호스팅 준비: ${selectedDomainHosting?.label || "-"}`,
-        `예상 공개가: ${priceEstimate.label}`,
-        `필요 기능: ${selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "-"}`,
-        `할인 혜택: ${selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "-"}`,
+        `예상 시작가(선택 기준): ${formatPrice(priceEstimate.basePrice)}`,
+        `참고 예상 범위: ${priceEstimate.label}`,
+        `추가 기능 구성: ${selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "-"}`,
+        `적용 혜택: ${selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "-"}`,
         "",
         `지금 가장 중요한 목표: ${form.goal || "-"}`,
         "",
@@ -638,7 +673,7 @@ export default function EstimateConversation() {
 
     triggerSmile();
     window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-    setStatusMessage("메일 앱으로 연결할게요. 정리한 내용을 바탕으로 곧 회신드릴게요.");
+    setStatusMessage("메일 앱으로 연결할게요. 선택하신 범위를 바탕으로 더 정확한 일정과 최종 견적을 함께 안내드릴게요.");
   };
 
   return (
@@ -661,11 +696,11 @@ export default function EstimateConversation() {
             >
               <p className="eyebrow">Gonish says</p>
               <p className="font-display text-[clamp(2rem,3vw,2.8rem)] leading-[1] text-ink">
-                견적, 어렵게 생각하지 않아도 돼요.
+                정직한 커스텀 제작 기준으로 안내드릴게요.
               </p>
               <p className="max-w-3xl text-sm leading-7 text-ink-muted md:text-base">
-                정확한 금액을 바로 정하는 게 아니라, 어떤 것들이 필요한지 먼저 가볍게 정리해보는 거예요.
-                추가 화면은 정적/폼/리스트·상세처럼 유형으로 생각하시면 쉽고, 기능은 결제나 예약처럼 실제로 동작하는 부분이에요.
+                몇 가지 질문에 답해주시면 필요한 범위와 예상 금액을 함께 정리해드릴게요.
+                모든 견적은 템플릿 재활용이 아닌 커스텀 제작 기준이며, 최종 금액은 기능 범위와 난이도에 따라 달라질 수 있어요.
               </p>
             </motion.div>
 
@@ -678,7 +713,7 @@ export default function EstimateConversation() {
                 <QuestionSection
                   number="01"
                   question="어떤 사이트를 생각하고 계신가요?"
-                  helper="예를 들어 '브랜드 홈페이지'는 회사나 브랜드의 소개, 분위기, 신뢰를 함께 보여주는 사이트를 말해요."
+                  helper="복잡한 개발 용어 대신, 지금 필요한 결과에 가장 가까운 유형을 선택해 주세요."
                 >
                   <div className="grid gap-2 md:grid-cols-2">
                     {projectTypeOptions.map((option) => (
@@ -695,8 +730,8 @@ export default function EstimateConversation() {
 
                 <QuestionSection
                   number="02"
-                  question="기본 범위 밖에 추가될 화면이 있나요?"
-                  helper="페이지가 더 필요하면 어떤 종류인지 골라주세요. 읽는 페이지인지, 입력하는 페이지인지부터 정하면 쉬워요."
+                  question="기본 범위 외에 추가할 화면이 있나요?"
+                  helper="추가 화면은 페이지/화면 구성 범위를 반영한 비용입니다. 실제 동작 기능이나 외부 연동은 아래 기능 항목에서 별도로 선택해 주세요."
                 >
                   <div className="grid gap-2 md:grid-cols-2">
                     {pageScopeOptions.map((option) => (
@@ -714,18 +749,33 @@ export default function EstimateConversation() {
                 <QuestionSection
                   number="03"
                   question="추가로 필요한 기능이 있나요?"
-                  helper="기능은 실제로 움직이는 부분이에요. 필요한 것만 체크해도 충분해요."
+                  helper="추가 기능은 화면 위에서 실제로 동작하는 로직, 권한, 결제, 외부 연동 등을 의미해요."
                 >
-                  <div className="grid gap-2 md:grid-cols-2">
-                    {featureOptions.map((option) => (
-                      <ChoiceButton
-                        key={option.id}
-                        selected={form.features.includes(option.id)}
-                        label={option.label}
-                        description={option.description}
-                        onClick={() => toggleFeature(option.id)}
-                      />
+                  <div className="space-y-5">
+                    {featureGroups.map((group) => (
+                      <div key={group.id} className="space-y-2.5">
+                        <p className="pl-1 text-[10px] uppercase tracking-[0.28em] text-brand/80">{group.title}</p>
+                        <div className="grid gap-2 md:grid-cols-2">
+                          {group.optionIds.map((optionId) => {
+                            const option = findOption(featureOptions, optionId);
+                            if (!option) return null;
+
+                            return (
+                              <ChoiceButton
+                                key={option.id}
+                                selected={form.features.includes(option.id)}
+                                label={option.label}
+                                description={option.description}
+                                onClick={() => toggleFeature(option.id)}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
                     ))}
+                    <p className="pl-1 text-xs leading-5 text-ink/62">
+                      화면 수(구성)와 기능(동작)은 별도예요. 예를 들어 리스트+상세는 화면 구조이고, 게시판 관리는 등록·수정·삭제 로직이에요.
+                    </p>
                   </div>
                 </QuestionSection>
 
@@ -733,11 +783,11 @@ export default function EstimateConversation() {
                   <QuestionSection
                     number="04"
                     question="자료는 어느 정도 준비되어 있나요?"
-                    helper="이 부분이 비어 있어도 괜찮아요. 어떤 자료가 필요한지부터 같이 정리할 수 있어요."
+                    helper="자료가 완벽하지 않아도 괜찮아요. 현재 준비된 정도에 가장 가까운 항목을 골라주세요."
                     headerClassName="lg:h-[13.5rem]"
                     alignHeaderDesktop
                   >
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 lg:hidden">
                       {readinessOptions.map((option) => (
                         <ChoiceButton
                           key={option.id}
@@ -759,28 +809,62 @@ export default function EstimateConversation() {
                         어느 정도인가요?
                       </>
                     }
-                    helper="일정은 작업 순서와 우선순위에 영향을 줘요. 빠른 일정일수록 꼭 필요한 것부터 먼저 여는 방식이 좋아요."
+                    helper="일정에 따라 작업 우선순위와 진행 방식이 달라져요."
                     headerClassName="lg:h-[13.5rem]"
                     alignHeaderDesktop
                   >
-                    <div className="grid gap-2">
-                      {scheduleOptions.map((option) => (
-                        <ChoiceButton
-                          key={option.id}
-                          selected={form.schedule === option.id}
-                          label={option.label}
-                          description={option.description}
-                          onClick={() => handleSingleChoice("schedule", option.id)}
-                        />
-                      ))}
+                    <div className="space-y-2 lg:hidden">
+                      <div className="grid gap-2">
+                        {scheduleOptions.map((option) => (
+                          <ChoiceButton
+                            key={option.id}
+                            selected={form.schedule === option.id}
+                            label={option.label}
+                            description={option.description}
+                            onClick={() => handleSingleChoice("schedule", option.id)}
+                          />
+                        ))}
+                      </div>
+                      <p className="pl-1 text-xs leading-5 text-ink/62">
+                        빠른 일정은 작업 우선순위 조정이 필요해 추가 비용이 발생할 수 있어요.
+                      </p>
                     </div>
                   </QuestionSection>
+                </div>
+                <div className="hidden lg:flex lg:flex-col lg:gap-2">
+                  {readinessOptions.map((readinessOption, rowIndex) => {
+                    const scheduleOption = scheduleOptions[rowIndex];
+                    if (!scheduleOption) return null;
+
+                    return (
+                      <div key={`aligned-row-${readinessOption.id}-${scheduleOption.id}`} className="grid grid-cols-2 gap-12">
+                        <ChoiceButton
+                          selected={form.readiness === readinessOption.id}
+                          label={readinessOption.label}
+                          description={readinessOption.description}
+                          onClick={() => handleSingleChoice("readiness", readinessOption.id)}
+                        />
+                        <ChoiceButton
+                          selected={form.schedule === scheduleOption.id}
+                          label={scheduleOption.label}
+                          description={scheduleOption.description}
+                          onClick={() => handleSingleChoice("schedule", scheduleOption.id)}
+                        />
+                      </div>
+                    );
+                  })}
+                  <div className="grid grid-cols-2 gap-12">
+                    <div />
+                    <p className="pl-1 text-xs leading-5 text-ink/62">
+                      빠른 일정은 작업 우선순위 조정이 필요해 추가 비용이 발생할 수 있어요.
+                    </p>
+                  </div>
                 </div>
 
                 <QuestionSection
                   number="06"
                   question="사이트 주소와 올릴 공간은 준비되어 있나요?"
-                  helper="도메인은 mybrand.com 같은 사이트 주소예요. 호스팅은 사이트를 올려둘 공간이에요. 아직 없거나 잘 모르셔도 괜찮아요."
+                  helper="사이트 운영에 필요한 도메인과 호스팅은 별도 준비 또는 대행이 가능해요. 아직 없거나 잘 모르셔도 괜찮아요."
                 >
                   <div className="grid gap-2 md:grid-cols-2">
                     {domainHostingOptions.map((option) => (
@@ -797,7 +881,7 @@ export default function EstimateConversation() {
 
                 <QuestionSection
                   number="07"
-                  question="이런 혜택이 가능하실까요?"
+                  question="선택 가능한 혜택이 있을까요?"
                   helper="가능한 항목만 편하게 체크해 주세요. 선택하지 않으셔도 괜찮아요."
                 >
                   <div className="space-y-2">
@@ -886,7 +970,7 @@ export default function EstimateConversation() {
               className="mt-16 flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
             >
               <p className="max-w-2xl text-sm leading-6 text-ink-muted">{statusMessage}</p>
-              <BrandButton type="submit">견적 상담 요청하기</BrandButton>
+              <BrandButton type="submit">이 범위로 상담 요청하기</BrandButton>
             </motion.div>
           </form>
 
@@ -903,24 +987,22 @@ export default function EstimateConversation() {
             >
               {/* Estimated price */}
               <div>
-                <p className="eyebrow">Estimated price</p>
-                <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">Selected base</p>
+                <p className="eyebrow">예상 견적</p>
+                <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">예상 시작가</p>
                 <p className="mt-2 font-display text-[clamp(2rem,3vw,2.8rem)] leading-[0.95] text-brand">
                   <SmartLineBreak text={formatPrice(priceEstimate.basePrice)} maxCharsPerLine={11} maxLines={3} />
                 </p>
-                {priceEstimate.urgentSurcharge > 0 ? (
-                  <p className="mt-1 text-xs leading-5 text-ink-muted">
-                    긴급 납기 가산: 약 {formatPrice(priceEstimate.urgentSurcharge)}
-                  </p>
-                ) : null}
                 <p className="mt-3 text-sm leading-6 text-ink-muted">{priceEstimate.description}</p>
+                <p className="mt-2 text-xs leading-5 text-ink/62">
+                  선택하신 범위를 기준으로 계산한 예상 금액입니다. 최종 견적은 기능 상세 범위, 디자인 난이도, 외부 연동 여부에 따라 조정될 수 있어요.
+                </p>
               </div>
 
               <div className="soft-divider" />
 
               {/* Range interpretation */}
               <div>
-                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">현재 범위</p>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">프로젝트 복잡도 가이드</p>
                 <p className="mt-2 font-medium leading-6 text-ink">{estimateBand.label}</p>
                 <p className="mt-1.5 text-sm leading-6 text-ink-muted">{estimateBand.explanation}</p>
               </div>
@@ -929,15 +1011,15 @@ export default function EstimateConversation() {
 
               {/* Summary */}
               <div className="space-y-2.5 text-sm leading-6 text-ink-muted">
-                <SummaryLine label="프로젝트 방향" value={selectedType?.label ?? "아직 고르는 중"} />
-                <SummaryLine label="추가 화면 범위" value={selectedPageScope?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="프로젝트 유형" value={selectedType?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="추가 화면 구성" value={selectedPageScope?.label ?? "아직 고르는 중"} />
                 <SummaryLine
-                  label="필요 기능"
-                  value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "기본만으로 시작"}
+                  label="추가 기능 구성"
+                  value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "선택한 추가 기능 없음"}
                 />
-                <SummaryLine label="자료 준비도" value={selectedReadiness?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="자료 준비 상태" value={selectedReadiness?.label ?? "아직 고르는 중"} />
                 <SummaryLine label="희망 일정" value={selectedSchedule?.label ?? "아직 고르는 중"} />
-                <SummaryLine label="사이트 주소/호스팅" value={selectedDomainHosting?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="도메인 / 호스팅" value={selectedDomainHosting?.label ?? "아직 고르는 중"} />
                 <SummaryLine
                   label="적용 혜택"
                   value={selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "아직 선택 안 함"}
@@ -946,14 +1028,17 @@ export default function EstimateConversation() {
 
               <div className="soft-divider" />
 
-              {/* Base includes */}
+              {/* Guidance */}
               <div className="space-y-2">
-                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
-                <p className="text-sm leading-6 text-ink-muted">
-                  휴대폰/PC에서 보기 좋은 화면 제작, 문의 남기기, 메일 연결, 첫 오픈까지 기본으로 포함돼 있어요.
-                </p>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">안내 사항</p>
                 <p className="text-xs leading-5 text-ink-muted">
-                  지금 보이는 금액은 예상 범위예요. 사이트 주소/서버 사용료, 외부 결제 서비스 이용료, 유료 서비스 비용은 별도일 수 있어요.
+                  유지보수는 운영 점검과 소규모 수정 중심이며, 신규 기능 개발은 별도예요.
+                </p>
+                <p className="text-xs leading-5 text-ink/62">
+                  모든 견적은 템플릿 재활용이 아닌 맞춤 제작 기준으로 계산됩니다.
+                </p>
+                <p className="text-xs leading-5 text-ink/62">
+                  단순 최저가보다 완성도와 운영 편의성을 우선해 필요한 범위를 정직하게 안내드리고 있어요.
                 </p>
               </div>
 
@@ -1043,7 +1128,7 @@ function QuestionSection({
           className={[
             headerClassName ?? "",
             alignHeaderDesktop
-              ? "lg:grid lg:grid-rows-[auto_minmax(4.7rem,auto)_minmax(3.5rem,auto)] lg:content-start lg:gap-y-2"
+              ? "lg:grid lg:grid-rows-[auto_5rem_4rem] lg:content-start lg:gap-y-2"
               : "lg:flex lg:flex-col lg:justify-start",
           ].join(" ").trim()}
         >
@@ -1060,7 +1145,7 @@ function QuestionSection({
               question
             )}
           </p>
-          <p className={["mt-3 text-sm leading-6 text-ink/40", alignHeaderDesktop ? "lg:mt-0" : ""].join(" ")}>{helper}</p>
+          <p className={["mt-3 text-sm leading-6 text-ink/52", alignHeaderDesktop ? "lg:mt-0" : ""].join(" ")}>{helper}</p>
         </div>
         {children}
       </div>
@@ -1115,7 +1200,7 @@ function SummaryLine({
 }) {
   return (
     <div className="flex items-start justify-between gap-4 border-b border-black/6 pb-3 last:border-b-0 last:pb-0">
-      <span className="shrink-0 text-[10px] uppercase tracking-[0.28em] text-ink-soft">{label}</span>
+      <span className="shrink-0 text-[10px] uppercase tracking-[0.28em] text-ink/58">{label}</span>
       <span className="text-right text-sm leading-6 text-ink">{value}</span>
     </div>
   );

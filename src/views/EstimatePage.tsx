@@ -15,12 +15,12 @@ export default function EstimatePage() {
         background={false}
         title={
           <SmartLineBreak
-            text="복잡한 용어 없이, 필요한 범위를 함께 정리해볼게요."
+            text="정직한 커스텀 제작 기준으로 필요한 범위를 함께 정리해볼게요."
             maxCharsPerLine={13}
             maxLines={3}
           />
         }
-        description="몇 가지 질문에 답해주시면 대략적인 범위와 비용을 먼저 정리해드려요. 개발을 몰라도 전혀 괜찮아요."
+        description="몇 가지 질문에 답해주시면 필요한 범위와 예상 금액을 함께 정리해드릴게요. 모든 견적은 템플릿 재활용이 아닌 커스텀 제작 기준이며, 최종 금액은 기능 범위와 난이도에 따라 달라질 수 있어요."
       />
       <EstimateConversation />
     </div>
