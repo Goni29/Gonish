@@ -12,6 +12,7 @@ type Option = {
   description: string;
   id: string;
   label: string;
+  percent?: number;
   price: number;
   score: number;
 };
@@ -36,20 +37,97 @@ type NextStepField = SingleChoiceField | "discounts" | "features";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const defaultCharacterReply = "어려운 말 없이, 필요한 것들을 하나씩 편하게 정리해볼게요.";
+const MIN_START_PRICE = 59;
+const FAST_TRACK_PERCENT = 15;
 
 const projectTypeOptions: Option[] = [
-  { id: "landing", label: "가볍게 소개하는 페이지", description: "서비스나 브랜드 하나를 또렷하게 보여주는 소개형 사이트예요.", price: 45, score: 1 },
-  { id: "brand-site", label: "브랜드 홈페이지", description: "브랜드 분위기와 신뢰를 함께 전달하는 일반적인 홈페이지예요.", price: 75, score: 2 },
-  { id: "renewal", label: "기존 사이트 리뉴얼", description: "이미 있는 사이트를 더 보기 좋고 이해하기 쉽게 정리하는 작업이에요.", price: 65, score: 2 },
-  { id: "conversion", label: "문의·예약 중심 사이트", description: "상담 요청이나 예약 연결이 중요한 흐름형 사이트예요.", price: 90, score: 3 },
-  { id: "unsure", label: "아직 방향을 정하는 중이에요", description: "괜찮아요. 필요한 흐름부터 함께 정리해 드릴게요.", price: 70, score: 2 },
+  {
+    id: "landing",
+    label: "홍보·브랜드 랜딩 페이지",
+    description: "모바일과 PC에서 보기 좋게 만든 소개형 1페이지예요. 문의 남기기와 첫 오픈까지 포함돼요.",
+    price: 59,
+    score: 1,
+  },
+  {
+    id: "corporate-site",
+    label: "기업형·소개형 사이트",
+    description: "메인과 여러 소개 페이지로 회사·브랜드 정보를 차근차근 보여주는 기본 구성입니다.",
+    price: 119,
+    score: 2,
+  },
+  {
+    id: "member-site",
+    label: "회원 기능 포함 사이트",
+    description: "회원가입, 로그인, 내 정보 화면처럼 사람마다 다르게 보이는 화면이 들어가는 구성이에요.",
+    price: 169,
+    score: 3,
+  },
+  {
+    id: "webapp",
+    label: "관리자·업무형 웹앱",
+    description: "관리자가 직접 관리할 수 있는 화면과 업무 흐름이 함께 들어가는 서비스형 구성이에요.",
+    price: 249,
+    score: 4,
+  },
+  {
+    id: "unsure",
+    label: "아직 어떤 유형이 맞는지 모르겠어요",
+    description: "괜찮아요. 목적을 먼저 듣고 가장 가까운 시작 패키지부터 같이 잡아드릴게요.",
+    price: 119,
+    score: 2,
+  },
 ];
 
 const pageScopeOptions: Option[] = [
-  { id: "small", label: "1~3페이지 정도", description: "메인, 소개, 문의처럼 비교적 단순한 구성에 가까워요.", price: 0, score: 1 },
-  { id: "medium", label: "4~6페이지 정도", description: "브랜드 소개, 서비스, 사례, 문의까지 담는 가장 일반적인 범위예요.", price: 25, score: 2 },
-  { id: "large", label: "7페이지 이상", description: "콘텐츠가 많거나 메뉴가 여러 갈래로 나뉘는 편이에요.", price: 55, score: 3 },
-  { id: "unknown", label: "아직 잘 모르겠어요", description: "괜찮아요. 메뉴를 함께 정리하면서 페이지 수를 잡아도 충분해요.", price: 20, score: 2 },
+  {
+    id: "included",
+    label: "기본 패키지 범위 안에서 시작",
+    description: "선택한 프로젝트 유형에 포함된 기본 페이지·화면 범위로 먼저 진행해요.",
+    price: 0,
+    score: 0,
+  },
+  {
+    id: "static-page",
+    label: "정적 페이지 추가",
+    description: "소개 글, 이용 안내처럼 읽는 내용 중심 페이지가 더 필요할 때 선택해요.",
+    price: 12,
+    score: 1,
+  },
+  {
+    id: "form-page",
+    label: "폼 페이지 추가",
+    description: "문의·신청처럼 사용자가 직접 내용을 입력하는 페이지가 더 필요할 때 선택해요.",
+    price: 22,
+    score: 1,
+  },
+  {
+    id: "list-detail",
+    label: "리스트 + 상세 화면 세트",
+    description: "목록에서 고르고, 눌러서 자세히 보는 흐름이 필요한 화면 구성이에요.",
+    price: 48,
+    score: 2,
+  },
+  {
+    id: "dashboard",
+    label: "대시보드·마이페이지 성격 화면",
+    description: "내 정보나 운영 현황처럼 사람별·관리용 화면이 더 필요할 때 선택해요.",
+    price: 42,
+    score: 2,
+  },
+  {
+    id: "multi-add",
+    label: "추가 화면이 여러 개 예정",
+    description: "추가 페이지/화면이 3개 이상으로 확장될 가능성이 높아요.",
+    price: 84,
+    score: 3,
+  },
+  {
+    id: "unknown",
+    label: "추가 화면 범위가 아직 미정",
+    description: "괜찮아요. 필수 화면부터 먼저 잡고, 나머지는 2차로 나누어도 충분해요.",
+    price: 24,
+    score: 2,
+  },
 ];
 
 const readinessOptions: Option[] = [
@@ -61,7 +139,14 @@ const readinessOptions: Option[] = [
 const scheduleOptions: Option[] = [
   { id: "relaxed", label: "여유 있게 진행하고 싶어요", description: "브랜드 방향과 디테일을 충분히 맞춰 가는 방식이 좋아요.", price: 0, score: 0 },
   { id: "normal", label: "1~2개월 안에 진행하고 싶어요", description: "가장 일반적인 홈페이지 제작 속도에 가까워요.", price: 0, score: 1 },
-  { id: "fast", label: "조금 빠르게 필요해요", description: "일정이 가까워 우선순위를 빠르게 정해야 하는 경우예요.", price: 30, score: 2 },
+  {
+    id: "fast",
+    label: "긴급 납기로 빠르게 필요해요",
+    description: "짧은 일정 안에 핵심 화면부터 먼저 오픈해야 하는 경우예요.",
+    price: 0,
+    percent: FAST_TRACK_PERCENT,
+    score: 2,
+  },
 ];
 
 const domainHostingOptions: Option[] = [
@@ -73,17 +158,31 @@ const domainHostingOptions: Option[] = [
 ];
 
 const featureOptions: Option[] = [
-  { id: "inquiry", label: "기본 문의 받기", description: "상담 내용과 연락처를 남기는 기본 문의 흐름이에요.", price: 0, score: 0 },
-  { id: "gallery", label: "포트폴리오·사진 모음", description: "시공 사례나 작업 사진처럼 여러 이미지를 보여주는 구성이에요.", price: 15, score: 1 },
-  { id: "booking", label: "예약·신청 흐름", description: "날짜나 시간 선택, 신청서 작성처럼 실제로 입력받는 기능이에요.", price: 45, score: 2 },
-  { id: "multilingual", label: "다국어", description: "같은 내용을 한국어·영어처럼 여러 언어로 보여주는 구성이에요.", price: 25, score: 1 },
-  { id: "commerce", label: "상품 판매·결제", description: "장바구니나 결제처럼 실제 판매 흐름이 들어가는 경우예요.", price: 90, score: 3 },
-  { id: "member", label: "로그인·회원 기능", description: "회원 구분이나 개인 화면이 필요한 경우에 가까워요.", price: 55, score: 2 },
+  { id: "inquiry", label: "문의 남기기", description: "방문자가 이름과 연락처를 남기고 문의를 보낼 수 있어요.", price: 0, score: 0 },
+  { id: "social-login", label: "간편 로그인", description: "구글·카카오 같은 계정으로 빠르게 로그인할 수 있어요.", price: 26, score: 1 },
+  { id: "role-permission", label: "사람별 화면 나누기", description: "일반 사용자, 운영자처럼 보는 화면과 할 일을 나눌 수 있어요.", price: 38, score: 2 },
+  { id: "file-upload", label: "파일 올리기", description: "사진이나 문서를 직접 올릴 수 있어요.", price: 24, score: 1 },
+  { id: "search-filter", label: "찾기·걸러보기", description: "원하는 항목을 검색하거나 조건으로 쉽게 고를 수 있어요.", price: 26, score: 1 },
+  { id: "rich-editor", label: "글쓰기 편집창", description: "공지나 소개 글을 보기 좋게 작성할 수 있어요.", price: 34, score: 2 },
+  { id: "crud-board", label: "공지·게시판 관리", description: "글을 쓰고, 고치고, 지우고, 목록으로 보는 기능이에요.", price: 69, score: 3 },
+  { id: "payment", label: "온라인 결제 받기", description: "사이트 안에서 결제를 받을 수 있어요.", price: 89, score: 3 },
+  { id: "subscription", label: "정기 결제 받기", description: "매달 또는 일정 주기로 결제가 반복되도록 만들 수 있어요.", price: 129, score: 4 },
+  { id: "reservation", label: "예약 받기", description: "날짜와 시간을 골라 예약을 받고 관리할 수 있어요.", price: 95, score: 3 },
+  { id: "notification-email", label: "자동 이메일 보내기", description: "가입·문의·예약 시 안내 메일이 자동으로 가요.", price: 16, score: 1 },
+  { id: "notification-sms", label: "문자·알림 보내기", description: "중요한 알림을 문자나 메신저로 자동 발송할 수 있어요.", price: 29, score: 1 },
+  { id: "map", label: "지도 보여주기", description: "매장 위치나 길찾기 정보를 지도에서 바로 보여줄 수 있어요.", price: 32, score: 1 },
+  { id: "external-api", label: "다른 서비스와 연결", description: "이미 쓰는 다른 서비스와 데이터를 주고받을 수 있어요.", price: 48, score: 2 },
+  { id: "admin-dashboard", label: "관리자 요약 화면", description: "운영자가 한눈에 상황을 볼 수 있는 화면을 만들어요.", price: 59, score: 2 },
+  { id: "admin-module", label: "관리자 목록 관리", description: "회원·문의·상품 같은 목록을 관리자가 직접 관리할 수 있어요.", price: 48, score: 2 },
+  { id: "admin-permission", label: "관리자 권한 나누기", description: "관리자마다 할 수 있는 일을 다르게 설정할 수 있어요.", price: 36, score: 1 },
+  { id: "stats-report", label: "운영 현황 보기", description: "가입, 문의, 매출 같은 흐름을 보기 쉽게 확인할 수 있어요.", price: 54, score: 2 },
+  { id: "excel-export", label: "엑셀로 내려받기", description: "목록 데이터를 엑셀 파일로 저장할 수 있어요.", price: 28, score: 1 },
+  { id: "maintenance", label: "오픈 후 관리 도와주기", description: "오픈 뒤에 작은 수정이나 점검을 도와드리는 옵션이에요.", price: 25, score: 1 },
 ];
 
 const discountOptions: Option[] = [
-  { id: "portfolio", label: "포트폴리오로 소개되어도 괜찮아요", description: "완성 후 일부 화면과 결과물을 Gonish 포트폴리오에 소개할 수 있으면 5만 원 할인돼요.", price: -5, score: 0 },
-  { id: "review", label: "작업 후 짧은 리뷰를 남길 수 있어요", description: "작업이 끝난 뒤 텍스트 후기나 짧은 리뷰를 남겨주시면 5만 원 할인돼요.", price: -5, score: 0 },
+  { id: "portfolio", label: "포트폴리오 소개에 동의할게요", description: "완성 후 일부 화면을 포트폴리오 예시로 소개해도 괜찮아요.", price: -5, score: 0 },
+  { id: "review", label: "작업 후 짧은 후기를 남길게요", description: "작업이 끝난 뒤 간단한 후기 작성에 참여할 수 있어요.", price: -5, score: 0 },
 ];
 
 const initialForm: EstimateForm = {
@@ -106,23 +205,30 @@ function findOption(options: Option[], id: string) {
 }
 
 function getEstimateBand(score: number) {
-  if (score <= 3) {
+  if (score <= 5) {
     return {
-      label: "가벼운 소개형",
-      explanation: "메뉴가 많지 않고, 브랜드 소개와 문의 연결에 집중하는 심플한 사이트예요.",
+      label: "랜딩·소개 중심",
+      explanation: "핵심 소개와 문의 연결 중심으로 시작하는 비교적 가벼운 범위예요.",
     };
   }
 
-  if (score <= 7) {
+  if (score <= 13) {
     return {
-      label: "브랜드 홈페이지",
-      explanation: "브랜드 소개부터 서비스, 사례, 문의까지 자연스럽게 담기는 가장 일반적인 홈페이지예요.",
+      label: "기업형·브랜드형",
+      explanation: "서비스 소개와 운영 기본 기능이 함께 들어가는 가장 일반적인 비즈니스 홈페이지 범위예요.",
+    };
+  }
+
+  if (score <= 22) {
+    return {
+      label: "회원·운영 기능 포함",
+      explanation: "가입, 예약, 알림 같은 실제 사용 기능이 함께 들어가는 단계예요.",
     };
   }
 
   return {
-    label: "기능이 포함된 프로젝트",
-    explanation: "콘텐츠가 많거나 예약, 판매, 회원 기능처럼 실제로 동작하는 부분이 들어가는 프로젝트예요.",
+    label: "관리자·업무형 웹앱",
+    explanation: "운영팀이 매일 쓰는 관리 화면과 사용자 기능이 함께 들어가는 큰 범위예요.",
   };
 }
 
@@ -136,81 +242,93 @@ function formatPriceRange(min: number, max: number) {
 
 function getProjectTypeStep(form: EstimateForm) {
   if (form.projectType === "landing") {
-    return "소개형 사이트라면 방문자가 처음 5초 안에 무엇을 알면 되는지부터 정리하면 흐름이 쉬워져요.";
+    return "랜딩형은 방문자가 들어오자마자 무엇을 해야 하는지 한눈에 보이게 정리하면 좋아요.";
   }
 
-  if (form.projectType === "brand-site") {
-    return "브랜드 홈페이지는 보통 브랜드 소개, 서비스, 사례, 문의 흐름으로 잡으면 가장 이해하기 쉬워요.";
+  if (form.projectType === "corporate-site") {
+    return "기업형 소개 사이트는 회사 소개, 서비스, 사례, 문의 순서로 잡으면 방문자 입장에서 가장 이해하기 쉬워요.";
   }
 
-  if (form.projectType === "renewal") {
-    return "리뉴얼이라면 기존 사이트에서 그대로 둘 것과 바꿀 것을 먼저 나누면 범위가 훨씬 빨리 선명해져요.";
+  if (form.projectType === "member-site") {
+    return "회원 기능이 들어가면 로그인 전/후에 화면이 어떻게 달라지는지부터 잡아두면 범위를 훨씬 정확하게 정리할 수 있어요.";
   }
 
-  if (form.projectType === "conversion") {
-    return "문의나 예약이 중요한 사이트라면, 방문자가 어디서 클릭하고 어떤 정보를 남기는지 흐름부터 정하는 게 좋아요.";
+  if (form.projectType === "webapp") {
+    return "업무형 웹앱은 누가 어떤 화면을 쓰는지 먼저 나누면 전체 구조를 훨씬 쉽게 잡을 수 있어요.";
   }
 
   if (form.projectType === "unsure") {
-    return "방향을 정하는 중이라면 이 사이트로 가장 먼저 얻고 싶은 결과 한 가지만 정해도 출발이 훨씬 쉬워져요.";
+    return "유형이 아직 애매하다면 이 프로젝트로 가장 먼저 해결하고 싶은 문제 1개만 정해도 시작이 훨씬 쉬워져요.";
   }
 
   return "어떤 사이트를 만들고 싶은지 먼저 정하면 전체 견적 흐름이 훨씬 쉬워져요.";
 }
 
 function getPageScopeStep(form: EstimateForm) {
-  if (form.pageScope === "small") {
-    if (form.projectType === "landing") {
-      return "가볍게 소개하는 사이트라면 메인, 소개, 문의 정도의 1~3페이지로 시작해도 충분해 보여요.";
-    }
-
-    if (form.projectType === "brand-site") {
-      return "브랜드 홈페이지를 작게 시작한다면, 핵심 서비스와 신뢰 포인트만 먼저 담아도 충분해요.";
-    }
-
-    return "1~3페이지 규모라면 핵심 소개와 문의 흐름 중심으로 가볍게 시작하기 좋아요.";
+  if (form.pageScope === "included") {
+    return "기본 패키지 범위 안에서 시작하면 일정과 비용을 안정적으로 잡기 좋아요.";
   }
 
-  if (form.pageScope === "medium") {
-    return "4~6페이지 규모라면 브랜드 소개, 서비스, 사례, 문의 흐름으로 잡는 구성이 가장 자연스러워요.";
+  if (form.pageScope === "static-page") {
+    return "정적 페이지는 콘텐츠만 확정되면 빠르게 추가할 수 있어서 1차 공개 범위를 넓히기 좋아요.";
   }
 
-  if (form.pageScope === "large") {
-    return "페이지가 많은 편이라면 1차 공개 범위와 나중에 추가할 범위를 먼저 나누는 게 좋아요.";
+  if (form.pageScope === "form-page") {
+    return "입력 페이지는 어떤 칸을 받는지, 제출 후 어떤 안내를 보여줄지만 먼저 정해도 훨씬 쉬워져요.";
+  }
+
+  if (form.pageScope === "list-detail") {
+    return "목록+상세 화면은 목록에서 보여줄 항목과 상세에서 보여줄 내용을 먼저 정하면 좋아요.";
+  }
+
+  if (form.pageScope === "dashboard") {
+    return "요약 화면은 첫 화면에서 꼭 보여줄 정보 3~5개만 먼저 정해도 방향이 금방 잡혀요.";
+  }
+
+  if (form.pageScope === "multi-add") {
+    return "추가 화면이 여러 개인 경우엔 1차 공개 화면과 2차 확장 화면을 나누면 일정과 예산을 안정적으로 관리할 수 있어요.";
   }
 
   if (form.pageScope === "unknown") {
-    return "페이지 수가 아직 미정이라면 메인, 소개, 문의처럼 꼭 필요한 메뉴부터 먼저 적어보면 충분해요.";
+    return "추가 화면이 아직 미정이라면 지금 꼭 필요한 화면 2~3개만 먼저 확정해도 견적이 훨씬 정확해져요.";
   }
 
-  return "페이지 규모를 정하면 필요한 작업 범위가 훨씬 또렷해져요.";
+  return "추가 화면 범위를 정하면 필요한 작업 범위가 훨씬 또렷해져요.";
 }
 
 function getFeatureStep(form: EstimateForm) {
   const featureIds = form.features.filter((feature) => feature !== "inquiry");
 
-  if (featureIds.length >= 2) {
-    return "기능이 여러 개 들어가면 이번 오픈에 꼭 필요한 기능과 나중에 붙일 기능을 나누는 게 견적을 가장 선명하게 만들어줘요.";
+  if (featureIds.length >= 6) {
+    return "기능이 많이 들어가는 프로젝트예요. 1차 오픈 기능과 2차 확장 기능을 나누면 일정과 비용을 훨씬 현실적으로 설계할 수 있어요.";
   }
 
-  if (featureIds.includes("commerce")) {
-    return "판매 기능이 들어가면 상품 수, 결제 방식, 배송이나 환불 정책까지 같이 봐야 견적이 정확해져요.";
+  if (featureIds.length >= 3) {
+    return "기능이 여러 개 들어가면 우선순위를 나눠서 핵심 기능부터 오픈하는 방식이 견적을 가장 선명하게 만들어줘요.";
   }
 
-  if (featureIds.includes("booking")) {
-    return "예약이나 신청 기능은 어떤 정보를 받을지와 접수 후 어떻게 확정할지 먼저 정하면 좋아요.";
+  if (featureIds.includes("payment") || featureIds.includes("subscription")) {
+    return "결제 기능은 결제가 안 됐을 때 어떻게 안내할지까지 정해두면 진행이 훨씬 안정적이에요.";
   }
 
-  if (featureIds.includes("member")) {
-    return "로그인·회원 기능은 회원마다 무엇을 보고 무엇을 할 수 있는지부터 정해야 범위가 정확해져요.";
+  if (featureIds.includes("reservation")) {
+    return "예약 기능은 가능한 시간, 취소 방법, 중복 예약 처리만 먼저 정해도 범위가 또렷해져요.";
   }
 
-  if (featureIds.includes("multilingual")) {
-    return "다국어는 몇 개 언어를 동시에 열지와 번역 원고를 누가 준비할지 먼저 정하면 훨씬 쉬워져요.";
+  if (featureIds.includes("external-api")) {
+    return "다른 서비스와 연결하는 기능은 연결 실패 시 안내 방법을 미리 정하면 운영이 훨씬 편해져요.";
   }
 
-  if (featureIds.includes("gallery")) {
-    return "사진이나 사례가 많다면 카테고리 기준과 대표 이미지 규칙부터 잡아두면 훨씬 정돈돼 보여요.";
+  if (featureIds.includes("admin-module") || featureIds.includes("admin-dashboard") || featureIds.includes("admin-permission")) {
+    return "관리자 기능은 누가 무엇을 수정할 수 있는지만 먼저 정하면 실수가 크게 줄어요.";
+  }
+
+  if (featureIds.includes("crud-board") || featureIds.includes("rich-editor")) {
+    return "글쓰기 기능은 꼭 필요한 입력칸과 수정 절차만 먼저 정해도 충분히 시작할 수 있어요.";
+  }
+
+  if (featureIds.includes("search-filter") || featureIds.includes("stats-report")) {
+    return "찾기·현황 기능은 꼭 필요한 조건 몇 가지만 먼저 정하면 화면이 복잡해지지 않아요.";
   }
 
   if (form.features.includes("inquiry")) {
@@ -270,7 +388,7 @@ function getScheduleStep(form: EstimateForm) {
   }
 
   if (form.schedule === "fast") {
-    return "일정이 빠르다면 꼭 필요한 페이지와 기능만 먼저 공개하는 방식으로 잡는 게 가장 안전해요.";
+    return "일정이 빠르면 꼭 필요한 화면부터 먼저 열고, 나머지는 다음 단계로 나누는 방식이 가장 안전해요.";
   }
 
   return undefined;
@@ -285,11 +403,11 @@ function getDiscountStep(form: EstimateForm) {
   }
 
   if (hasPortfolio) {
-    return "포트폴리오 소개 혜택을 반영했어요. 리뷰도 가능하면 추가로 5만 원 더 반영돼요.";
+    return "포트폴리오 소개 동의가 반영됐어요. 후기도 가능하면 함께 체크해 주세요.";
   }
 
   if (hasReview) {
-    return "리뷰 혜택을 반영했어요. 포트폴리오 소개도 가능하면 추가로 5만 원 더 반영돼요.";
+    return "후기 참여 동의가 반영됐어요. 포트폴리오 소개도 가능하면 함께 체크해 주세요.";
   }
 
   return "혜택은 가능한 항목만 체크하시면 되고, 선택하지 않으셔도 괜찮아요.";
@@ -376,8 +494,6 @@ export default function EstimateConversation() {
     return getEstimateBand(score);
   }, [selectedFeatures, selectedPageScope, selectedReadiness, selectedSchedule, selectedType]);
 
-  const totalDiscount = useMemo(() => Math.abs(selectedDiscounts.reduce((sum, option) => sum + option.price, 0)), [selectedDiscounts]);
-
   const priceEstimate = useMemo(() => {
     const hasSelection =
       Boolean(form.projectType) ||
@@ -389,35 +505,49 @@ export default function EstimateConversation() {
 
     if (!hasSelection) {
       return {
-        min: 45,
-        max: 80,
-        label: formatPriceRange(45, 80),
-        description: "가장 기본적인 소개형 사이트 기준이에요. 항목을 선택하시면 더 정확해져요.",
+        basePrice: MIN_START_PRICE,
+        min: MIN_START_PRICE,
+        max: 95,
+        urgentSurcharge: 0,
+        label: formatPriceRange(MIN_START_PRICE, 95),
+        description: "기본 랜딩 시작가 기준이에요. 항목을 고를수록 안내 범위가 더 정확해져요.",
       };
     }
 
-    const rawBasePrice =
-      (selectedType?.price ?? 45) +
+    const subtotalBeforeUrgent =
+      (selectedType?.price ?? MIN_START_PRICE) +
       (selectedPageScope?.price ?? 0) +
       (selectedReadiness?.price ?? 0) +
+      selectedFeatures.reduce((sum, option) => sum + option.price, 0);
+
+    const urgentPercent = selectedSchedule?.percent ?? 0;
+    const urgentSurcharge = urgentPercent > 0 ? roundToFive(subtotalBeforeUrgent * (urgentPercent / 100)) : 0;
+
+    const discountedBase =
+      subtotalBeforeUrgent +
+      urgentSurcharge +
       (selectedSchedule?.price ?? 0) +
-      selectedFeatures.reduce((sum, option) => sum + option.price, 0) +
       selectedDiscounts.reduce((sum, option) => sum + option.price, 0);
 
-    const min = roundToFive(Math.max(45, rawBasePrice));
-    const bufferBase = min < 80 ? 15 : min < 150 ? 20 : min < 240 ? 30 : 40;
-    const featureBuffer = selectedFeatures.length >= 2 ? 10 : 0;
-    const largeScopeBuffer = form.pageScope === "large" ? 10 : 0;
+    const min = roundToFive(Math.max(MIN_START_PRICE, discountedBase));
+    const bufferBase = min < 120 ? 20 : min < 240 ? 30 : min < 400 ? 40 : 55;
+    const featureBuffer = selectedFeatures.length >= 6 ? 30 : selectedFeatures.length >= 3 ? 15 : 0;
+    const largeScopeBuffer =
+      form.pageScope === "multi-add" ? 15 : form.pageScope === "dashboard" || form.pageScope === "list-detail" ? 10 : 0;
     const max = roundToFive(min + bufferBase + featureBuffer + largeScopeBuffer);
 
     return {
+      basePrice: min,
       min,
       max,
+      urgentSurcharge,
       label: formatPriceRange(min, max),
       description:
-        selectedDiscounts.length > 0
-          ? "혜택까지 반영하면 이 정도 범위에서 시작하시는 게 좋아 보여요."
-          : "지금 선택하신 기준으로 보면 이 정도 범위에서 시작하시면 좋을 것 같아요.",
+        urgentSurcharge > 0
+          ? `긴급 납기 가산(약 ${urgentSurcharge}만 원)이 반영된 범위예요.`
+          : selectedDiscounts.length > 0
+            ? "혜택까지 반영하면 이 정도 범위에서 시작하시는 게 좋아 보여요."
+            : "지금 선택하신 기준으로 보면 이 정도 범위에서 시작하시면 좋아요.",
     };
   }, [
     form.discounts.length,
@@ -488,7 +618,7 @@ export default function EstimateConversation() {
         `브랜드명: ${form.brand || "-"}`,
         `답변 받을 연락처: ${form.reply || "-"}`,
         `프로젝트 방향: ${selectedType?.label || "-"}`,
-        `페이지 규모: ${selectedPageScope?.label || "-"}`,
+        `추가 화면 범위: ${selectedPageScope?.label || "-"}`,
         `자료 준비도: ${selectedReadiness?.label || "-"}`,
         `일정: ${selectedSchedule?.label || "-"}`,
         `도메인/호스팅 준비: ${selectedDomainHosting?.label || "-"}`,
@@ -531,7 +661,7 @@ export default function EstimateConversation() {
               </p>
               <p className="max-w-3xl text-sm leading-7 text-ink-muted md:text-base">
                 정확한 금액을 바로 정하는 게 아니라, 어떤 것들이 필요한지 먼저 가볍게 정리해보는 거예요.
-                페이지 수는 메뉴 수라고 생각하시면 되고, 기능은 예약이나 결제처럼 실제로 동작하는 부분이에요.
+                추가 화면은 정적/폼/리스트·상세처럼 유형으로 생각하시면 쉽고, 기능은 결제나 예약처럼 실제로 동작하는 부분이에요.
               </p>
             </motion.div>
 
@@ -561,8 +691,8 @@ export default function EstimateConversation() {
 
                 <QuestionSection
                   number="02"
-                  question="생각하고 있는 페이지 규모는 어느 정도인가요?"
-                  helper="페이지는 보통 메뉴 수와 비슷하게 생각하시면 쉬워요. 예를 들면 메인 / 소개 / 서비스 / 문의처럼요."
+                  question="기본 범위 밖에 추가될 화면이 있나요?"
+                  helper="페이지가 더 필요하면 어떤 종류인지 골라주세요. 읽는 페이지인지, 입력하는 페이지인지부터 정하면 쉬워요."
                 >
                   <div className="grid gap-2 md:grid-cols-2">
                     {pageScopeOptions.map((option) => (
@@ -580,7 +710,7 @@ export default function EstimateConversation() {
                 <QuestionSection
                   number="03"
                   question="추가로 필요한 기능이 있나요?"
-                  helper="기능은 사용자가 버튼을 누르거나 정보를 입력했을 때 실제로 동작하는 부분이라고 생각하시면 쉬워요."
+                  helper="기능은 실제로 움직이는 부분이에요. 필요한 것만 체크해도 충분해요."
                 >
                   <div className="grid gap-2 md:grid-cols-2">
                     {featureOptions.map((option) => (
@@ -600,8 +730,10 @@ export default function EstimateConversation() {
                     number="04"
                     question="자료는 어느 정도 준비되어 있나요?"
                     helper="이 부분이 비어 있어도 괜찮아요. 어떤 자료가 필요한지부터 같이 정리할 수 있어요."
+                    headerClassName="lg:h-[13.5rem]"
+                    alignHeaderDesktop
                   >
-                    <div className="space-y-2">
+                    <div className="grid gap-2">
                       {readinessOptions.map((option) => (
                         <ChoiceButton
                           key={option.id}
@@ -616,10 +748,18 @@ export default function EstimateConversation() {
 
                   <QuestionSection
                     number="05"
-                    question="희망 일정은 어느 정도인가요?"
-                    helper="일정은 금액뿐 아니라 작업 순서와 우선순위에도 영향을 줘요."
+                    question={
+                      <>
+                        희망 일정은
+                        <br />
+                        어느 정도인가요?
+                      </>
+                    }
+                    helper="일정은 작업 순서와 우선순위에 영향을 줘요. 빠른 일정일수록 꼭 필요한 것부터 먼저 여는 방식이 좋아요."
+                    headerClassName="lg:h-[13.5rem]"
+                    alignHeaderDesktop
                   >
-                    <div className="space-y-2">
+                    <div className="grid gap-2">
                       {scheduleOptions.map((option) => (
                         <ChoiceButton
                           key={option.id}
@@ -654,7 +794,7 @@ export default function EstimateConversation() {
                 <QuestionSection
                   number="07"
                   question="이런 혜택이 가능하실까요?"
-                  helper="포트폴리오 소개 가능과 리뷰 작성은 각각 5만 원씩 반영돼요. 두 항목 모두 선택하셔도 최저가는 45만 원 아래로 내려가지 않아요."
+                  helper="가능한 항목만 편하게 체크해 주세요. 선택하지 않으셔도 괜찮아요."
                 >
                   <div className="space-y-2">
                     {discountOptions.map((option) => (
@@ -764,6 +904,12 @@ export default function EstimateConversation() {
                 <p className="mt-2 font-display text-[clamp(2rem,3vw,2.8rem)] leading-[0.95] text-brand">
                   <SmartLineBreak text={priceEstimate.label} maxCharsPerLine={11} maxLines={3} />
                 </p>
+                <p className="mt-3 text-xs leading-5 text-ink-muted">선택 반영 기준가: 약 {priceEstimate.basePrice}만 원</p>
+                {priceEstimate.urgentSurcharge > 0 ? (
+                  <p className="mt-1 text-xs leading-5 text-ink-muted">
+                    긴급 납기 가산: 약 {priceEstimate.urgentSurcharge}만 원
+                  </p>
+                ) : null}
                 <p className="mt-3 text-sm leading-6 text-ink-muted">{priceEstimate.description}</p>
               </div>
 
@@ -781,7 +927,7 @@ export default function EstimateConversation() {
               {/* Summary */}
               <div className="space-y-2.5 text-sm leading-6 text-ink-muted">
                 <SummaryLine label="프로젝트 방향" value={selectedType?.label ?? "아직 고르는 중"} />
-                <SummaryLine label="페이지 규모" value={selectedPageScope?.label ?? "아직 고르는 중"} />
+                <SummaryLine label="추가 화면 범위" value={selectedPageScope?.label ?? "아직 고르는 중"} />
                 <SummaryLine
                   label="필요 기능"
                   value={selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "기본만으로 시작"}
@@ -801,10 +947,10 @@ export default function EstimateConversation() {
               <div className="space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
                 <p className="text-sm leading-6 text-ink-muted">
-                  반응형 웹 제작, 기본 문의 흐름, 메일 세팅, 배포 연결까지 기본으로 포함돼 있어요.
+                  휴대폰/PC에서 보기 좋은 화면 제작, 문의 남기기, 메일 연결, 첫 오픈까지 기본으로 포함돼 있어요.
                 </p>
                 <p className="text-xs leading-5 text-ink-muted">
-                  지금 보이는 금액은 예상 범위예요. 도메인, 호스팅, 유료 플러그인, 외부 결제 수수료는 별도일 수 있어요.
+                  지금 보이는 금액은 예상 범위예요. 사이트 주소/서버 사용료, 외부 결제 서비스 이용료, 유료 서비스 비용은 별도일 수 있어요.
                 </p>
               </div>
 
@@ -861,15 +1007,19 @@ export default function EstimateConversation() {
 /* ── Sub-components ── */
 
 function QuestionSection({
+  alignHeaderDesktop,
   children,
   helper,
+  headerClassName,
   number,
   question,
 }: {
+  alignHeaderDesktop?: boolean;
   children: ReactNode;
   helper: string;
+  headerClassName?: string;
   number: string;
-  question: string;
+  question: ReactNode;
 }) {
   return (
     <motion.section
@@ -886,12 +1036,28 @@ function QuestionSection({
       </span>
 
       <div className="space-y-5">
-        <div>
+        <div
+          className={[
+            headerClassName ?? "",
+            alignHeaderDesktop
+              ? "lg:grid lg:grid-rows-[auto_minmax(4.7rem,auto)_minmax(3.5rem,auto)] lg:content-start lg:gap-y-2"
+              : "lg:flex lg:flex-col lg:justify-start",
+          ].join(" ").trim()}
+        >
           <span className="font-display text-[clamp(2.4rem,4vw,3.6rem)] leading-none text-brand/12">{number}</span>
-          <p className="mt-2 font-display text-[clamp(1.6rem,2.5vw,2.2rem)] leading-[1.1] text-ink">
-            <SmartLineBreak text={question} maxCharsPerLine={16} maxLines={3} />
+          <p
+            className={[
+              "mt-2 font-display text-[clamp(1.6rem,2.5vw,2.2rem)] leading-[1.1] text-ink",
+              alignHeaderDesktop ? "lg:mt-0" : "",
+            ].join(" ").trim()}
+          >
+            {typeof question === "string" ? (
+              <SmartLineBreak text={question} maxCharsPerLine={16} maxLines={3} />
+            ) : (
+              question
+            )}
           </p>
-          <p className="mt-3 text-sm leading-6 text-ink/40">{helper}</p>
+          <p className={["mt-3 text-sm leading-6 text-ink/40", alignHeaderDesktop ? "lg:mt-0" : ""].join(" ")}>{helper}</p>
         </div>
         {children}
       </div>
