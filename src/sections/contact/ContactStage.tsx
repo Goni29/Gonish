@@ -10,12 +10,14 @@ type FormState = {
   message: string;
   name: string;
   project: string;
+  reply: string;
   tone: string;
 };
 
 const initialFormState: FormState = {
   name: "",
   project: "",
+  reply: "",
   tone: "",
   message: "",
 };
@@ -56,6 +58,12 @@ export default function ContactStage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!form.reply.trim()) {
+      setStatusMessage("답변 받으실 연락처를 남겨주세요. 이메일이나 전화번호 중 편한 쪽으로요.");
+      return;
+    }
+
     triggerSmile();
 
     if (contactEmail) {
@@ -63,6 +71,7 @@ export default function ContactStage() {
       const body = encodeURIComponent(
         [
           `이름: ${form.name || "-"}`,
+          `답변 받을 연락처: ${form.reply || "-"}`,
           `프로젝트: ${form.project || "-"}`,
           `원하는 분위기: ${form.tone || "-"}`,
           "",
@@ -150,6 +159,17 @@ export default function ContactStage() {
                 </label>
 
                 <label className="rounded-[1.5rem] border border-black/10 bg-white/78 p-4 backdrop-blur-xl">
+                  <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Reply to</span>
+                  <input
+                    name="reply"
+                    value={form.reply}
+                    onChange={handleChange}
+                    placeholder="이메일 또는 전화번호"
+                    className="mt-3 w-full border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink/32"
+                  />
+                </label>
+
+                <label className="rounded-[1.5rem] border border-black/10 bg-white/78 p-4 backdrop-blur-xl">
                   <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Message</span>
                   <textarea
                     name="message"
@@ -169,6 +189,15 @@ export default function ContactStage() {
             </div>
           </div>
         </div>
+      </div>
+      {/* ── Cross-link to Estimate ── */}
+      <div className="mt-16 flex flex-col items-center gap-4 text-center">
+        <p className="text-sm leading-6 text-ink-muted">
+          본격적으로 프로젝트를 의뢰하고 싶으신가요? 범위와 비용을 함께 정리해드려요.
+        </p>
+        <BrandButton to="/estimate" variant="ghost">
+          견적 알아보기
+        </BrandButton>
       </div>
     </section>
   );

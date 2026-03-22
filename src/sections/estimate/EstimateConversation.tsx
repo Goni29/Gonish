@@ -677,7 +677,7 @@ export default function EstimateConversation() {
                   <div className="space-y-5">
                     <div className="grid gap-5 md:grid-cols-2">
                       <label className="group block">
-                        <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Name</span>
+                        <span className="block text-[10px] uppercase tracking-[0.32em] text-ink">Name</span>
                         <input
                           name="name"
                           value={form.name}
@@ -687,7 +687,7 @@ export default function EstimateConversation() {
                         />
                       </label>
                       <label className="group block">
-                        <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Brand</span>
+                        <span className="block text-[10px] uppercase tracking-[0.32em] text-ink">Brand</span>
                         <input
                           name="brand"
                           value={form.brand}
@@ -698,7 +698,7 @@ export default function EstimateConversation() {
                       </label>
                     </div>
                     <label className="block">
-                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Reply</span>
+                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink">Reply</span>
                       <input
                         name="reply"
                         value={form.reply}
@@ -708,7 +708,7 @@ export default function EstimateConversation() {
                       />
                     </label>
                     <label className="block">
-                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Goal</span>
+                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink">Goal</span>
                       <input
                         name="goal"
                         value={form.goal}
@@ -718,7 +718,7 @@ export default function EstimateConversation() {
                       />
                     </label>
                     <label className="block">
-                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink/42">Note</span>
+                      <span className="block text-[10px] uppercase tracking-[0.32em] text-ink">Note</span>
                       <textarea
                         name="note"
                         value={form.note}
@@ -748,23 +748,6 @@ export default function EstimateConversation() {
 
           {/* ── Right: Aside ── */}
           <aside>
-            {/* Base includes — stays at top, does not follow scroll */}
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, ease }}
-              className="mb-4 space-y-2 px-1"
-            >
-              <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
-              <p className="text-sm leading-6 text-ink-muted">
-                반응형 웹 제작, 기본 문의 흐름, 메일 세팅, 배포 연결까지 기본으로 포함돼 있어요.
-              </p>
-              <p className="text-xs leading-5 text-ink-muted">
-                지금 보이는 금액은 예상 범위예요. 도메인, 호스팅, 유료 플러그인, 외부 결제 수수료는 별도일 수 있어요.
-              </p>
-            </motion.div>
-
             {/* Sticky panel — follows scroll */}
             <div className="xl:sticky xl:top-6">
             <motion.div
@@ -812,9 +795,34 @@ export default function EstimateConversation() {
                 />
               </div>
 
+              <div className="soft-divider" />
+
+              {/* Base includes */}
+              <div className="space-y-2">
+                <p className="text-[10px] uppercase tracking-[0.32em] text-brand">기본 포함</p>
+                <p className="text-sm leading-6 text-ink-muted">
+                  반응형 웹 제작, 기본 문의 흐름, 메일 세팅, 배포 연결까지 기본으로 포함돼 있어요.
+                </p>
+                <p className="text-xs leading-5 text-ink-muted">
+                  지금 보이는 금액은 예상 범위예요. 도메인, 호스팅, 유료 플러그인, 외부 결제 수수료는 별도일 수 있어요.
+                </p>
+              </div>
+
             </motion.div>
             </div>
           </aside>
+        </div>
+      </div>
+
+      {/* ── Cross-link to Contact ── */}
+      <div className="shell relative z-10 mt-20">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="text-sm leading-6 text-ink-muted">
+            아직 프로젝트가 구체적이지 않거나, 간단한 질문만 있으신가요?
+          </p>
+          <BrandButton to="/contact" variant="ghost">
+            부담 없이 문의하기
+          </BrandButton>
         </div>
       </div>
 
