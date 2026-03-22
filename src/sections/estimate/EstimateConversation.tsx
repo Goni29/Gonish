@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
-import PageSectionBridge from "@/components/ui/PageSectionBridge";
+
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type Option = {
@@ -508,8 +508,7 @@ export default function EstimateConversation() {
   };
 
   return (
-    <section className="section-space relative -mt-24 overflow-x-clip md:-mt-28">
-      <PageSectionBridge variant="estimate" />
+    <section className="section-space relative overflow-x-clip">
       {/* Cosmic background glows */}
       <div className="pointer-events-none absolute left-[-8rem] top-28 h-[18rem] w-[18rem] rounded-full bg-brand/[0.05] blur-[110px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-24 h-[20rem] w-[20rem] rounded-full bg-brand/[0.04] blur-[120px]" />

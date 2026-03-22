@@ -37,6 +37,7 @@ type HeadingTheme = {
 
 type SectionHeadingProps = {
   align?: "left" | "center";
+  background?: boolean;
   description?: ReactNode;
   eyebrow: string;
   title: ReactNode;
@@ -208,6 +209,7 @@ const headingThemes = {
 
 export default function SectionHeading({
   align = "left",
+  background = true,
   description,
   eyebrow,
   title,
@@ -219,102 +221,51 @@ export default function SectionHeading({
   return (
     <div
       className={[
-        "relative left-1/2 w-screen min-h-[100svh] -translate-x-1/2 overflow-hidden",
+        "relative min-h-[100svh]",
         isCenter ? "text-center" : "",
       ].join(" ")}
     >
-      <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: theme.backdropVeil }} />
-      <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: theme.wash }} />
-      <div
-        className="pointer-events-none absolute left-[-10rem] top-[6%] h-[24rem] w-[24rem] rounded-full blur-[150px]"
-        style={{ backgroundColor: theme.leftGlow }}
-      />
-      <div
-        className="pointer-events-none absolute right-[-8rem] top-[-3rem] h-[28rem] w-[28rem] rounded-full blur-[160px]"
-        style={{ backgroundColor: theme.rightGlow }}
-      />
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-[-10rem] h-[26rem]"
-        style={{
-          background: `linear-gradient(180deg, rgba(255,251,252,0) 0%, ${theme.transitionSoft} 22%, ${theme.transitionTint} 40%, ${theme.transitionMid} 60%, ${theme.transitionStrong} 82%, ${theme.transitionBase} 100%)`,
-        }}
-      />
-      <div
-        className="pointer-events-none absolute left-[-10rem] bottom-[-8rem] h-[18rem] w-[30rem] rounded-full blur-[130px]"
-        style={{ backgroundColor: theme.leftGlow }}
-      />
-      <div
-        className="pointer-events-none absolute right-[-10rem] bottom-[-7rem] h-[20rem] w-[32rem] rounded-full blur-[140px]"
-        style={{ backgroundColor: theme.rightGlow }}
-      />
-
-      <div className="pointer-events-none absolute inset-0 opacity-90" aria-hidden="true">
-        <svg viewBox="0 0 1600 760" className="h-full w-full">
-          <ellipse
-            cx="920"
-            cy="256"
-            rx="560"
-            ry="160"
-            fill="none"
-            stroke={theme.orbitStrong}
-            strokeDasharray="14 18"
-            strokeWidth="1.2"
-            transform="rotate(-9 920 256)"
+      {background && (
+        <>
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: theme.backdropVeil }} />
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: theme.wash }} />
+          <div
+            className="pointer-events-none absolute left-[-10rem] top-[6%] h-[24rem] w-[24rem] rounded-full blur-[150px]"
+            style={{ backgroundColor: theme.leftGlow }}
           />
-          <ellipse
-            cx="1030"
-            cy="336"
-            rx="430"
-            ry="126"
-            fill="none"
-            stroke={theme.orbitMid}
-            strokeDasharray="8 14"
-            strokeWidth="1"
-            transform="rotate(8 1030 336)"
+          <div
+            className="pointer-events-none absolute right-[-8rem] top-[-3rem] h-[28rem] w-[28rem] rounded-full blur-[160px]"
+            style={{ backgroundColor: theme.rightGlow }}
           />
-          <ellipse
-            cx="1220"
-            cy="382"
-            rx="286"
-            ry="92"
-            fill="none"
-            stroke={theme.orbitSoft}
-            strokeWidth="0.9"
-            transform="rotate(-6 1220 382)"
-          />
-          <path
-            d="M0 508 C220 432, 392 446, 562 520 S930 626, 1216 540 S1482 472, 1600 520"
-            fill="none"
-            stroke={theme.waveStroke}
-            strokeWidth="1"
-          />
-          <path
-            d="M74 188 C260 132, 472 144, 694 206 S1120 332, 1496 196"
-            fill="none"
-            stroke={theme.orbitMid}
-            strokeWidth="0.9"
-          />
-          <circle cx="238" cy="172" r="4" fill={theme.dotSoft} />
-          <circle cx="612" cy="488" r="3" fill={theme.dotSoft} />
-          <circle cx="1248" cy="180" r="5.2" fill={theme.dotSoft} />
-          <circle cx="1386" cy="430" r="3.2" fill={theme.dotSoft} />
-          <circle cx="1492" cy="298" r="2.6" fill="rgba(20,16,20,0.18)" />
-        </svg>
-      </div>
-
-      <div className="pointer-events-none absolute inset-x-0 top-5 hidden xl:block">
-        <div className="shell">
-          <p
-            className={[
-              "font-display text-[clamp(7rem,20vw,18rem)] leading-none tracking-[-0.08em] text-transparent opacity-90",
-              isCenter ? "text-center" : "text-right",
-            ].join(" ")}
-            style={{ WebkitTextStroke: `1px ${theme.ghostStroke}` }}
-          >
-            {theme.ghostWord}
-          </p>
-        </div>
-      </div>
+          <div className="pointer-events-none absolute inset-0 opacity-90" aria-hidden="true">
+            <svg viewBox="0 0 1600 760" className="h-full w-full">
+              <ellipse cx="920" cy="256" rx="560" ry="160" fill="none" stroke={theme.orbitStrong} strokeDasharray="14 18" strokeWidth="1.2" transform="rotate(-9 920 256)" />
+              <ellipse cx="1030" cy="336" rx="430" ry="126" fill="none" stroke={theme.orbitMid} strokeDasharray="8 14" strokeWidth="1" transform="rotate(8 1030 336)" />
+              <ellipse cx="1220" cy="382" rx="286" ry="92" fill="none" stroke={theme.orbitSoft} strokeWidth="0.9" transform="rotate(-6 1220 382)" />
+              <path d="M0 508 C220 432, 392 446, 562 520 S930 626, 1216 540 S1482 472, 1600 520" fill="none" stroke={theme.waveStroke} strokeWidth="1" />
+              <path d="M74 188 C260 132, 472 144, 694 206 S1120 332, 1496 196" fill="none" stroke={theme.orbitMid} strokeWidth="0.9" />
+              <circle cx="238" cy="172" r="4" fill={theme.dotSoft} />
+              <circle cx="612" cy="488" r="3" fill={theme.dotSoft} />
+              <circle cx="1248" cy="180" r="5.2" fill={theme.dotSoft} />
+              <circle cx="1386" cy="430" r="3.2" fill={theme.dotSoft} />
+              <circle cx="1492" cy="298" r="2.6" fill="rgba(20,16,20,0.18)" />
+            </svg>
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 top-5 hidden xl:block">
+            <div className="shell">
+              <p
+                className={[
+                  "font-display text-[clamp(7rem,20vw,18rem)] leading-none tracking-[-0.08em] text-transparent opacity-90",
+                  isCenter ? "text-center" : "text-right",
+                ].join(" ")}
+                style={{ WebkitTextStroke: `1px ${theme.ghostStroke}` }}
+              >
+                {theme.ghostWord}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="shell relative z-10">
         <div

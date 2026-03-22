@@ -90,19 +90,19 @@ export default function PageSectionBridge({
           background: [
             `radial-gradient(circle at 14% 4%, ${theme.surfaceGlowLeft} 0, transparent 28%)`,
             `radial-gradient(circle at 84% 8%, ${theme.surfaceGlowRight} 0, transparent 30%)`,
-            `linear-gradient(180deg, rgba(255,253,252,0) 0rem, ${theme.surfaceTop} 8rem, ${theme.surfaceMid} 18rem, ${theme.base} 34rem, ${theme.base} 100%)`,
+            `linear-gradient(180deg, ${theme.base} 0rem, ${theme.base} 4rem, ${theme.surfaceMid} 16rem, ${theme.surfaceTop} 28rem, rgba(255,253,252,0) 42rem)`,
           ].join(", "),
         }}
       />
 
       <div
-        className="pointer-events-none absolute inset-x-0 top-[-18rem] h-[32rem] overflow-hidden"
+        className="pointer-events-none absolute inset-x-0 top-[-24rem] h-[42rem] overflow-hidden"
         aria-hidden="true"
         style={{
           WebkitMaskImage:
-            "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.42) 16%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.56) 74%, transparent 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.28) 12%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.56) 76%, transparent 100%)",
           maskImage:
-            "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.42) 16%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.56) 74%, transparent 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.28) 12%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.56) 76%, transparent 100%)",
         }}
       >
         <div
@@ -113,15 +113,15 @@ export default function PageSectionBridge({
         />
 
         <div
-          className="absolute left-[-10rem] top-[4rem] h-[16rem] w-[16rem] rounded-full blur-[130px]"
+          className="absolute left-[-10rem] top-[2rem] h-[20rem] w-[22rem] rounded-full blur-[160px]"
           style={{ backgroundColor: theme.glowLeft }}
         />
         <div
-          className="absolute right-[-8rem] top-[1rem] h-[18rem] w-[18rem] rounded-full blur-[140px]"
+          className="absolute right-[-8rem] top-[-1rem] h-[22rem] w-[24rem] rounded-full blur-[170px]"
           style={{ backgroundColor: theme.glowRight }}
         />
         <div
-          className="absolute left-[20%] top-[10rem] h-[8rem] w-[22rem] rounded-full blur-[130px]"
+          className="absolute left-[20%] top-[8rem] h-[12rem] w-[28rem] rounded-full blur-[160px]"
           style={{ backgroundColor: theme.glowLeft }}
         />
 
