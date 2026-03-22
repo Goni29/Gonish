@@ -18,29 +18,29 @@ type OrbitProject = {
 
 const orbitProjects: OrbitProject[] = [
   {
-    eyebrow: "Trust orbit",
-    title: "법무법인",
-    subtitle: "신뢰를 시각화하다",
+    eyebrow: "Glow orbit",
+    title: "Haute Beauty Commerce",
+    subtitle: "감각을 전시하다",
     summary:
-      "권위와 안심이 함께 읽히는 첫 장면을 만들고, 상담 전환까지 단정한 리듬으로 이어지도록 구성했습니다.",
+      "제품의 매력이 한눈에 전달되고, 탐색에서 결제까지 끊김 없이 이어지는 프리미엄 뷰티 커머스.",
     to: "/portfolio",
     offsetClass: "lg:ml-0",
   },
   {
     eyebrow: "Care orbit",
-    title: "병원",
+    title: "Private Dental Clinic",
     subtitle: "안심을 설계하다",
     summary:
-      "정보의 부담은 낮추고 이해 속도는 높여, 낯선 방문자도 빠르게 신뢰를 느끼게 만드는 흐름을 설계했습니다.",
+      "처음 방문하는 환자도 진료 과목과 예약 방법을 바로 파악하고, 안심하고 예약까지 이어지는 병원 사이트.",
     to: "/portfolio",
     offsetClass: "lg:ml-16",
   },
   {
-    eyebrow: "Glow orbit",
-    title: "하이엔드 뷰티 커머스",
-    subtitle: "감각을 전시하다",
+    eyebrow: "Trust orbit",
+    title: "Prestige Law Firm",
+    subtitle: "신뢰를 시각화하다",
     summary:
-      "브랜드 무드와 제품 매력이 동시에 남도록 연출해, 짧은 체류에서도 인상과 구매 동기가 자연스럽게 이어집니다.",
+      "전문 분야와 성공사례가 명확히 읽히고, 상담 요청까지 자연스럽게 연결되는 법무법인 브랜드 사이트.",
     to: "/portfolio",
     offsetClass: "lg:ml-8",
   },

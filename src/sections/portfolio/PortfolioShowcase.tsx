@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import PageSectionBridge from "@/components/ui/PageSectionBridge";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { caseStudies, type CaseStudy, type DeviceKey, type DevicePreview } from "@/data/siteContent";
 
@@ -21,8 +22,9 @@ export default function PortfolioShowcase() {
   );
 
   return (
-    <section className="section-space">
-      <div className="shell">
+    <section className="section-space relative -mt-24 overflow-hidden md:-mt-28">
+      <PageSectionBridge variant="portfolio" />
+      <div className="shell relative z-10">
         {/* ── Project selector (minimal text list) ── */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}

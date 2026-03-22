@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
+import PageSectionBridge from "@/components/ui/PageSectionBridge";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type Option = {
@@ -507,10 +508,11 @@ export default function EstimateConversation() {
   };
 
   return (
-    <section className="section-space relative overflow-x-clip">
+    <section className="section-space relative -mt-24 overflow-x-clip md:-mt-28">
+      <PageSectionBridge variant="estimate" />
       {/* Cosmic background glows */}
-      <div className="pointer-events-none absolute left-[-10rem] top-20 h-[24rem] w-[24rem] rounded-full bg-brand/[0.08] blur-[120px]" />
-      <div className="pointer-events-none absolute right-[-12rem] top-16 h-[26rem] w-[26rem] rounded-full bg-brand/[0.06] blur-[130px]" />
+      <div className="pointer-events-none absolute left-[-8rem] top-28 h-[18rem] w-[18rem] rounded-full bg-brand/[0.05] blur-[110px]" />
+      <div className="pointer-events-none absolute right-[-10rem] top-24 h-[20rem] w-[20rem] rounded-full bg-brand/[0.04] blur-[120px]" />
 
       <div className="shell relative z-10">
         <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_360px]">

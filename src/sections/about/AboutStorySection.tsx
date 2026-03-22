@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import PageSectionBridge from "@/components/ui/PageSectionBridge";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { aboutMilestones, aboutPrinciples, aboutStats } from "@/data/siteContent";
 
@@ -6,8 +7,9 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function AboutStorySection() {
   return (
-    <section className="section-space">
-      <div className="shell">
+    <section className="section-space relative -mt-24 overflow-hidden md:-mt-28">
+      <PageSectionBridge variant="about" />
+      <div className="shell relative z-10">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:items-start xl:gap-20">
           {/* ── Left column ── */}
           <div className="space-y-20">

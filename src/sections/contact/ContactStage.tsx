@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
+import PageSectionBridge from "@/components/ui/PageSectionBridge";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type FormState = {
@@ -78,8 +79,9 @@ export default function ContactStage() {
   };
 
   return (
-    <section className="section-space">
-      <div className="shell">
+    <section className="section-space relative -mt-24 overflow-hidden md:-mt-28">
+      <PageSectionBridge variant="contact" />
+      <div className="shell relative z-10">
         <div className="panel relative overflow-hidden rounded-[2.3rem] px-6 py-8 sm:px-8 sm:py-10 lg:min-h-[720px] lg:px-12 lg:py-12">
           <div className="absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(circle_at_left_bottom,rgba(243,29,91,0.18),transparent_40%)]" />
 
