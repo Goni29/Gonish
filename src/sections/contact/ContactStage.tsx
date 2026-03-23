@@ -139,7 +139,7 @@ export default function ContactStage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="relative z-20 order-2 flex items-end justify-start lg:order-1 lg:min-h-[440px]"
+              className="relative z-20 order-2 flex items-end justify-start will-change-transform lg:order-1 lg:min-h-[440px]"
             >
               <div className="pointer-events-none relative h-[240px] w-[240px] sm:h-[280px] sm:w-[280px]">
                 <GonishCharacter isSmiling={smiling} className="size-full drop-shadow-[0_24px_60px_rgba(20,16,20,0.12)]" />
