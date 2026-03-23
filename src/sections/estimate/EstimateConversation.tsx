@@ -7,6 +7,7 @@ import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import type { EstimateContractDraft, EstimateEmailData, InquiryResponse } from "@/lib/inquiry";
+import { isValidReplyContact, REPLY_CONTACT_VALIDATION_MESSAGE } from "@/lib/replyContact";
 
 type Option = {
   description: string;
@@ -715,6 +716,11 @@ export default function EstimateConversation() {
 
     if (!form.reply.trim()) {
       setSubmitCharacterReply("연락처만 남겨주셔도 괜찮아요. 지금 정리된 범위를 바탕으로 상담을 이어갈게요.");
+      return;
+    }
+
+    if (!isValidReplyContact(form.reply)) {
+      setSubmitCharacterReply(REPLY_CONTACT_VALIDATION_MESSAGE);
       return;
     }
 

@@ -40,9 +40,15 @@ function rows(items: Row[]) {
 function wrap(badge: string, title: string, body: string) {
   return `
 <div style="max-width:620px;margin:0 auto;font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#FFFDFC;border:1px solid rgba(20,16,20,0.08);border-radius:22px;overflow:hidden">
-  <div style="padding:24px 28px;border-bottom:2px solid #F31D5B;background:linear-gradient(180deg,#fffdfd 0%,#fff7fa 100%);display:flex;justify-content:space-between;align-items:center">
-    <span style="font-size:22px;font-weight:700;color:#F31D5B;letter-spacing:1.6px">Gonish</span>
-    <span style="background:#F31D5B;color:#fff;padding:5px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.2px;float:right">${safeText(badge)}</span>
+  <div style="padding:24px 28px;border-bottom:2px solid #F31D5B;background:linear-gradient(180deg,#fffdfd 0%,#fff7fa 100%)">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+      <tr>
+        <td style="font-size:22px;font-weight:700;color:#F31D5B;letter-spacing:1.6px;line-height:1;vertical-align:middle">Gonish</td>
+        <td align="right" style="vertical-align:middle">
+          <span style="display:inline-block;background:#F31D5B;color:#fff;padding:5px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.2px;line-height:1.2;mso-line-height-rule:exactly">${safeText(badge)}</span>
+        </td>
+      </tr>
+    </table>
   </div>
   <div style="padding:22px 28px 0">
     <div style="font-size:20px;font-weight:700;color:#141014;margin-bottom:4px">${safeText(title)}</div>

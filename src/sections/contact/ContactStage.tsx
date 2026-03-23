@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import type { InquiryResponse } from "@/lib/inquiry";
+import { isValidReplyContact, REPLY_CONTACT_VALIDATION_MESSAGE } from "@/lib/replyContact";
 
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
@@ -87,6 +88,11 @@ export default function ContactStage() {
     if (!form.reply.trim()) {
       const validationMessage = "답변 받으실 연락처를 남겨주세요. 이메일이나 전화번호 중 편한 쪽으로요.";
       setSubmitResultMessage(validationMessage);
+      return;
+    }
+
+    if (!isValidReplyContact(form.reply)) {
+      setSubmitResultMessage(REPLY_CONTACT_VALIDATION_MESSAGE);
       return;
     }
 

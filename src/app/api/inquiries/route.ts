@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { contactEmailHtml, estimateEmailHtml } from "@/lib/emailTemplate";
 import type { InquiryPayload, InquiryResponse } from "@/lib/inquiry";
+import { isValidReplyContact, isValidReplyEmail, REPLY_CONTACT_VALIDATION_MESSAGE } from "@/lib/replyContact";
 import { createContactInquiry } from "@/lib/server/contactStore";
 import { createEstimateLead } from "@/lib/server/leadStore";
 
@@ -71,6 +72,13 @@ export async function POST(request: Request) {
       message: toText(form.message),
     };
 
+    if (!isValidReplyContact(sanitizedForm.reply)) {
+      return jsonResponse(400, {
+        ok: false,
+        message: REPLY_CONTACT_VALIDATION_MESSAGE,
+      });
+    }
+
     try {
       await createContactInquiry(sanitizedForm);
     } catch {
@@ -83,7 +91,7 @@ export async function POST(request: Request) {
       await resend.emails.send({
         from: fromEmail,
         to: [receiveEmail],
-        replyTo: sanitizedForm.reply || undefined,
+        replyTo: isValidReplyEmail(sanitizedForm.reply) ? sanitizedForm.reply : undefined,
         subject,
         html: contactEmailHtml(sanitizedForm),
       });
@@ -122,6 +130,13 @@ export async function POST(request: Request) {
       goal: toText(emailData.goal),
       note: toText(emailData.note),
     };
+
+    if (!isValidReplyContact(sanitizedEmailData.reply)) {
+      return jsonResponse(400, {
+        ok: false,
+        message: REPLY_CONTACT_VALIDATION_MESSAGE,
+      });
+    }
 
     const sanitizedContractDraft = {
       ...contractDraft,
@@ -174,7 +189,7 @@ export async function POST(request: Request) {
       await resend.emails.send({
         from: fromEmail,
         to: [receiveEmail],
-        replyTo: lead.emailData.reply || undefined,
+        replyTo: isValidReplyEmail(lead.emailData.reply) ? lead.emailData.reply : undefined,
         subject,
         html: estimateEmailHtml(lead.emailData, { contractUrl: contractUrl.toString() }),
       });
