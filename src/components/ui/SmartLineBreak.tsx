@@ -151,7 +151,7 @@ export default function SmartLineBreak({
       return;
     }
 
-    const sample = "가나다라마바사아자차카타파하ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const fallbackSample = "가나다라마바사아자차카타파하";
 
     const updateMeasuredChars = () => {
       const width = container.clientWidth;
@@ -168,8 +168,10 @@ export default function SmartLineBreak({
 
       context.font = `${fontStyle} ${fontWeight} ${fontSize} ${fontFamily}`;
 
-      const sampleWidth = context.measureText(sample).width;
-      const averageCharWidth = sampleWidth > 0 ? sampleWidth / sample.length : 10;
+      const normalizedText = normalize(text);
+      const measureTarget = normalizedText.length >= 4 ? normalizedText : fallbackSample;
+      const measuredWidth = context.measureText(measureTarget).width;
+      const averageCharWidth = measuredWidth > 0 ? measuredWidth / measureTarget.length : 10;
       const nextValue = Math.max(minCharsPerLine, Math.floor(width / averageCharWidth));
 
       setMeasuredMaxChars((current) => (current === nextValue ? current : nextValue));
@@ -195,7 +197,7 @@ export default function SmartLineBreak({
       window.removeEventListener("resize", updateMeasuredChars);
       fontSet?.removeEventListener?.("loadingdone", handleFontLoadingDone);
     };
-  }, [autoFit, minCharsPerLine]);
+  }, [autoFit, minCharsPerLine, text]);
 
   const effectiveMaxCharsPerLine = autoFit ? measuredMaxChars ?? maxCharsPerLine : maxCharsPerLine;
 

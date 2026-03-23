@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type HeadingVariant = "default" | "about" | "portfolio" | "estimate" | "contact";
 
@@ -310,7 +311,11 @@ export default function SectionHeading({
                   isCenter ? "mx-auto" : "",
                 ].join(" ")}
               >
-                {description}
+                {typeof description === "string" ? (
+                  <SmartLineBreak text={description} maxLines={6} />
+                ) : (
+                  description
+                )}
               </div>
             ) : null}
           </div>

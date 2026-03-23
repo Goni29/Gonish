@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from "react";
+import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type ProcessStep = {
   id: string;
@@ -51,8 +52,8 @@ export default function AboutProcessSection() {
 
           <div className="relative">
             <p className="text-[0.76rem] font-semibold tracking-[0.28em] text-brand/70">+ OUR APPROACH</p>
-            <h2 className="mt-3 break-keep font-display text-[clamp(1.6rem,3.2vw,2.45rem)] leading-[1.24] tracking-[-0.02em] text-ink">
-              감도 높은 디자인 × 전략적 사고 × 섬세한 실행
+            <h2 className="mt-3 font-display text-[clamp(1.6rem,3.2vw,2.45rem)] leading-[1.24] tracking-[-0.02em] text-ink">
+              <SmartLineBreak text="감도 높은 디자인 × 전략적 사고 × 섬세한 실행" />
             </h2>
             <p className="mt-2 text-base leading-7 text-ink-muted sm:text-[1.05rem]">
               당신의 브랜드가 오래 기억되도록, 모든 디테일을 다듬습니다.
