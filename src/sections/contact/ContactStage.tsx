@@ -151,9 +151,9 @@ export default function ContactStage() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -4, scale: 0.95 }}
                       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute left-[92%] top-1/2 z-30 w-56 -translate-y-1/2 rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:left-[94%] sm:w-60 lg:w-64"
+                      className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+12px)] z-30 w-56 rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:left-[94%] sm:translate-x-0 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:w-60 lg:w-64"
                     >
-                      <div className="absolute -left-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 bg-brand" />
+                      <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 h-3 w-3 rotate-45 bg-brand sm:left-0 sm:-translate-x-0 sm:translate-y-0 sm:bottom-auto sm:-left-1.5 sm:top-1/2 sm:-translate-y-1/2" />
                       {submitResultMessage}
                     </motion.div>
                   ) : null}

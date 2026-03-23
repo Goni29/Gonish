@@ -103,7 +103,7 @@ export default function PortfolioPreview() {
           <Sparkle cx="58%" cy="91%" size={11} delay={3} />
           <Sparkle cx="36%" cy="6%" size={8} delay={2} />
 
-          <div className="relative z-10 grid gap-10 lg:grid-cols-[minmax(0,0.98fr)_minmax(300px,0.82fr)] lg:items-center">
+          <div className="relative z-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(240px,0.8fr)] lg:items-center">
             <div className="space-y-8 lg:space-y-12">
               <p className="eyebrow">Selected works</p>
 

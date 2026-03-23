@@ -91,7 +91,7 @@ export default function PortfolioShowcase() {
             />
 
             {/* ── Top: Info + Sidebar ── */}
-            <div className="relative grid gap-12 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start xl:gap-16">
+            <div className="relative grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(240px,300px)] lg:items-start xl:gap-16">
               {/* Left: Header + Outcomes */}
               <div className="space-y-10">
                 <div className="space-y-5">
@@ -224,10 +224,10 @@ function DeviceShowcase({
 
   const frameClasses =
     device === "pc"
-      ? "w-full rounded-[2.2rem] p-4"
+      ? "w-full rounded-[2.2rem] p-2 sm:p-4"
       : device === "tablet"
-        ? "mx-auto w-full max-w-[860px] rounded-[2.4rem] p-4"
-        : "mx-auto w-full max-w-[420px] rounded-[2.2rem] p-3";
+        ? "mx-auto w-full max-w-[min(860px,100%)] rounded-[2.4rem] p-2 sm:p-4"
+        : "mx-auto w-full max-w-[min(420px,100%)] rounded-[2.2rem] p-2 sm:p-3";
 
   return (
     <div className="space-y-6">

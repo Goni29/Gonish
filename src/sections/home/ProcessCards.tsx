@@ -365,7 +365,7 @@ function ProcessCardsImpl(
         <div
           key={stepIndex}
           ref={(el) => { containerRefs.current[stepIndex] = el; }}
-          className="absolute inset-0 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5 lg:gap-6 will-change-transform"
+          className="absolute inset-0 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 sm:gap-5 lg:gap-6 will-change-transform"
           style={{ transformOrigin: "center 40%", backfaceVisibility: "hidden" }}
         >
           {cards.map((card) => (

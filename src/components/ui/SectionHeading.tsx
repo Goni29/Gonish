@@ -275,7 +275,7 @@ export default function SectionHeading({
             "grid min-h-[100svh] items-center gap-12 py-[clamp(3rem,7vw,5rem)] xl:gap-16",
             isCenter
               ? "justify-items-center text-center"
-              : "lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.72fr)] xl:grid-cols-[minmax(0,1.14fr)_minmax(320px,0.66fr)]",
+              : "lg:grid-cols-[minmax(0,1.08fr)_minmax(240px,0.72fr)] xl:grid-cols-[minmax(0,1.14fr)_minmax(300px,0.66fr)]",
           ].join(" ")}
         >
           <div className={["relative space-y-6", isCenter ? "mx-auto max-w-3xl" : "max-w-5xl xl:max-w-6xl"].join(" ")}>

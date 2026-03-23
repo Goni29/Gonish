@@ -69,7 +69,7 @@ export default function ClosingSection() {
         </motion.div>
 
         {/* 궤도 시스템 */}
-        <div className="relative mx-auto aspect-square w-full max-w-[520px] md:max-w-[600px]">
+        <div className="relative mx-auto aspect-square w-full max-w-[min(520px,100%)] overflow-hidden md:max-w-[600px] md:overflow-visible">
 
           {/* ── 궤도 링 1 (외부) — 상시 회전 ── */}
           <div className="pointer-events-none absolute inset-0 animate-[spin_60s_linear_infinite]">

@@ -127,7 +127,7 @@ export default function SignatureSection() {
         </div>
 
         {/* 하단: 프로세스 카드 (풀 와이드, 남은 공간 전부 사용) */}
-        <div className="flex min-h-0 flex-1 px-4 pt-4 pb-6 sm:px-6 sm:pt-5 lg:px-10">
+        <div className="flex min-h-[240px] flex-1 px-4 pt-4 pb-6 sm:min-h-0 sm:px-6 sm:pt-5 lg:px-10">
           <ProcessCards ref={cardsRef} />
         </div>
       </div>

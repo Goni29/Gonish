@@ -8,7 +8,7 @@ export default function AboutStorySection() {
   return (
     <section className="section-space relative">
       <div className="shell relative z-10">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:items-start xl:gap-20">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(260px,0.95fr)] lg:items-start xl:gap-20">
           {/* ── Left column ── */}
           <div className="space-y-20">
             {/* ── Narrative ── */}
