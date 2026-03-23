@@ -43,6 +43,9 @@ export default async function AdminContactsPage() {
             <p className={styles.desc}>Contact 페이지에서 들어온 상담 문의를 최신 순으로 확인합니다.</p>
           </div>
           <div className={styles.actions}>
+            <Link href="/admin/dashboard" className={`${styles.button} ${styles.buttonSecondary}`}>
+              Dashboard
+            </Link>
             <Link href="/admin/leads" className={`${styles.button} ${styles.buttonSecondary}`}>
               Estimate 리드
             </Link>

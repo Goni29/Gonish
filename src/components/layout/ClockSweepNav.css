@@ -755,7 +755,7 @@
     --nub-height: 1.28rem;
     --interaction-zone-size: clamp(20rem, 82vw, 24rem);
     --dock-shift-open-x: clamp(-4.2rem, -14vw, -2.6rem);
-    --dock-shift-open-y: clamp(-8.2rem, -16vh, -6.8rem);
+    --dock-shift-open-y: clamp(-8.2rem, -16svh, -6.8rem);
     height: calc(var(--dial-size) + 4rem);
     margin-left: 0;
   }
@@ -776,6 +776,22 @@
 
   .clock-sweep-nav__link {
     font-size: clamp(0.9rem, 3.7vw, 1rem);
+  }
+}
+
+/* 극소형 화면 / 가로모드: 다이얼 크기 축소 및 시프트 완화 */
+@media (max-width: 359px) {
+  .clock-sweep-nav {
+    --dial-size: min(84vw, 16rem);
+    --dock-shift-open-x: clamp(-3.2rem, -10vw, -2rem);
+    --dock-shift-open-y: clamp(-6rem, -14svh, -4.8rem);
+  }
+}
+
+@media (max-height: 420px) and (orientation: landscape) {
+  .clock-sweep-nav {
+    --dial-size: min(52vh, 16rem);
+    --dock-shift-open-y: clamp(-5rem, -12svh, -3.6rem);
   }
 }
 

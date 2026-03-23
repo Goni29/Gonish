@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { LayoutRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gsap from "gsap";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
@@ -73,6 +74,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen">
+      <AnalyticsTracker />
       <ScrollToTop />
       <SiteHeader />
       <AnimatePresence mode="wait" initial={false}>

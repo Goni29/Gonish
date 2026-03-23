@@ -122,6 +122,9 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
             <p className={styles.desc}>상태, 담당자, 다음 액션일, 내부 메모를 기준으로 견적 리드를 운영하세요.</p>
           </div>
           <div className={styles.actions}>
+            <Link href="/admin/dashboard" className={`${styles.button} ${styles.buttonSecondary}`}>
+              Dashboard
+            </Link>
             <Link href="/admin/contacts" className={`${styles.button} ${styles.buttonSecondary}`}>
               Contact 문의
             </Link>
