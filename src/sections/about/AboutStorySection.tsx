@@ -144,20 +144,20 @@ export default function AboutStorySection() {
               <div className="panel relative overflow-hidden rounded-[2.2rem] p-4 sm:p-5">
                 <div className="overflow-hidden rounded-[1.8rem] border border-black/10 bg-[#f4eded]">
                   <img
-                    src="/portrait-editorial.svg"
-                    alt="Gonish portrait artwork"
+                    src="/Gonish_about.png"
+                    alt="Gonish portrait photo"
                     className="w-full object-cover"
                   />
                 </div>
                 <div className="space-y-4 px-2 pb-2 pt-6">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="eyebrow">Studio note</p>
+                      <p className="eyebrow">Brand direction</p>
                       <p className="mt-3 font-display text-3xl leading-none text-ink">Gonish</p>
                     </div>
                     <p className="max-w-[12rem] text-right text-xs uppercase tracking-[0.28em] text-ink/45">
                       <SmartLineBreak
-                        text="calm direction refined flow lasting impression"
+                        text="premium trust fast solution"
                         maxCharsPerLine={13}
                         maxLines={3}
                         minCharsPerLine={6}
@@ -165,9 +165,9 @@ export default function AboutStorySection() {
                     </p>
                   </div>
                   <p className="break-keep text-sm leading-6 text-ink-muted">
-                    이 이미지는 Gonish의 무드를 상징적으로 보여주기 위한 에디토리얼 아트워크입니다.
-                    이후 실제 사진으로 교체하더라도 지금의 분위기와 균형이 흔들리지 않도록 전체 구조를
-                    먼저 정돈해두었습니다.
+                    Gonish는 프리미엄 완성도로 브랜드의 첫인상을 끌어올리고, 신뢰를 만드는 정보 구조로
+                    고객의 결정을 돕습니다. 빠른 해결이 필요한 순간에도 핵심을 정확히 짚어, 짧은 시간 안에
+                    실행 가능한 결과를 제안합니다.
                   </p>
                 </div>
               </div>

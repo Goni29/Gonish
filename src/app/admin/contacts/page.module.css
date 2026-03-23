@@ -1,0 +1,144 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
+    linear-gradient(180deg, #fffdfd 0%, #f8f3f1 52%, #f5f0ef 100%);
+  padding: 22px;
+}
+
+.shell {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.titleWrap {
+  display: grid;
+  gap: 4px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 20, 0.44);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #6b6168;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: #f31d5b;
+  color: white;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.buttonSecondary {
+  background: white;
+  color: #141014;
+  border: 1px solid rgba(20, 16, 20, 0.14);
+}
+
+.card {
+  border: 1px solid rgba(20, 16, 20, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 24px 80px rgba(20, 16, 20, 0.08);
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(20, 16, 20, 0.08);
+  font-size: 12px;
+  color: #6b6168;
+}
+
+.tableWrap {
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1160px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #6b6168;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(20, 16, 20, 0.08);
+  background: #fff7fa;
+}
+
+.table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(20, 16, 20, 0.08);
+  font-size: 13px;
+  vertical-align: top;
+}
+
+.rowTitle {
+  font-weight: 700;
+  color: #1b1418;
+}
+
+.muted {
+  color: #6b6168;
+  margin-top: 3px;
+}
+
+.multiline {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  color: #393136;
+  max-width: 460px;
+}
+
+.empty {
+  padding: 28px 16px;
+  font-size: 14px;
+  color: #6b6168;
+}

@@ -322,15 +322,17 @@
         <div class="summary">
           <div class="summary-box">
             <p class="summary-label">Estimated range</p>
-            <p class="summary-price" id="price-range">45만 ~ 80만 원</p>
+            <p class="summary-price" id="price-range">60만 ~ 95만 원</p>
             <p class="summary-desc" id="price-description">
-              가벼운 소개형 시작가 기준으로 먼저 보실 수 있는 공개 범위예요.
+              기본 시작가예요. 항목을 선택할수록 선택 반영 기준가가 더 정확해져요.
             </p>
           </div>
           <div class="summary-box">
-            <p class="summary-label">Recommended package</p>
-            <p class="summary-price" id="package-name" style="font-size: 28px">First Light</p>
-            <p class="summary-desc" id="package-description">첫 소개용, 소형 사이트, 간단한 문의 중심</p>
+            <p class="summary-label">Complexity guide</p>
+            <p class="summary-price" id="complexity-label" style="font-size: 28px">랜딩·소개 중심</p>
+            <p class="summary-desc" id="complexity-description">
+              핵심 소개 화면 위주로 시작하는 비교적 가벼운 범위예요.
+            </p>
           </div>
         </div>
       </section>
@@ -363,25 +365,30 @@
             <p class="card-desc">가장 가까운 유형 하나를 선택합니다.</p>
             <label class="block">
               <select id="project-type">
-                <option value="landing">짧고 선명한 소개 페이지</option>
-                <option value="renewal">기존 사이트 리뉴얼</option>
-                <option value="brand-site" selected>브랜드 홈페이지</option>
-                <option value="unsure">아직 방향 미정</option>
-                <option value="conversion">문의·예약 중심 사이트</option>
+                <option value="" selected>선택해 주세요</option>
+                <option value="landing">원페이지 / 랜딩 페이지</option>
+                <option value="corporate-site">기업형 / 소개형 사이트</option>
+                <option value="member-site">회원 기능 포함 사이트</option>
+                <option value="webapp">관리자 / 업무형 웹앱</option>
+                <option value="unsure">아직 잘 모르겠어요</option>
               </select>
             </label>
           </section>
 
           <section class="card">
             <p class="eyebrow">Page scope</p>
-            <p class="card-title">페이지 규모는 어느 정도인가요?</p>
-            <p class="card-desc">보통 메뉴 수 기준으로 생각하면 됩니다.</p>
+            <p class="card-title">기본 범위 외에 추가 화면이 있나요?</p>
+            <p class="card-desc">추가 화면 구성 비용입니다. 동작 기능은 아래 기능 항목에서 별도 선택해 주세요.</p>
             <label class="block">
               <select id="page-scope">
-                <option value="small">1~3페이지</option>
-                <option value="medium" selected>4~6페이지</option>
-                <option value="large">7페이지 이상</option>
-                <option value="unknown">아직 미정</option>
+                <option value="" selected>선택해 주세요</option>
+                <option value="included">기본 화면 구성으로 시작</option>
+                <option value="static-page">추가 정적 페이지</option>
+                <option value="form-page">추가 입력 페이지</option>
+                <option value="list-detail">리스트 + 상세 화면 세트</option>
+                <option value="dashboard">로그인 후 개인화 화면</option>
+                <option value="multi-add">추가 화면 3개 이상 예정</option>
+                <option value="unknown">화면 수를 아직 모르겠어요</option>
               </select>
             </label>
           </section>
@@ -389,12 +396,13 @@
           <section class="card">
             <p class="eyebrow">Readiness</p>
             <p class="card-title">자료 준비도는 어떤가요?</p>
-            <p class="card-desc">자료 정리가 덜 되어 있을수록 버퍼를 넉넉히 잡습니다.</p>
+            <p class="card-desc">준비 상태가 낮을수록 기획/정리 지원 범위가 커질 수 있어요.</p>
             <label class="block">
               <select id="readiness">
-                <option value="ready">거의 준비 완료</option>
-                <option value="partial" selected>일부만 준비</option>
-                <option value="need-help">무엇을 준비할지 모름</option>
+                <option value="" selected>선택해 주세요</option>
+                <option value="ready">자료와 방향이 거의 정리되어 있어요</option>
+                <option value="partial">일부만 정리되어 있어요</option>
+                <option value="need-help">아직 상담이 많이 필요해요</option>
               </select>
             </label>
           </section>
@@ -402,12 +410,29 @@
           <section class="card">
             <p class="eyebrow">Schedule</p>
             <p class="card-title">일정은 어느 정도인가요?</p>
-            <p class="card-desc">빠른 일정이면 반드시 추가 버퍼를 반영합니다.</p>
+            <p class="card-desc">빠른 일정은 선택 기준가의 15%를 일정 가산으로 반영합니다.</p>
             <label class="block">
               <select id="schedule">
-                <option value="relaxed">여유 있게 진행</option>
-                <option value="normal" selected>일반 일정</option>
-                <option value="fast">빠른 일정</option>
+                <option value="" selected>선택해 주세요</option>
+                <option value="relaxed">여유 있게 진행하고 싶어요</option>
+                <option value="normal">평균적인 일정으로 진행하고 싶어요</option>
+                <option value="fast">조금 더 빠르게 진행하고 싶어요</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="card">
+            <p class="eyebrow">Domain / Hosting</p>
+            <p class="card-title">사이트 주소와 올릴 공간은 준비되어 있나요?</p>
+            <p class="card-desc">도메인/호스팅은 금액 계산보다는 배포 준비 상태 확인 용도예요.</p>
+            <label class="block">
+              <select id="domain-hosting">
+                <option value="" selected>선택해 주세요</option>
+                <option value="both-ready">둘 다 있어요</option>
+                <option value="domain-only">주소(도메인)만 있어요</option>
+                <option value="hosting-only">올릴 공간(호스팅)만 있어요</option>
+                <option value="none">둘 다 아직 없어요</option>
+                <option value="unsure">무슨 말인지 잘 모르겠어요</option>
               </select>
             </label>
           </section>
@@ -415,49 +440,63 @@
           <section class="card full">
             <p class="eyebrow">Features</p>
             <p class="card-title">필요 기능을 체크해 주세요</p>
-            <p class="card-desc">운영 복잡도가 높아지는 기능일수록 가산폭을 크게 둡니다.</p>
+            <p class="card-desc">Estimate 페이지와 동일한 기능 단가를 반영합니다.</p>
             <div class="check-grid">
               <label class="check">
-                <input type="checkbox" value="inquiry" data-kind="feature" />
-                <div>
-                  <strong>문의 폼</strong>
-                  <span>0만 원</span>
-                </div>
+                <input type="checkbox" value="member-auth" data-kind="feature" />
+                <div><strong>회원가입 / 로그인</strong><span>42만 원</span></div>
               </label>
               <label class="check">
-                <input type="checkbox" value="gallery" data-kind="feature" />
-                <div>
-                  <strong>사례/사진 모음</strong>
-                  <span>15만 원</span>
-                </div>
+                <input type="checkbox" value="social-login" data-kind="feature" />
+                <div><strong>소셜 로그인</strong><span>26만 원</span></div>
               </label>
               <label class="check">
-                <input type="checkbox" value="multilingual" data-kind="feature" />
-                <div>
-                  <strong>다국어</strong>
-                  <span>25만 원</span>
-                </div>
+                <input type="checkbox" value="role-permission" data-kind="feature" />
+                <div><strong>사용자 역할 / 권한 분리</strong><span>38만 원</span></div>
               </label>
               <label class="check">
-                <input type="checkbox" value="booking" data-kind="feature" />
-                <div>
-                  <strong>예약/신청 흐름</strong>
-                  <span>45만 원</span>
-                </div>
+                <input type="checkbox" value="admin-dashboard" data-kind="feature" />
+                <div><strong>관리자 대시보드</strong><span>59만 원</span></div>
               </label>
               <label class="check">
-                <input type="checkbox" value="member" data-kind="feature" />
-                <div>
-                  <strong>로그인/회원 기능</strong>
-                  <span>55만 원</span>
-                </div>
+                <input type="checkbox" value="admin-module" data-kind="feature" />
+                <div><strong>관리자용 업무 관리 모듈</strong><span>48만 원</span></div>
               </label>
               <label class="check">
-                <input type="checkbox" value="commerce" data-kind="feature" />
-                <div>
-                  <strong>상품 판매/결제</strong>
-                  <span>90만 원</span>
-                </div>
+                <input type="checkbox" value="admin-permission" data-kind="feature" />
+                <div><strong>관리자 권한 세분화</strong><span>36만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="stats-report" data-kind="feature" />
+                <div><strong>고급 통계 / 리포트</strong><span>54만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="crud-board" data-kind="feature" />
+                <div><strong>게시판 / 콘텐츠 관리</strong><span>69만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="payment" data-kind="feature" />
+                <div><strong>온라인 결제</strong><span>89만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="subscription" data-kind="feature" />
+                <div><strong>정기 결제 / 구독</strong><span>129만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="map" data-kind="feature" />
+                <div><strong>기본 지도 표시</strong><span>32만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="notification-email" data-kind="feature" />
+                <div><strong>자동 이메일 발송</strong><span>16만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="notification-sms" data-kind="feature" />
+                <div><strong>문자 / 알림 발송</strong><span>29만 원</span></div>
+              </label>
+              <label class="check">
+                <input type="checkbox" value="external-api" data-kind="feature" />
+                <div><strong>기타 외부 API 연동 1종</strong><span>48만 원</span></div>
               </label>
             </div>
           </section>
@@ -465,20 +504,20 @@
           <section class="card full">
             <p class="eyebrow">Discount</p>
             <p class="card-title">적용 가능한 할인 조건</p>
-            <p class="card-desc">포트폴리오 공개와 리뷰 작성 조건에 동의하는 경우 내부 기준으로 할인합니다.</p>
+            <p class="card-desc">Estimate 페이지와 동일하게 항목별 5만 원씩 반영합니다.</p>
             <div class="check-grid">
               <label class="check">
                 <input type="checkbox" value="portfolio" data-kind="discount" />
                 <div>
-                  <strong>포트폴리오 사용 허용</strong>
-                  <span>-5만 원 / 작업 완료 후 일부 결과물을 Gonish 포트폴리오로 공개 가능</span>
+                  <strong>포트폴리오 소개에 동의할게요</strong>
+                  <span>-5만 원 / 완성 후 일부 화면을 포트폴리오 예시로 소개 가능</span>
                 </div>
               </label>
               <label class="check">
                 <input type="checkbox" value="review" data-kind="discount" />
                 <div>
-                  <strong>리뷰 작성 동의</strong>
-                  <span>-5만 원 / 작업 완료 후 텍스트 후기 또는 짧은 리뷰 작성 기준</span>
+                  <strong>작업 후 짧은 후기를 남길게요</strong>
+                  <span>-5만 원 / 작업 종료 후 간단한 후기 작성</span>
                 </div>
               </label>
             </div>
@@ -501,7 +540,7 @@
               <textarea
                 id="memo"
                 rows="5"
-                placeholder="예: 기존 사이트가 너무 오래되어 리뉴얼 우선, 예약은 2차 오픈으로 분리 가능"
+                placeholder="예: 1차 오픈은 핵심 화면만, 결제/통계 기능은 2차로 분리"
               ></textarea>
             </label>
           </section>
@@ -511,12 +550,13 @@
           <section class="card">
             <p class="eyebrow">Result</p>
             <p class="card-title">계산 결과</p>
-            <div class="stat-line"><span class="muted">기본 계산가</span><strong id="raw-price">110만 원</strong></div>
-            <div class="stat-line"><span class="muted">최소 판매가</span><strong id="min-price">110만 원</strong></div>
-            <div class="stat-line"><span class="muted">안내 범위 상단</span><strong id="max-price">130만 원</strong></div>
+            <div class="stat-line"><span class="muted">일정 가산 전 합계</span><strong id="raw-price">60만 원</strong></div>
+            <div class="stat-line"><span class="muted">빠른 일정 가산</span><strong id="urgent-surcharge">0만 원</strong></div>
+            <div class="stat-line"><span class="muted">예상 시작가</span><strong id="min-price">60만 원</strong></div>
+            <div class="stat-line"><span class="muted">안내 범위 상단</span><strong id="max-price">95만 원</strong></div>
             <div class="stat-line">
-              <span class="muted">권장 구간</span>
-              <span class="pill" id="recommended-band">Signature Orbit</span>
+              <span class="muted">복잡도 가이드</span>
+              <span class="pill" id="complexity-pill">랜딩·소개 중심</span>
             </div>
           </section>
 
@@ -538,61 +578,76 @@
 
     <script>
       const STORAGE_KEY = "gonish:latestEstimateDraft";
+      const MIN_START_PRICE = 60;
+      const FAST_TRACK_PERCENT = 15;
 
       const projectType = {
-        landing: { label: "짧고 선명한 소개 페이지", price: 45 },
-        renewal: { label: "기존 사이트 리뉴얼", price: 65 },
-        "brand-site": { label: "브랜드 홈페이지", price: 75 },
-        unsure: { label: "아직 방향 미정", price: 70 },
-        conversion: { label: "문의·예약 중심 사이트", price: 90 },
+        landing: { label: "원페이지 / 랜딩 페이지", price: 60, score: 1 },
+        "corporate-site": { label: "기업형 / 소개형 사이트", price: 119, score: 2 },
+        "member-site": { label: "회원 기능 포함 사이트", price: 169, score: 3 },
+        webapp: { label: "관리자 / 업무형 웹앱", price: 249, score: 4 },
+        unsure: { label: "아직 잘 모르겠어요", price: 119, score: 2 },
       };
 
       const pageScope = {
-        small: { label: "1~3페이지", price: 0 },
-        medium: { label: "4~6페이지", price: 25 },
-        large: { label: "7페이지 이상", price: 55 },
-        unknown: { label: "아직 미정", price: 20 },
+        included: { label: "기본 화면 구성으로 시작", price: 0, score: 0 },
+        "static-page": { label: "추가 정적 페이지", price: 12, score: 1 },
+        "form-page": { label: "추가 입력 페이지", price: 22, score: 1 },
+        "list-detail": { label: "리스트 + 상세 화면 세트", price: 48, score: 2 },
+        dashboard: { label: "로그인 후 개인화 화면", price: 42, score: 2 },
+        "multi-add": { label: "추가 화면 3개 이상 예정", price: 84, score: 3 },
+        unknown: { label: "화면 수를 아직 모르겠어요", price: 24, score: 2 },
       };
 
       const readiness = {
-        ready: { label: "거의 준비 완료", price: 0 },
-        partial: { label: "일부만 준비", price: 10 },
-        "need-help": { label: "무엇을 준비할지 모름", price: 25 },
+        ready: { label: "자료와 방향이 거의 정리되어 있어요", price: 0, score: 0 },
+        partial: { label: "일부만 정리되어 있어요", price: 10, score: 1 },
+        "need-help": { label: "아직 상담이 많이 필요해요", price: 25, score: 2 },
       };
 
       const schedule = {
-        relaxed: { label: "여유 있게 진행", price: 0 },
-        normal: { label: "일반 일정", price: 0 },
-        fast: { label: "빠른 일정", price: 30 },
+        relaxed: { label: "여유 있게 진행하고 싶어요", price: 0, score: 0, percent: 0 },
+        normal: { label: "평균적인 일정으로 진행하고 싶어요", price: 0, score: 1, percent: 0 },
+        fast: { label: "조금 더 빠르게 진행하고 싶어요", price: 0, score: 2, percent: FAST_TRACK_PERCENT },
+      };
+
+      const domainHosting = {
+        "both-ready": { label: "둘 다 있어요" },
+        "domain-only": { label: "주소(도메인)만 있어요" },
+        "hosting-only": { label: "올릴 공간(호스팅)만 있어요" },
+        none: { label: "둘 다 아직 없어요" },
+        unsure: { label: "무슨 말인지 잘 모르겠어요" },
       };
 
       const features = {
-        inquiry: { label: "문의 폼", price: 0 },
-        gallery: { label: "사례/사진 모음", price: 15 },
-        multilingual: { label: "다국어", price: 25 },
-        booking: { label: "예약/신청 흐름", price: 45 },
-        member: { label: "로그인/회원 기능", price: 55 },
-        commerce: { label: "상품 판매/결제", price: 90 },
+        "member-auth": { label: "회원가입 / 로그인", price: 42, score: 2 },
+        "social-login": { label: "소셜 로그인", price: 26, score: 1 },
+        "role-permission": { label: "사용자 역할 / 권한 분리", price: 38, score: 2 },
+        "admin-dashboard": { label: "관리자 대시보드", price: 59, score: 2 },
+        "admin-module": { label: "관리자용 업무 관리 모듈", price: 48, score: 2 },
+        "admin-permission": { label: "관리자 권한 세분화", price: 36, score: 1 },
+        "stats-report": { label: "고급 통계 / 리포트", price: 54, score: 2 },
+        "crud-board": { label: "게시판 / 콘텐츠 관리", price: 69, score: 3 },
+        payment: { label: "온라인 결제", price: 89, score: 3 },
+        subscription: { label: "정기 결제 / 구독", price: 129, score: 4 },
+        map: { label: "기본 지도 표시", price: 32, score: 1 },
+        "notification-email": { label: "자동 이메일 발송", price: 16, score: 1 },
+        "notification-sms": { label: "문자 / 알림 발송", price: 29, score: 1 },
+        "external-api": { label: "기타 외부 API 연동 1종", price: 48, score: 2 },
       };
 
       const discounts = {
         portfolio: {
-          label: "포트폴리오 사용 허용",
+          label: "포트폴리오 소개에 동의할게요",
           amount: -5,
-          contractNote: "포트폴리오 사용 할인 적용: 작업 완료 후 결과물 일부를 Gonish 포트폴리오 및 홍보 이미지로 활용할 수 있습니다.",
+          contractNote: "포트폴리오 소개 동의 할인 적용: 완성 후 일부 화면을 Gonish 포트폴리오 예시로 활용할 수 있습니다.",
         },
         review: {
-          label: "리뷰 작성 동의",
+          label: "작업 후 짧은 후기를 남길게요",
           amount: -5,
-          contractNote: "리뷰 할인 적용: 프로젝트 종료 후 14일 이내 텍스트 후기 또는 짧은 리뷰를 남기는 조건으로 할인합니다.",
+          contractNote: "후기 참여 할인 적용: 프로젝트 종료 후 간단한 텍스트 후기를 남기는 조건으로 할인합니다.",
         },
       };
-
-      const packages = [
-        { id: "first-light", label: "First Light", description: "첫 소개용, 소형 사이트, 간단한 문의 중심" },
-        { id: "signature-orbit", label: "Signature Orbit", description: "브랜드 소개, 서비스, 사례, 문의까지 포함" },
-        { id: "orbit-flow", label: "Orbit Flow", description: "예약, 회원, 다국어, 운영 기능 포함" },
-      ];
 
       const ids = {
         projectTitle: document.getElementById("project-title"),
@@ -603,16 +658,18 @@
         pageScope: document.getElementById("page-scope"),
         readiness: document.getElementById("readiness"),
         schedule: document.getElementById("schedule"),
+        domainHosting: document.getElementById("domain-hosting"),
         manualAdjustment: document.getElementById("manual-adjustment"),
         memo: document.getElementById("memo"),
         priceRange: document.getElementById("price-range"),
         priceDescription: document.getElementById("price-description"),
-        packageName: document.getElementById("package-name"),
-        packageDescription: document.getElementById("package-description"),
+        complexityLabel: document.getElementById("complexity-label"),
+        complexityDescription: document.getElementById("complexity-description"),
         rawPrice: document.getElementById("raw-price"),
+        urgentSurcharge: document.getElementById("urgent-surcharge"),
         minPrice: document.getElementById("min-price"),
         maxPrice: document.getElementById("max-price"),
-        recommendedBand: document.getElementById("recommended-band"),
+        complexityPill: document.getElementById("complexity-pill"),
         shareOutput: document.getElementById("share-output"),
         copyButton: document.getElementById("copy-button"),
         draftButton: document.getElementById("draft-button"),
@@ -627,79 +684,109 @@
       const formatPrice = (value) => `${value}만 원`;
       const formatRange = (min, max) => `${min}만 ~ ${max}만 원`;
 
-      function getPackage(min) {
-        if (min < 85) return packages[0];
-        if (min < 160) return packages[1];
-        return packages[2];
-      }
-
-      function getBuffer(min, featureCount, isLarge) {
-        let base = 15;
-
-        if (min >= 240) {
-          base = 40;
-        } else if (min >= 150) {
-          base = 30;
-        } else if (min >= 80) {
-          base = 20;
+      function getEstimateBand(score) {
+        if (score <= 5) {
+          return {
+            label: "랜딩·소개 중심",
+            explanation: "핵심 소개 화면 위주로 시작하는 비교적 가벼운 범위예요.",
+          };
         }
 
-        if (featureCount >= 2) {
-          base += 10;
+        if (score <= 13) {
+          return {
+            label: "기업형·브랜드형",
+            explanation: "서비스 소개와 운영 기본 기능이 함께 들어가는 가장 일반적인 비즈니스 홈페이지 범위예요.",
+          };
         }
 
-        if (isLarge) {
-          base += 10;
+        if (score <= 22) {
+          return {
+            label: "회원·운영 기능 포함",
+            explanation: "회원, 운영, 콘텐츠 관리 같은 실제 동작 기능이 함께 들어가는 단계예요.",
+          };
         }
 
-        return base;
+        return {
+          label: "관리자·업무형 웹앱",
+          explanation: "운영팀이 매일 쓰는 관리 화면과 사용자 기능이 함께 들어가는 큰 범위예요.",
+        };
       }
 
       function getTimeline(scheduleKey, min) {
         if (scheduleKey === "fast") {
-          return "약 2~4주";
+          return "약 2~4주 (우선순위 압축 기준)";
         }
 
-        if (min < 85) {
-          return "약 2~3주";
-        }
-
-        if (min < 160) {
+        if (min < 120) {
           return "약 3~5주";
         }
 
-        return "약 4주 이상";
+        if (min < 240) {
+          return "약 4~7주";
+        }
+
+        if (min < 400) {
+          return "약 6~10주";
+        }
+
+        return "약 10주 이상";
+      }
+
+      function getDomainHostingNote(domainHostingKey) {
+        if (domainHostingKey === "both-ready") {
+          return "기존 도메인과 호스팅 정보를 확인해 연결 기준으로 진행합니다.";
+        }
+
+        if (domainHostingKey === "domain-only") {
+          return "도메인은 보유 중이며, 호스팅(서버) 환경은 별도 준비가 필요합니다.";
+        }
+
+        if (domainHostingKey === "hosting-only") {
+          return "호스팅은 보유 중이며, 도메인 구매/연결 작업은 별도 준비가 필요합니다.";
+        }
+
+        if (domainHostingKey === "none") {
+          return "도메인/호스팅 신규 구매 및 세팅 비용은 별도입니다.";
+        }
+
+        if (domainHostingKey === "unsure") {
+          return "도메인/호스팅 준비 상태가 미정이어서 상담 시 우선 확인이 필요합니다.";
+        }
+
+        return "도메인/호스팅 준비 상태는 상담에서 함께 확인합니다.";
       }
 
       function buildScopeText(state) {
-        const base = `${state.selectedProjectType.label} / ${state.selectedPageScope.label}`;
+        const projectTypeLabel = state.selectedProjectType?.label || "프로젝트 유형 미정";
+        const pageScopeLabel = state.selectedPageScope?.label || "추가 화면 구성 미정";
         const featuresText =
           state.selectedFeatures.length > 0
             ? state.selectedFeatures.map((item) => item.label).join(", ")
-            : "기본 문의 흐름 중심";
+            : "선택한 추가 기능 없음";
+        const domainHostingLabel = state.selectedDomainHosting?.label || "미정";
         const custom = state.customScope ? ` / 추가 메모: ${state.customScope}` : "";
 
-        return `${base} / 기능: ${featuresText}${custom}`;
+        return `${projectTypeLabel} / ${pageScopeLabel} / 기능: ${featuresText} / 도메인·호스팅: ${domainHostingLabel}${custom}`;
       }
 
-      function buildBreakdown(state) {
+      function buildBreakdown(state, urgentSurcharge) {
         const rows = [
           {
-            label: "기본 제작비",
-            description: state.selectedProjectType.label,
-            amount: state.selectedProjectType.price,
+            label: state.selectedProjectType ? "프로젝트 유형" : "기본 시작가",
+            description: state.selectedProjectType?.label || "유형 미선택 기본값",
+            amount: state.selectedProjectType?.price ?? MIN_START_PRICE,
           },
         ];
 
-        if (state.selectedPageScope.price > 0) {
+        if ((state.selectedPageScope?.price ?? 0) > 0) {
           rows.push({
-            label: "페이지 규모 가산",
+            label: "추가 화면 구성",
             description: state.selectedPageScope.label,
             amount: state.selectedPageScope.price,
           });
         }
 
-        if (state.selectedReadiness.price > 0) {
+        if ((state.selectedReadiness?.price ?? 0) > 0) {
           rows.push({
             label: "자료 정리 지원",
             description: state.selectedReadiness.label,
@@ -707,27 +794,25 @@
           });
         }
 
-        if (state.selectedSchedule.price > 0) {
+        if (urgentSurcharge > 0) {
           rows.push({
-            label: "일정 가산",
-            description: state.selectedSchedule.label,
-            amount: state.selectedSchedule.price,
+            label: "빠른 일정 가산",
+            description: `빠른 일정 (${FAST_TRACK_PERCENT}%)`,
+            amount: urgentSurcharge,
           });
         }
 
         state.selectedFeatures.forEach((feature) => {
-          if (feature.price > 0) {
-            rows.push({
-              label: "기능 추가",
-              description: feature.label,
-              amount: feature.price,
-            });
-          }
+          rows.push({
+            label: "기능 추가",
+            description: feature.label,
+            amount: feature.price,
+          });
         });
 
         state.selectedDiscounts.forEach((discount) => {
           rows.push({
-            label: "할인 적용",
+            label: "혜택 적용",
             description: discount.label,
             amount: discount.amount,
           });
@@ -736,7 +821,7 @@
         if (state.manualAdjustment !== 0) {
           rows.push({
             label: "수동 조정",
-            description: state.manualAdjustment > 0 ? "특이사항 가산" : "내부 조정 할인",
+            description: state.manualAdjustment > 0 ? "내부 가산" : "내부 감액",
             amount: state.manualAdjustment,
           });
         }
@@ -744,37 +829,88 @@
         return rows;
       }
 
-      function getExactQuote(min) {
-        return min;
-      }
-
       function buildDraft(state) {
-        const raw = roundToFive(Math.max(45, state.raw));
-        const min = roundToFive(Math.max(45, state.raw));
-        const max = roundToFive(
-          min + getBuffer(min, state.selectedFeatures.length, state.pageScopeKey === "large"),
-        );
-        const recommendedPackage = getPackage(min);
-        const exactQuote = getExactQuote(min);
+        const hasSelection =
+          Boolean(state.projectTypeKey) ||
+          Boolean(state.pageScopeKey) ||
+          Boolean(state.readinessKey) ||
+          Boolean(state.scheduleKey) ||
+          state.selectedFeatures.length > 0 ||
+          state.selectedDiscounts.length > 0 ||
+          state.manualAdjustment !== 0;
+
+        const selectedProjectTypePrice = state.selectedProjectType?.price ?? MIN_START_PRICE;
+        const selectedPageScopePrice = state.selectedPageScope?.price ?? 0;
+        const selectedReadinessPrice = state.selectedReadiness?.price ?? 0;
+        const selectedSchedulePrice = state.selectedSchedule?.price ?? 0;
+        const selectedSchedulePercent = state.selectedSchedule?.percent ?? 0;
+        const featuresPrice = state.selectedFeatures.reduce((sum, item) => sum + item.price, 0);
+        const discountAmount = state.selectedDiscounts.reduce((sum, item) => sum + item.amount, 0);
+
+        const subtotalBeforeUrgent =
+          selectedProjectTypePrice + selectedPageScopePrice + selectedReadinessPrice + featuresPrice;
+        const urgentSurcharge =
+          selectedSchedulePercent > 0 ? roundToFive(subtotalBeforeUrgent * (selectedSchedulePercent / 100)) : 0;
+        const discountedBase =
+          subtotalBeforeUrgent +
+          urgentSurcharge +
+          selectedSchedulePrice +
+          discountAmount +
+          state.manualAdjustment;
+
+        const score =
+          (state.selectedProjectType?.score ?? 0) +
+          (state.selectedPageScope?.score ?? 0) +
+          (state.selectedReadiness?.score ?? 0) +
+          (state.selectedSchedule?.score ?? 0) +
+          state.selectedFeatures.reduce((sum, item) => sum + item.score, 0);
+        const complexity = getEstimateBand(score);
+
+        let min = MIN_START_PRICE;
+        let max = 95;
+        let rawBeforeUrgent = MIN_START_PRICE;
+        let priceDescription = "기본 시작가예요. 항목을 선택할수록 선택 반영 기준가가 더 정확해져요.";
+
+        if (hasSelection) {
+          rawBeforeUrgent = roundToFive(Math.max(0, subtotalBeforeUrgent + state.manualAdjustment));
+          min = roundToFive(Math.max(0, discountedBase));
+          const bufferBase = min < 120 ? 20 : min < 240 ? 30 : min < 400 ? 40 : 55;
+          const featureBuffer =
+            state.selectedFeatures.length >= 6 ? 30 : state.selectedFeatures.length >= 3 ? 15 : 0;
+          const largeScopeBuffer =
+            state.pageScopeKey === "multi-add"
+              ? 15
+              : state.pageScopeKey === "dashboard" || state.pageScopeKey === "list-detail"
+                ? 10
+                : 0;
+          max = roundToFive(min + bufferBase + featureBuffer + largeScopeBuffer);
+
+          priceDescription =
+            urgentSurcharge > 0
+              ? "빠른 일정 반영 기준가예요."
+              : state.selectedDiscounts.length > 0
+                ? "혜택까지 반영한 선택 기준가예요."
+                : "선택하신 범위를 기준으로 계산한 예상 시작가예요.";
+        }
+
+        const projectTypeLabel = state.selectedProjectType?.label || "미정";
+        const pageScopeLabel = state.selectedPageScope?.label || "미정";
+        const readinessLabel = state.selectedReadiness?.label || "미정";
+        const scheduleLabel = state.selectedSchedule?.label || "미정";
+        const domainHostingLabel = state.selectedDomainHosting?.label || "미정";
+        const featureLabels = state.selectedFeatures.map((item) => item.label);
+        const discountLabels = state.selectedDiscounts.map((item) => item.label);
+        const domainHostingNote = getDomainHostingNote(state.domainHostingKey);
         const timeline = getTimeline(state.scheduleKey, min);
-        const breakdown = buildBreakdown(state);
+        const breakdown = buildBreakdown(state, urgentSurcharge);
         const scopeText = buildScopeText(state);
-        const projectTitle =
-          state.projectTitle || `${state.selectedProjectType.label} 제작 견적서`;
+        const projectTitle = state.projectTitle || `${projectTypeLabel === "미정" ? "프로젝트" : projectTypeLabel} 견적서`;
+        const exactQuote = min;
         const exactHalf = roundToFive(exactQuote / 2);
-        const discountText =
-          state.selectedDiscounts.length > 0
-            ? state.selectedDiscounts.map((item) => item.label).join(", ")
-            : "";
-        const extraNotes = [];
-
-        if (discountText) {
-          extraNotes.push(`할인 적용: ${discountText}`);
-        }
-
-        if (state.memo) {
-          extraNotes.push(`추가 메모: ${state.memo}`);
-        }
+        const discountText = discountLabels.join(", ");
+        const shareFeatureText = featureLabels.length > 0 ? featureLabels.join(", ") : "선택한 추가 기능 없음";
+        const shareDiscountText = discountText ? `\n적용 혜택: ${discountText}` : "";
+        const shareMemoText = state.memo ? `\n메모: ${state.memo}` : "";
 
         return {
           projectTitle,
@@ -782,16 +918,22 @@
           clientContact: state.clientContact,
           customScope: state.customScope,
           memo: state.memo,
-          projectTypeLabel: state.selectedProjectType.label,
-          pageScopeLabel: state.selectedPageScope.label,
-          readinessLabel: state.selectedReadiness.label,
-          scheduleLabel: state.selectedSchedule.label,
-          featureLabels: state.selectedFeatures.map((item) => item.label),
-          discountLabels: state.selectedDiscounts.map((item) => item.label),
-          recommendedPackageLabel: recommendedPackage.label,
-          recommendedPackageDescription: recommendedPackage.description,
+          projectTypeLabel,
+          pageScopeLabel,
+          readinessLabel,
+          scheduleLabel,
+          domainHostingLabel,
+          domainHostingNote,
+          featureLabels,
+          discountLabels,
+          complexityLabel: complexity.label,
+          complexityDescription: complexity.explanation,
+          recommendedPackageLabel: complexity.label,
+          recommendedPackageDescription: complexity.explanation,
           priceRangeLabel: formatRange(min, max),
-          rawPriceLabel: formatPrice(raw),
+          priceDescription,
+          rawPriceLabel: formatPrice(rawBeforeUrgent),
+          urgentSurchargeLabel: formatPrice(urgentSurcharge),
           minPriceLabel: formatPrice(min),
           maxPriceLabel: formatPrice(max),
           exactQuoteLabel: formatPrice(exactQuote),
@@ -800,18 +942,16 @@
           timeline,
           scopeText,
           shareText:
-            `현재 기준으로 보면 ${formatRange(min, max)} 범위로 안내드리는 것이 가장 자연스럽습니다.\n` +
-            `유형은 ${state.selectedProjectType.label}, 규모는 ${state.selectedPageScope.label}, 기능은 ${
-              state.selectedFeatures.length > 0
-                ? state.selectedFeatures.map((item) => item.label).join(", ")
-                : "기본 문의 흐름 중심"
-            } 기준입니다.\n` +
-            `추천 패키지는 ${recommendedPackage.label} 쪽에 가깝습니다.` +
-            (discountText ? `\n적용 할인: ${discountText}` : "") +
-            (state.memo ? `\n메모: ${state.memo}` : ""),
+            `현재 선택 기준으로 예상 시작가는 ${formatPrice(min)}이며, 안내 범위는 ${formatRange(min, max)}입니다.\n` +
+            `프로젝트 유형: ${projectTypeLabel}\n` +
+            `추가 화면 구성: ${pageScopeLabel}\n` +
+            `추가 기능: ${shareFeatureText}\n` +
+            `자료 준비: ${readinessLabel}\n` +
+            `희망 일정: ${scheduleLabel}\n` +
+            `도메인/호스팅: ${domainHostingLabel}${shareDiscountText}${shareMemoText}`,
           summaryDescription:
-            `현재 계산 기준으로는 ${formatRange(min, max)} 안내가 적절하며, 최종 견적서 초안은 ${formatPrice(exactQuote)} 기준으로 채웠습니다.` +
-            (discountText ? ` 할인 조건은 ${discountText} 기준입니다.` : ""),
+            `${priceDescription} 현재 안내 범위는 ${formatRange(min, max)}이며, 초안 견적은 ${formatPrice(exactQuote)} 기준으로 반영했습니다.` +
+            (discountText ? ` 혜택 조건은 ${discountText} 기준입니다.` : ""),
           breakdown: breakdown.map((row) => ({
             label: row.label,
             description: row.description,
@@ -822,29 +962,28 @@
             "반응형 웹 제작",
             "기본 메타 세팅",
             "최종 배포 연결",
-            state.selectedFeatures.length > 0
-              ? `선택 기능: ${state.selectedFeatures.map((item) => item.label).join(", ")}`
-              : "기본 문의 흐름 연결",
+            featureLabels.length > 0 ? `선택 기능: ${featureLabels.join(", ")}` : "선택 기능 없음 (기본 화면 범위 중심)",
           ],
           excludedItems: [
-            "도메인 및 호스팅 비용",
-            "유료 플러그인 및 외부 API 비용",
+            "도메인 및 호스팅 구매 비용",
+            "유료 플러그인 및 외부 API 사용료",
             "전문 촬영 및 카피라이팅",
             "결제 수수료",
           ],
           revisionPolicy:
             state.scheduleKey === "fast"
-              ? "빠른 일정 기준으로 범위 고정 후 시안 기준 2회 수정 포함. 큰 방향 변경은 별도 견적으로 재안내합니다."
+              ? "빠른 일정 기준으로 범위를 우선 고정한 뒤 시안 기준 2회 수정 포함. 큰 방향 변경은 별도 견적으로 재안내합니다."
               : "시안 기준 2회 수정 포함. 큰 방향 변경이나 추가 기능 요청은 별도 견적으로 재안내합니다.",
           paymentNote: "선금 확인 후 작업을 시작하며, 최종 검수 완료 후 잔금을 안내드립니다.",
           footerNote:
             `본 견적서는 내부 계산 기준(${formatRange(min, max)})을 바탕으로 작성된 초안입니다. 범위 변경이나 기능 추가가 발생할 경우 일정 및 금액은 함께 조정될 수 있습니다.`,
-          contractExtra:
-            extraNotes.length > 0
-              ? [...state.selectedDiscounts.map((item) => item.contractNote), state.memo ? `추가 메모: ${state.memo}` : ""]
-                  .filter(Boolean)
-                  .join(" ")
-              : "",
+          contractExtra: [
+            ...state.selectedDiscounts.map((item) => item.contractNote),
+            domainHostingNote,
+            state.memo ? `추가 메모: ${state.memo}` : "",
+          ]
+            .filter(Boolean)
+            .join(" "),
         };
       }
 
@@ -859,45 +998,34 @@
           pageScopeKey: ids.pageScope.value,
           readinessKey: ids.readiness.value,
           scheduleKey: ids.schedule.value,
+          domainHostingKey: ids.domainHosting.value,
           manualAdjustment: Number(ids.manualAdjustment.value || 0),
           selectedProjectType: projectType[ids.projectType.value],
           selectedPageScope: pageScope[ids.pageScope.value],
           selectedReadiness: readiness[ids.readiness.value],
           selectedSchedule: schedule[ids.schedule.value],
+          selectedDomainHosting: domainHosting[ids.domainHosting.value],
           selectedFeatures: featureInputs
             .filter((input) => input.checked)
-            .map((input) => features[input.value]),
+            .map((input) => features[input.value])
+            .filter(Boolean),
           selectedDiscounts: discountInputs
             .filter((input) => input.checked)
-            .map((input) => discounts[input.value]),
+            .map((input) => discounts[input.value])
+            .filter(Boolean),
         };
-
-        state.raw =
-          state.selectedProjectType.price +
-          state.selectedPageScope.price +
-          state.selectedReadiness.price +
-          state.selectedSchedule.price +
-          state.selectedFeatures.reduce((sum, item) => sum + item.price, 0) +
-          state.selectedDiscounts.reduce((sum, item) => sum + item.amount, 0) +
-          state.manualAdjustment;
 
         const draft = buildDraft(state);
 
         ids.rawPrice.textContent = draft.rawPriceLabel;
-        ids.minPrice.textContent = draft.exactQuoteLabel;
+        ids.urgentSurcharge.textContent = draft.urgentSurchargeLabel;
+        ids.minPrice.textContent = draft.minPriceLabel;
         ids.maxPrice.textContent = draft.maxPriceLabel;
         ids.priceRange.textContent = draft.priceRangeLabel;
-        ids.recommendedBand.textContent = draft.recommendedPackageLabel;
-        ids.packageName.textContent = draft.recommendedPackageLabel;
-        ids.packageDescription.textContent = draft.recommendedPackageDescription;
-
-        if (draft.breakdown.length <= 2) {
-          ids.priceDescription.textContent = "가벼운 소개형 또는 소형 리뉴얼 쪽으로 안내하기 좋은 범위예요.";
-        } else if (draft.breakdown.length <= 4) {
-          ids.priceDescription.textContent = "브랜드 홈페이지나 일반적인 리뉴얼 상담에서 가장 많이 쓰기 좋은 범위예요.";
-        } else {
-          ids.priceDescription.textContent = "운영 기능이 포함된 프로젝트로 보고, 기능 범위를 한 번 더 확인하는 편이 안전해요.";
-        }
+        ids.priceDescription.textContent = draft.priceDescription;
+        ids.complexityPill.textContent = draft.complexityLabel;
+        ids.complexityLabel.textContent = draft.complexityLabel;
+        ids.complexityDescription.textContent = draft.complexityDescription;
 
         ids.shareOutput.textContent = draft.shareText;
 
@@ -914,18 +1042,13 @@
         }
       }
 
-      [
-        ids.projectTitle,
-        ids.clientName,
-        ids.clientContact,
-        ids.customScope,
-        ids.projectType,
-        ids.pageScope,
-        ids.readiness,
-        ids.schedule,
-        ids.manualAdjustment,
-        ids.memo,
-      ].forEach((input) => input.addEventListener("input", calculate));
+      [ids.projectTitle, ids.clientName, ids.clientContact, ids.customScope, ids.manualAdjustment, ids.memo].forEach(
+        (input) => input.addEventListener("input", calculate),
+      );
+
+      [ids.projectType, ids.pageScope, ids.readiness, ids.schedule, ids.domainHosting].forEach((input) =>
+        input.addEventListener("change", calculate),
+      );
 
       featureInputs.forEach((input) => input.addEventListener("change", calculate));
       discountInputs.forEach((input) => input.addEventListener("change", calculate));
@@ -965,10 +1088,11 @@
         ids.clientName.value = "";
         ids.clientContact.value = "";
         ids.customScope.value = "";
-        ids.projectType.value = "brand-site";
-        ids.pageScope.value = "medium";
-        ids.readiness.value = "partial";
-        ids.schedule.value = "normal";
+        ids.projectType.value = "";
+        ids.pageScope.value = "";
+        ids.readiness.value = "";
+        ids.schedule.value = "";
+        ids.domainHosting.value = "";
         ids.manualAdjustment.value = 0;
         ids.memo.value = "";
         featureInputs.forEach((input) => {

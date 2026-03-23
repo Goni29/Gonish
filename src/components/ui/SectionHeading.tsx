@@ -217,6 +217,7 @@ export default function SectionHeading({
 }: SectionHeadingProps) {
   const isCenter = align === "center";
   const theme = headingThemes[variant];
+  const heroTitleFontClass = variant === "default" ? "font-display" : "detail-hero-title-font";
 
   return (
     <div
@@ -280,7 +281,12 @@ export default function SectionHeading({
             <p className="eyebrow">{eyebrow}</p>
 
             <div className="space-y-5">
-              <h1 className="max-w-5xl break-keep font-display text-[clamp(3.1rem,6vw,6.8rem)] leading-[0.96] tracking-[-0.055em] text-ink xl:max-w-6xl">
+              <h1
+                className={[
+                  "max-w-5xl break-keep text-[clamp(2.8rem,5.5vw,6.1rem)] leading-[1.08] tracking-[-0.02em] text-ink xl:max-w-6xl",
+                  heroTitleFontClass,
+                ].join(" ")}
+              >
                 {title}
               </h1>
 

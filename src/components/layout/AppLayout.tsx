@@ -36,17 +36,40 @@ type AppLayoutProps = {
 export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname() ?? "/";
   const isHome = pathname === "/";
+  const isAdminRoute = pathname.startsWith("/admin/");
 
   useEffect(() => {
+    if (isAdminRoute) return;
     ScrollTrigger.normalizeScroll(true);
-  }, []);
+  }, [isAdminRoute]);
 
   useEffect(() => {
+    if (isAdminRoute) return;
     const frame = requestAnimationFrame(() => {
       ScrollTrigger.refresh();
     });
     return () => cancelAnimationFrame(frame);
-  }, [pathname]);
+  }, [isAdminRoute, pathname]);
+
+  if (isAdminRoute) {
+    return (
+      <div className="min-h-screen">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={pageTransition}
+          >
+            <FrozenRouter>
+              <main>{children}</main>
+            </FrozenRouter>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">

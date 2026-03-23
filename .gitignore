@@ -2,7 +2,9 @@ node_modules
 dist
 .next
 .npm-cache
+.data
 .DS_Store
 .env
 .env.*
+!.env.example
 *.local

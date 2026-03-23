@@ -4,6 +4,7 @@ import Link from "next/link";
 type BrandButtonProps = {
   children: ReactNode;
   className?: string;
+  disabled?: boolean;
   href?: string;
   onClick?: () => void;
   to?: string;
@@ -24,13 +25,14 @@ const variantClasses = {
 export default function BrandButton({
   children,
   className,
+  disabled,
   href,
   onClick,
   to,
   type = "button",
   variant = "primary",
 }: BrandButtonProps) {
-  const classes = [baseClasses, variantClasses[variant], className]
+  const classes = [baseClasses, variantClasses[variant], disabled && "opacity-50 pointer-events-none", className]
     .filter(Boolean)
     .join(" ");
 
@@ -51,7 +53,7 @@ export default function BrandButton({
   }
 
   return (
-    <button type={type} onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} disabled={disabled} className={classes}>
       {children}
     </button>
   );

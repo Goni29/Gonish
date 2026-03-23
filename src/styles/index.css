@@ -73,6 +73,44 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Ridibatang";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.0/RIDIBatang.woff")
+    format("woff");
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Godo";
+  src:
+    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff2")
+      format("woff2"),
+    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff")
+      format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Godo";
+  src:
+    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoB.woff2")
+      format("woff2"),
+    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoB.woff")
+      format("woff");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GangwonSpecialSelfGoverningProvince";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/GangwonState.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-brand: #F31D5B;
   --color-ink: #141014;
@@ -211,6 +249,21 @@
   font-family: "Paperozi", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif;
   font-weight: 700;
   letter-spacing: -0.04em;
+}
+
+.detail-hero-title-font {
+  font-family: "Godo", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif;
+}
+
+.home-story-serif-font {
+  font-family: "Paperozi", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif;
+  font-weight: 300;
+  font-synthesis: none;
+}
+
+.footer-title-font {
+  font-family: "Ridibatang", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif !important;
+  font-weight: 400;
 }
 
 .soft-divider {

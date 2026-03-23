@@ -1,8 +1,9 @@
 import type { ChangeEvent, FormEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
+import type { InquiryResponse } from "@/lib/inquiry";
 
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
@@ -21,23 +22,46 @@ const initialFormState: FormState = {
   tone: "",
   message: "",
 };
+const contactSubmitSuccessMessage = "문의가 전송되었어요! 최대한 빨리 확인하고 회신드릴게요!";
+const inquirySubmitFailureMessage = "문의 전송이 실패했어요. 잠시 후 다시 시도해주세요.";
+const contactBubbleAutoHideMs = 5000;
 
 export default function ContactStage() {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [smiling, setSmiling] = useState(false);
-  const [statusMessage, setStatusMessage] = useState(
-    "프로젝트 목표와 일정, 원하는 분위기를 편하게 적어주세요. 정리해서 회신드릴게요.",
-  );
-  const timeoutRef = useRef<number | null>(null);
-  const contactEmail = useMemo(() => process.env.NEXT_PUBLIC_CONTACT_EMAIL, []);
+  const [sending, setSending] = useState(false);
+  const [submitResultMessage, setSubmitResultMessage] = useState<string | null>(null);
+  const smileTimeoutRef = useRef<number | null>(null);
+  const messageTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+      if (smileTimeoutRef.current) {
+        window.clearTimeout(smileTimeoutRef.current);
+      }
+      if (messageTimeoutRef.current) {
+        window.clearTimeout(messageTimeoutRef.current);
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!submitResultMessage) {
+      if (messageTimeoutRef.current) {
+        window.clearTimeout(messageTimeoutRef.current);
+        messageTimeoutRef.current = null;
+      }
+      return;
+    }
+
+    if (messageTimeoutRef.current) {
+      window.clearTimeout(messageTimeoutRef.current);
+    }
+
+    messageTimeoutRef.current = window.setTimeout(() => {
+      setSubmitResultMessage(null);
+    }, contactBubbleAutoHideMs);
+  }, [submitResultMessage]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -47,51 +71,57 @@ export default function ContactStage() {
   const triggerSmile = () => {
     setSmiling(true);
 
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
+    if (smileTimeoutRef.current) {
+      window.clearTimeout(smileTimeoutRef.current);
     }
 
-    timeoutRef.current = window.setTimeout(() => {
+    smileTimeoutRef.current = window.setTimeout(() => {
       setSmiling(false);
     }, 2800);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setSubmitResultMessage(null);
 
     if (!form.reply.trim()) {
-      setStatusMessage("답변 받으실 연락처를 남겨주세요. 이메일이나 전화번호 중 편한 쪽으로요.");
+      const validationMessage = "답변 받으실 연락처를 남겨주세요. 이메일이나 전화번호 중 편한 쪽으로요.";
+      setSubmitResultMessage(validationMessage);
       return;
     }
 
-    triggerSmile();
+    setSending(true);
 
-    if (contactEmail) {
-      const subject = encodeURIComponent(`[Gonish 문의] ${form.project || form.name || "새 프로젝트"}`);
-      const body = encodeURIComponent(
-        [
-          `이름: ${form.name || "-"}`,
-          `답변 받을 연락처: ${form.reply || "-"}`,
-          `프로젝트: ${form.project || "-"}`,
-          `원하는 분위기: ${form.tone || "-"}`,
-          "",
-          form.message || "궁금한 점을 남겨주세요.",
-        ].join("\n"),
-      );
+    try {
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "contact",
+          form,
+        }),
+      });
 
-      window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-      setStatusMessage("메일 앱으로 연결할게요. 남겨주신 내용을 바탕으로 곧 회신드릴게요.");
-      return;
+      const result = (await response.json()) as InquiryResponse;
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "문의 전송에 실패했어요.");
+      }
+
+      triggerSmile();
+      setSubmitResultMessage(contactSubmitSuccessMessage);
+      setForm(initialFormState);
+    } catch {
+      setSubmitResultMessage(inquirySubmitFailureMessage);
+    } finally {
+      setSending(false);
     }
-
-    setStatusMessage("지금 연락 채널을 확인하고 있어요. 잠시 후 다시 시도해 주세요.");
   };
 
   return (
     <section className="section-space relative">
       <div className="shell relative z-10">
         <div className="panel relative overflow-hidden rounded-[2.3rem] px-6 py-8 sm:px-8 sm:py-10 lg:min-h-[720px] lg:px-12 lg:py-12">
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(circle_at_left_bottom,rgba(243,29,91,0.18),transparent_40%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(circle_at_left_bottom,rgba(243,29,91,0.18),transparent_40%)]" />
 
           <div className="grid gap-12 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-end">
             <motion.div
@@ -103,10 +133,25 @@ export default function ContactStage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="relative order-2 flex items-end justify-start lg:order-1 lg:min-h-[440px]"
+              className="relative z-20 order-2 flex items-end justify-start lg:order-1 lg:min-h-[440px]"
             >
               <div className="pointer-events-none relative h-[240px] w-[240px] sm:h-[280px] sm:w-[280px]">
                 <GonishCharacter isSmiling={smiling} className="size-full drop-shadow-[0_24px_60px_rgba(20,16,20,0.12)]" />
+                <AnimatePresence mode="wait">
+                  {submitResultMessage ? (
+                    <motion.div
+                      key={submitResultMessage}
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute left-[92%] top-1/2 z-30 w-56 -translate-y-1/2 rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:left-[94%] sm:w-60 lg:w-64"
+                    >
+                      <div className="absolute -left-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 bg-brand" />
+                      {submitResultMessage}
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
               </div>
             </motion.div>
 
@@ -181,9 +226,10 @@ export default function ContactStage() {
                   />
                 </label>
 
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <p className="max-w-2xl text-sm leading-6 text-ink-muted">{statusMessage}</p>
-                  <BrandButton type="submit">문의하기</BrandButton>
+                <div className="flex justify-end">
+                  <BrandButton type="submit" disabled={sending}>
+                    {sending ? "전송 중…" : "문의하기"}
+                  </BrandButton>
                 </div>
               </form>
             </div>

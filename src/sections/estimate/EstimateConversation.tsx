@@ -5,8 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
-
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
+import type { EstimateContractDraft, EstimateEmailData, InquiryResponse } from "@/lib/inquiry";
 
 type Option = {
   description: string;
@@ -37,6 +37,9 @@ type NextStepField = SingleChoiceField | "discounts" | "features";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const defaultCharacterReply = "어려운 말 없이, 필요한 것들을 하나씩 편하게 정리해볼게요.";
+const defaultEstimateStatusMessage = "선택하신 내용을 바탕으로 더 정확한 범위와 일정, 최종 견적을 함께 정리해드릴게요.";
+const estimateSubmitSuccessMessage = "견적이 전송되었어요! 최대한 빨리 확인하고 회신드릴게요!";
+const inquirySubmitFailureMessage = "문의 전송이 실패했어요. 잠시 후 다시 시도해주세요.";
 const MIN_START_PRICE = 60;
 const FAST_TRACK_PERCENT = 15;
 
@@ -276,6 +279,71 @@ function formatPrice(value: number) {
   return `${value}만 원`;
 }
 
+function getTimeline(scheduleKey: string, minPrice: number) {
+  if (scheduleKey === "fast") {
+    return "약 2~4주 (우선순위 압축 기준)";
+  }
+
+  if (minPrice < 120) {
+    return "약 3~5주";
+  }
+
+  if (minPrice < 240) {
+    return "약 4~7주";
+  }
+
+  if (minPrice < 400) {
+    return "약 6~10주";
+  }
+
+  return "약 10주 이상";
+}
+
+function getDomainHostingNote(domainHostingKey: string) {
+  if (domainHostingKey === "both-ready") {
+    return "기존 도메인과 호스팅 정보를 확인해 연결 기준으로 진행합니다.";
+  }
+
+  if (domainHostingKey === "domain-only") {
+    return "도메인은 보유 중이며, 호스팅(서버) 환경은 별도 준비가 필요합니다.";
+  }
+
+  if (domainHostingKey === "hosting-only") {
+    return "호스팅은 보유 중이며, 도메인 구매/연결 작업은 별도 준비가 필요합니다.";
+  }
+
+  if (domainHostingKey === "none") {
+    return "도메인/호스팅 신규 구매 및 세팅 비용은 별도입니다.";
+  }
+
+  if (domainHostingKey === "unsure") {
+    return "도메인/호스팅 준비 상태가 미정이어서 상담 시 우선 확인이 필요합니다.";
+  }
+
+  return "도메인/호스팅 준비 상태는 상담에서 함께 확인합니다.";
+}
+
+function buildScopeText(params: {
+  projectTypeLabel: string;
+  pageScopeLabel: string;
+  featureLabels: string[];
+  domainHostingLabel: string;
+  goal: string;
+}) {
+  const featureText = params.featureLabels.length > 0 ? params.featureLabels.join(", ") : "선택한 추가 기능 없음";
+  const goalText = params.goal.trim() ? ` / 목표: ${params.goal.trim()}` : "";
+
+  return `${params.projectTypeLabel} / ${params.pageScopeLabel} / 기능: ${featureText} / 도메인·호스팅: ${params.domainHostingLabel}${goalText}`;
+}
+
+function buildRevisionPolicy(scheduleKey: string) {
+  if (scheduleKey === "fast") {
+    return "빠른 일정 기준으로 범위를 우선 고정한 뒤 시안 기준 2회 수정 포함. 큰 방향 변경은 별도 견적으로 재안내합니다.";
+  }
+
+  return "시안 기준 2회 수정 포함. 큰 방향 변경이나 추가 기능 요청은 별도 견적으로 재안내합니다.";
+}
+
 function getProjectTypeStep(form: EstimateForm) {
   if (form.projectType === "landing") {
     return "랜딩 페이지는 방문자가 처음 5초 안에 이해할 수 있도록 핵심 메시지와 행동 버튼을 먼저 정하면 좋아요.";
@@ -496,9 +564,9 @@ export default function EstimateConversation() {
   const [isSmiling, setIsSmiling] = useState(false);
   const [lastTouchedField, setLastTouchedField] = useState<NextStepField | null>(null);
   const smilingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [statusMessage, setStatusMessage] = useState(
-    "선택하신 내용을 바탕으로 더 정확한 범위와 일정, 최종 견적을 함께 정리해드릴게요.",
-  );
+  const [sending, setSending] = useState(false);
+  const statusMessage = defaultEstimateStatusMessage;
+  const [submitCharacterReply, setSubmitCharacterReply] = useState<string | null>(null);
 
   const triggerSmile = useCallback(() => {
     setIsSmiling(true);
@@ -512,7 +580,6 @@ export default function EstimateConversation() {
     };
   }, []);
 
-  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
   const selectedType = useMemo(() => findOption(projectTypeOptions, form.projectType), [form.projectType]);
   const selectedPageScope = useMemo(() => findOption(pageScopeOptions, form.pageScope), [form.pageScope]);
   const selectedReadiness = useMemo(() => findOption(readinessOptions, form.readiness), [form.readiness]);
@@ -602,15 +669,20 @@ export default function EstimateConversation() {
     selectedType,
   ]);
 
-  const conversationReply = useMemo(() => getCharacterReply(form, lastTouchedField), [form, lastTouchedField]);
+  const conversationReply = useMemo(
+    () => submitCharacterReply ?? getCharacterReply(form, lastTouchedField),
+    [form, lastTouchedField, submitCharacterReply],
+  );
 
   const handleTextChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
+    setSubmitCharacterReply(null);
     setForm((current) => ({ ...current, [name]: value }));
   };
 
   const handleSingleChoice = (field: SingleChoiceField, value: string) => {
     if (form[field] === value) return;
+    setSubmitCharacterReply(null);
     setForm((current) => ({ ...current, [field]: value }));
     setLastTouchedField(field);
     triggerSmile();
@@ -618,6 +690,7 @@ export default function EstimateConversation() {
 
   const toggleFeature = (value: string) => {
     const removing = form.features.includes(value);
+    setSubmitCharacterReply(null);
     setForm((current) => ({
       ...current,
       features: removing ? current.features.filter((item) => item !== value) : [...current.features, value],
@@ -628,6 +701,7 @@ export default function EstimateConversation() {
 
   const toggleDiscount = (value: string) => {
     const removing = form.discounts.includes(value);
+    setSubmitCharacterReply(null);
     setForm((current) => ({
       ...current,
       discounts: removing ? current.discounts.filter((item) => item !== value) : [...current.discounts, value],
@@ -636,44 +710,108 @@ export default function EstimateConversation() {
     if (!removing) triggerSmile();
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!form.reply.trim()) {
-      setStatusMessage("연락처만 남겨주셔도 괜찮아요. 지금 정리된 범위를 바탕으로 상담을 이어갈게요.");
+      setSubmitCharacterReply("연락처만 남겨주셔도 괜찮아요. 지금 정리된 범위를 바탕으로 상담을 이어갈게요.");
       return;
     }
 
-    if (!contactEmail) {
-      setStatusMessage("지금 견적 상담 채널을 확인하고 있어요. 잠시 후 다시 시도해 주세요.");
-      return;
+    setSending(true);
+
+    try {
+      const featureLabels = selectedFeatures.map((feature) => feature.label);
+      const discountLabels = selectedDiscounts.map((discount) => discount.label);
+      const domainHostingNote = getDomainHostingNote(form.domainHosting);
+      const timeline = getTimeline(form.schedule, priceEstimate.basePrice);
+      const projectTypeLabel = selectedType?.label || "미정";
+      const pageScopeLabel = selectedPageScope?.label || "미정";
+      const readinessLabel = selectedReadiness?.label || "미정";
+      const scheduleLabel = selectedSchedule?.label || "미정";
+      const domainHostingLabel = selectedDomainHosting?.label || "미정";
+      const quoteLabel = formatPrice(priceEstimate.basePrice);
+      const half = roundToFive(priceEstimate.basePrice / 2);
+      const contractExtra = [
+        discountLabels.length > 0 ? `적용 혜택: ${discountLabels.join(", ")}` : "",
+        domainHostingNote,
+        form.note.trim() ? `추가 메모: ${form.note.trim()}` : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      const emailData: EstimateEmailData = {
+        name: form.name,
+        brand: form.brand,
+        reply: form.reply,
+        projectType: projectTypeLabel,
+        pageScope: pageScopeLabel,
+        features: featureLabels.length > 0 ? featureLabels.join(", ") : "-",
+        readiness: readinessLabel,
+        schedule: scheduleLabel,
+        domainHosting: domainHostingLabel,
+        discounts: discountLabels.length > 0 ? discountLabels.join(", ") : "-",
+        basePrice: formatPrice(priceEstimate.basePrice),
+        priceRange: priceEstimate.label,
+        goal: form.goal,
+        note: form.note,
+      };
+
+      const contractDraft: EstimateContractDraft = {
+        projectTitle: form.brand || form.name ? `${form.brand || form.name} 프로젝트 견적` : "프로젝트 견적",
+        clientName: form.name || form.brand || "",
+        clientContact: form.reply,
+        projectTypeLabel,
+        pageScopeLabel,
+        featureLabels,
+        readinessLabel,
+        scheduleLabel,
+        domainHostingLabel,
+        domainHostingNote,
+        discountLabels,
+        estimateBandLabel: estimateBand.label,
+        estimateBandDescription: estimateBand.explanation,
+        basePriceLabel: emailData.basePrice,
+        priceRangeLabel: emailData.priceRange,
+        scopeText: buildScopeText({
+          projectTypeLabel,
+          pageScopeLabel,
+          featureLabels,
+          domainHostingLabel,
+          goal: form.goal,
+        }),
+        timeline,
+        quoteLabel,
+        depositLabel: `50% / ${formatPrice(half)}`,
+        balanceLabel: `50% / ${formatPrice(priceEstimate.basePrice - half)}`,
+        revisionPolicy: buildRevisionPolicy(form.schedule),
+        contractExtra,
+        goal: form.goal,
+        note: form.note,
+      };
+
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "estimate",
+          emailData,
+          contractDraft,
+        }),
+      });
+
+      const result = (await response.json()) as InquiryResponse;
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "견적 문의 전송에 실패했어요.");
+      }
+
+      triggerSmile();
+      setSubmitCharacterReply(estimateSubmitSuccessMessage);
+    } catch {
+      setSubmitCharacterReply(inquirySubmitFailureMessage);
+    } finally {
+      setSending(false);
     }
-
-    const subject = encodeURIComponent(`[Gonish 견적 문의] ${form.brand || form.name || selectedType?.label || "새 프로젝트"}`);
-    const body = encodeURIComponent(
-      [
-        `이름: ${form.name || "-"}`,
-        `브랜드명: ${form.brand || "-"}`,
-        `답변 받을 연락처: ${form.reply || "-"}`,
-        `프로젝트 유형: ${selectedType?.label || "-"}`,
-        `추가 화면 구성: ${selectedPageScope?.label || "-"}`,
-        `자료 준비 상태: ${selectedReadiness?.label || "-"}`,
-        `희망 일정: ${selectedSchedule?.label || "-"}`,
-        `도메인/호스팅 준비: ${selectedDomainHosting?.label || "-"}`,
-        `예상 시작가(선택 기준): ${formatPrice(priceEstimate.basePrice)}`,
-        `참고 예상 범위: ${priceEstimate.label}`,
-        `추가 기능 구성: ${selectedFeatures.length > 0 ? selectedFeatures.map((feature) => feature.label).join(", ") : "-"}`,
-        `적용 혜택: ${selectedDiscounts.length > 0 ? selectedDiscounts.map((discount) => discount.label).join(", ") : "-"}`,
-        "",
-        `지금 가장 중요한 목표: ${form.goal || "-"}`,
-        "",
-        form.note || "추가 메모 없음",
-      ].join("\n"),
-    );
-
-    triggerSmile();
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-    setStatusMessage("메일 앱으로 연결할게요. 선택하신 범위를 바탕으로 더 정확한 일정과 최종 견적을 함께 안내드릴게요.");
   };
 
   return (
@@ -970,7 +1108,9 @@ export default function EstimateConversation() {
               className="mt-16 flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
             >
               <p className="max-w-2xl text-sm leading-6 text-ink-muted">{statusMessage}</p>
-              <BrandButton type="submit">이 범위로 상담 요청하기</BrandButton>
+              <BrandButton type="submit" disabled={sending}>
+                {sending ? "전송 중…" : "이 범위로 상담 요청하기"}
+              </BrandButton>
             </motion.div>
           </form>
 

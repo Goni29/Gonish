@@ -363,7 +363,7 @@
                 contenteditable="true"
                 data-placeholder="총 견적 금액"
               >
-120만 원</p>
+210만 원</p>
               <p
                 id="sheet-summary-description"
                 class="summary-desc editable placeholder"
@@ -418,7 +418,7 @@
                 contenteditable="true"
                 data-placeholder="제작 범위를 적어주세요"
               >
-메인 페이지, 브랜드 소개, 서비스 소개, 사례 소개, 문의 페이지
+기업형 소개 사이트 기본 구성 + 추가 화면(리스트/상세) + 회원 로그인 기능
               </div>
             </section>
 
@@ -430,7 +430,7 @@
                 contenteditable="true"
                 data-placeholder="예상 일정"
               >
-착수 후 약 4주
+착수 후 약 4~7주
               </div>
             </section>
           </div>
@@ -447,19 +447,19 @@
               </thead>
               <tbody id="sheet-breakdown-body">
                 <tr>
-                  <td class="editable placeholder" contenteditable="true" data-placeholder="항목명">기본 제작비</td>
-                  <td class="editable placeholder" contenteditable="true" data-placeholder="설명">브랜드 톤에 맞춘 반응형 웹 디자인 및 구현</td>
-                  <td class="price editable placeholder" contenteditable="true" data-placeholder="금액">75만 원</td>
+                  <td class="editable placeholder" contenteditable="true" data-placeholder="항목명">프로젝트 유형</td>
+                  <td class="editable placeholder" contenteditable="true" data-placeholder="설명">기업형 / 소개형 사이트</td>
+                  <td class="price editable placeholder" contenteditable="true" data-placeholder="금액">119만 원</td>
                 </tr>
                 <tr>
-                  <td class="editable placeholder" contenteditable="true" data-placeholder="항목명">페이지 추가</td>
-                  <td class="editable placeholder" contenteditable="true" data-placeholder="설명">서비스, 사례, 문의 흐름 포함</td>
-                  <td class="price editable placeholder" contenteditable="true" data-placeholder="금액">25만 원</td>
+                  <td class="editable placeholder" contenteditable="true" data-placeholder="항목명">추가 화면 구성</td>
+                  <td class="editable placeholder" contenteditable="true" data-placeholder="설명">리스트 + 상세 화면 세트</td>
+                  <td class="price editable placeholder" contenteditable="true" data-placeholder="금액">48만 원</td>
                 </tr>
                 <tr>
                   <td class="editable placeholder" contenteditable="true" data-placeholder="항목명">기능 추가</td>
-                  <td class="editable placeholder" contenteditable="true" data-placeholder="설명">문의 폼 또는 예약 흐름 등</td>
-                  <td class="price editable placeholder" contenteditable="true" data-placeholder="금액">20만 원</td>
+                  <td class="editable placeholder" contenteditable="true" data-placeholder="설명">회원가입 / 로그인</td>
+                  <td class="price editable placeholder" contenteditable="true" data-placeholder="금액">42만 원</td>
                 </tr>
               </tbody>
             </table>
@@ -473,7 +473,7 @@
                   contenteditable="true"
                   data-placeholder="총 견적"
                 >
-120만 원</strong>
+210만 원</strong>
               </div>
               <div class="total-line">
                 <span>선금</span>
@@ -483,7 +483,7 @@
                   contenteditable="true"
                   data-placeholder="선금 비율/금액"
                 >
-50% / 60만 원</span>
+50% / 105만 원</span>
               </div>
               <div class="total-line">
                 <span>잔금</span>
@@ -493,7 +493,7 @@
                   contenteditable="true"
                   data-placeholder="잔금 비율/금액"
                 >
-50% / 60만 원</span>
+50% / 105만 원</span>
               </div>
             </div>
           </section>
@@ -601,8 +601,17 @@
         element.textContent = value;
       }
 
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
       function buildListMarkup(items) {
-        return items.map((item) => `<li>${item}</li>`).join("");
+        return items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
       }
 
       function buildBreakdownRows(items) {
@@ -610,9 +619,9 @@
           .map(
             (item) => `
               <tr>
-                <td class="editable" contenteditable="true">${item.label}</td>
-                <td class="editable" contenteditable="true">${item.description}</td>
-                <td class="price editable" contenteditable="true">${item.amountLabel}</td>
+                <td class="editable" contenteditable="true">${escapeHtml(item.label)}</td>
+                <td class="editable" contenteditable="true">${escapeHtml(item.description)}</td>
+                <td class="price editable" contenteditable="true">${escapeHtml(item.amountLabel)}</td>
               </tr>`,
           )
           .join("");
@@ -633,19 +642,25 @@
       }
 
       function applyDraft(draft) {
-        fillEditable(ids.title, draft.projectTitle);
-        fillEditable(ids.totalPrice, draft.exactQuoteLabel);
-        fillEditable(ids.summaryDescription, draft.summaryDescription);
+        const projectTypeLabel = draft.projectTypeLabel || "미정";
+        const pageScopeLabel = draft.pageScopeLabel || "미정";
+        const complexityLabel = draft.complexityLabel || draft.recommendedPackageLabel || "복잡도 미정";
+        const domainHostingLabel = draft.domainHostingLabel || "미정";
+        const summaryDescription = draft.summaryDescription || draft.priceDescription || "";
+
+        fillEditable(ids.title, draft.projectTitle || "프로젝트 견적서");
+        fillEditable(ids.totalPrice, draft.exactQuoteLabel || draft.minPriceLabel);
+        fillEditable(ids.summaryDescription, summaryDescription);
         fillEditable(ids.clientName, draft.clientName);
         fillEditable(ids.clientContact, draft.clientContact);
-        fillEditable(ids.projectName, draft.projectTitle || draft.projectTypeLabel);
+        fillEditable(ids.projectName, draft.projectTitle || projectTypeLabel);
         fillEditable(
           ids.projectDescription,
-          `${draft.projectTypeLabel} / ${draft.pageScopeLabel} / ${draft.recommendedPackageLabel}`,
+          `${projectTypeLabel} / ${pageScopeLabel} / ${complexityLabel} / 도메인·호스팅: ${domainHostingLabel}`,
         );
         fillEditable(ids.scope, draft.scopeText);
         fillEditable(ids.timeline, draft.timeline);
-        fillEditable(ids.totalLine, draft.exactQuoteLabel);
+        fillEditable(ids.totalLine, draft.exactQuoteLabel || draft.minPriceLabel);
         fillEditable(ids.deposit, draft.depositLabel);
         fillEditable(ids.balance, draft.balanceLabel);
         fillEditable(ids.revisionPolicy, draft.revisionPolicy);

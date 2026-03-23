@@ -198,7 +198,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
             ref={(node) => {
               titleRefs.current[index] = node;
             }}
-            className="absolute inset-x-0 top-0 font-display [font-family:Paperozi,'Noto_Sans_KR',Aptos,'Segoe_UI',sans-serif] text-[clamp(4.2rem,11vw,10.8rem)] leading-[0.9] tracking-[-0.03em] text-ink will-change-transform"
+            className="home-story-serif-font absolute inset-x-0 top-0 text-[clamp(4.2rem,11vw,10.8rem)] leading-[0.9] tracking-[-0.03em] text-ink/85 will-change-transform"
           >
             {step.title}
           </p>

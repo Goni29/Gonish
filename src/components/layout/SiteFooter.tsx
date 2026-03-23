@@ -29,7 +29,10 @@ export default function SiteFooter() {
                     <p className="eyebrow">Gonish</p>
                   </div>
 
-                  <p className="font-display text-[clamp(1.9rem,3.4vw,3.1rem)] leading-[0.95] text-ink">
+                  <p
+                    className="footer-title-font text-[clamp(1.9rem,3.4vw,3.1rem)] leading-[1.2] text-ink"
+                    style={{ fontFamily: '"Ridibatang", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif' }}
+                  >
                     당신의 브랜드가
                     <br />
                     당신의 생각보다 더 빛나도록
@@ -58,7 +61,7 @@ export default function SiteFooter() {
               <div className="soft-divider" />
 
               <div className="flex flex-col gap-2 text-sm text-ink-muted lg:flex-row lg:items-center lg:justify-between">
-                <p className="text-[0.92rem]">브랜드의 가치를 더 빛나게 설계해드립니다.</p>
+                <p className="footer-title-font text-[0.92rem]">브랜드의 가치를 더 빛나게 설계해드립니다.</p>
                 <p className="text-xs text-ink-soft">
                   © {new Date().getFullYear()} Gonish. Brand-focused web studio.
                 </p>
