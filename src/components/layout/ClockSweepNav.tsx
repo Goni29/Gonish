@@ -75,10 +75,10 @@ const slotMotionMap: Record<
 
 const slotOrbitMap: Record<DialSlot, { duration: number }> = {
   main: { duration: 112 },
-  about: { duration: 126 },
-  estimate: { duration: 132 },
-  portfolio: { duration: 118 },
-  contact: { duration: 104 },
+  about: { duration: 112 },
+  estimate: { duration: 112 },
+  portfolio: { duration: 112 },
+  contact: { duration: 112 },
 };
 
 const dialItems = navigation.map((item) => ({
@@ -231,10 +231,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
   const isFocusWithinRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
   const [supportsHoverDial, setSupportsHoverDial] = useState(false);
-  const [isSmallDesktop, setIsSmallDesktop] = useState(false);
-  const [isTabletDial, setIsTabletDial] = useState(false);
-  const [isMobileDial, setIsMobileDial] = useState(false);
-  const [isSmallMobileDial, setIsSmallMobileDial] = useState(false);
+  const [radiusScale, setRadiusScale] = useState(1);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const [isDiscHovered, setIsDiscHovered] = useState(false);
   const [isCorridorHovered, setIsCorridorHovered] = useState(false);
@@ -732,43 +729,31 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
       return;
     }
 
-    const smallDesktopQuery = window.matchMedia("(max-width: 1459px)");
-    const tabletQuery = window.matchMedia("(max-width: 1023px)");
-    const mobileQuery = window.matchMedia("(max-width: 639px)");
-    const smallMobileQuery = window.matchMedia("(max-width: 359px)");
-    const updateSmallDesktop = () => setIsSmallDesktop(smallDesktopQuery.matches);
-    const updateTablet = () => setIsTabletDial(tabletQuery.matches);
-    const updateMobile = () => setIsMobileDial(mobileQuery.matches);
-    const updateSmallMobile = () => setIsSmallMobileDial(smallMobileQuery.matches);
+    const maxBaseRadius = 136;
+    const margin = 39;
 
-    updateSmallDesktop();
-    updateTablet();
-    updateMobile();
-    updateSmallMobile();
+    const computeRadiusScale = () => {
+      const vw = window.innerWidth;
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      let dialSize: number;
 
-    if (typeof smallDesktopQuery.addEventListener === "function") {
-      smallDesktopQuery.addEventListener("change", updateSmallDesktop);
-      tabletQuery.addEventListener("change", updateTablet);
-      mobileQuery.addEventListener("change", updateMobile);
-      smallMobileQuery.addEventListener("change", updateSmallMobile);
-      return () => {
-        smallDesktopQuery.removeEventListener("change", updateSmallDesktop);
-        tabletQuery.removeEventListener("change", updateTablet);
-        mobileQuery.removeEventListener("change", updateMobile);
-        smallMobileQuery.removeEventListener("change", updateSmallMobile);
-      };
-    }
+      if (vw <= 359) {
+        dialSize = Math.min(vw * 0.72, 16 * rem);
+      } else if (vw <= 639) {
+        dialSize = Math.min(vw * 0.76, 18 * rem);
+      } else if (vw <= 1023) {
+        dialSize = Math.min(vw * 0.78, 21 * rem);
+      } else {
+        dialSize = Math.max(20.5 * rem, Math.min(vw * 0.24, 23.5 * rem));
+      }
 
-    smallDesktopQuery.addListener(updateSmallDesktop);
-    tabletQuery.addListener(updateTablet);
-    mobileQuery.addListener(updateMobile);
-    smallMobileQuery.addListener(updateSmallMobile);
-    return () => {
-      smallDesktopQuery.removeListener(updateSmallDesktop);
-      tabletQuery.removeListener(updateTablet);
-      mobileQuery.removeListener(updateMobile);
-      smallMobileQuery.removeListener(updateSmallMobile);
+      const dialRadius = dialSize / 2;
+      setRadiusScale(Math.min(1, (dialRadius - margin) / maxBaseRadius));
     };
+
+    computeRadiusScale();
+    window.addEventListener("resize", computeRadiusScale);
+    return () => window.removeEventListener("resize", computeRadiusScale);
   }, []);
 
   useEffect(() => () => {
@@ -1015,7 +1000,6 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                 {dialItems.map((item) => {
                   const motion = slotMotionMap[item.slot];
                   const orbitMotion = slotOrbitMap[item.slot];
-                  const radiusScale = isSmallMobileDial ? 0.68 : isMobileDial ? 0.75 : isTabletDial ? 0.95 : isSmallDesktop ? 0.93 : 1;
                   const isActive =
                     item.to === "/"
                       ? pathname === "/"
@@ -1025,9 +1009,9 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                     "--enter-delay": `${menuEntryBaseDelayMs + enterOrder[item.slot] * menuEntryStepDelayMs}ms`,
                     "--exit-delay": `${exitOrder[item.slot] * 56}ms`,
                     "--item-angle": `${motion.angle}deg`,
-                    "--item-radius": `${motion.radius * radiusScale}px`,
+                    "--item-radius": `${Math.max(102, motion.radius * radiusScale)}px`,
                     "--item-start-angle": `${motion.startAngle}deg`,
-                    "--item-start-radius": `${motion.startRadius * radiusScale}px`,
+                    "--item-start-radius": `${Math.max(76, motion.startRadius * radiusScale)}px`,
                     "--orbit-duration": `${orbitMotion.duration}s`,
                   } as CSSProperties;
 
