@@ -445,12 +445,20 @@
     text-shadow 220ms ease;
 }
 
-.clock-sweep-nav__link:hover,
 .clock-sweep-nav__link:focus-visible {
   color: #8f1e49;
   outline: none;
   transform: translateY(-1px) scale(1.04);
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.28);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .clock-sweep-nav__link:hover {
+    color: #8f1e49;
+    outline: none;
+    transform: translateY(-1px) scale(1.04);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.28);
+  }
 }
 
 .clock-sweep-nav__link--active {
@@ -505,8 +513,14 @@
   animation: clockMenuOrbit var(--orbit-duration) linear infinite;
 }
 
-.clock-sweep-nav__item:is(:hover, :focus-within) .clock-sweep-nav__itemMotion {
+.clock-sweep-nav__item:focus-within .clock-sweep-nav__itemMotion {
   animation-play-state: paused;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .clock-sweep-nav__item:hover .clock-sweep-nav__itemMotion {
+    animation-play-state: paused;
+  }
 }
 
 .clock-sweep-nav[data-phase="closing"] .clock-sweep-nav__menuLayer {
@@ -765,10 +779,7 @@
     padding: 0 1.16rem;
   }
 
-  .clock-sweep-nav__logoFrame {
-    width: 4.04rem;
-    height: 1.48rem;
-  }
+  /* logoFrame 크기는 데스크톱과 동일하게 유지하여 스프라이트 잘림 방지 */
 
   .clock-sweep-nav__nub {
     width: 6.15rem;

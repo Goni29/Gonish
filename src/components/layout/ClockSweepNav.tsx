@@ -67,10 +67,10 @@ const slotMotionMap: Record<
   { angle: number; radius: number; startAngle: number; startRadius: number }
 > = {
   main: { angle: 302, radius: 126, startAngle: -14, startRadius: 82 },
-  about: { angle: 24, radius: 130, startAngle: 10, startRadius: 84 },
+  about: { angle: 14, radius: 130, startAngle: 10, startRadius: 84 },
   estimate: { angle: 86, radius: 134, startAngle: 44, startRadius: 88 },
-  portfolio: { angle: 226, radius: 136, startAngle: 140, startRadius: 94 },
-  contact: { angle: 152, radius: 126, startAngle: 92, startRadius: 88 },
+  contact: { angle: 158, radius: 126, startAngle: 92, startRadius: 88 },
+  portfolio: { angle: 230, radius: 136, startAngle: 140, startRadius: 94 },
 };
 
 const slotOrbitMap: Record<DialSlot, { duration: number }> = {
@@ -231,6 +231,10 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
   const isFocusWithinRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
   const [supportsHoverDial, setSupportsHoverDial] = useState(false);
+  const [isSmallDesktop, setIsSmallDesktop] = useState(false);
+  const [isTabletDial, setIsTabletDial] = useState(false);
+  const [isMobileDial, setIsMobileDial] = useState(false);
+  const [isSmallMobileDial, setIsSmallMobileDial] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const [isDiscHovered, setIsDiscHovered] = useState(false);
   const [isCorridorHovered, setIsCorridorHovered] = useState(false);
@@ -723,6 +727,50 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
     return () => mediaQuery.removeListener(updateInteractionMode);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const smallDesktopQuery = window.matchMedia("(max-width: 1459px)");
+    const tabletQuery = window.matchMedia("(max-width: 1023px)");
+    const mobileQuery = window.matchMedia("(max-width: 639px)");
+    const smallMobileQuery = window.matchMedia("(max-width: 359px)");
+    const updateSmallDesktop = () => setIsSmallDesktop(smallDesktopQuery.matches);
+    const updateTablet = () => setIsTabletDial(tabletQuery.matches);
+    const updateMobile = () => setIsMobileDial(mobileQuery.matches);
+    const updateSmallMobile = () => setIsSmallMobileDial(smallMobileQuery.matches);
+
+    updateSmallDesktop();
+    updateTablet();
+    updateMobile();
+    updateSmallMobile();
+
+    if (typeof smallDesktopQuery.addEventListener === "function") {
+      smallDesktopQuery.addEventListener("change", updateSmallDesktop);
+      tabletQuery.addEventListener("change", updateTablet);
+      mobileQuery.addEventListener("change", updateMobile);
+      smallMobileQuery.addEventListener("change", updateSmallMobile);
+      return () => {
+        smallDesktopQuery.removeEventListener("change", updateSmallDesktop);
+        tabletQuery.removeEventListener("change", updateTablet);
+        mobileQuery.removeEventListener("change", updateMobile);
+        smallMobileQuery.removeEventListener("change", updateSmallMobile);
+      };
+    }
+
+    smallDesktopQuery.addListener(updateSmallDesktop);
+    tabletQuery.addListener(updateTablet);
+    mobileQuery.addListener(updateMobile);
+    smallMobileQuery.addListener(updateSmallMobile);
+    return () => {
+      smallDesktopQuery.removeListener(updateSmallDesktop);
+      tabletQuery.removeListener(updateTablet);
+      mobileQuery.removeListener(updateMobile);
+      smallMobileQuery.removeListener(updateSmallMobile);
+    };
+  }, []);
+
   useEffect(() => () => {
     clearHoverTimer();
     clearCloseMonitor();
@@ -967,6 +1015,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                 {dialItems.map((item) => {
                   const motion = slotMotionMap[item.slot];
                   const orbitMotion = slotOrbitMap[item.slot];
+                  const radiusScale = isSmallMobileDial ? 0.74 : isMobileDial ? 0.81 : isTabletDial ? 0.95 : isSmallDesktop ? 0.93 : 1;
                   const isActive =
                     item.to === "/"
                       ? pathname === "/"
@@ -976,9 +1025,9 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                     "--enter-delay": `${menuEntryBaseDelayMs + enterOrder[item.slot] * menuEntryStepDelayMs}ms`,
                     "--exit-delay": `${exitOrder[item.slot] * 56}ms`,
                     "--item-angle": `${motion.angle}deg`,
-                    "--item-radius": `${motion.radius}px`,
+                    "--item-radius": `${motion.radius * radiusScale}px`,
                     "--item-start-angle": `${motion.startAngle}deg`,
-                    "--item-start-radius": `${motion.startRadius}px`,
+                    "--item-start-radius": `${motion.startRadius * radiusScale}px`,
                     "--orbit-duration": `${orbitMotion.duration}s`,
                   } as CSSProperties;
 
