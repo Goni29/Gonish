@@ -6,7 +6,7 @@ import EstimateConversation from "@/sections/estimate/EstimateConversation";
 
 export default function EstimatePage() {
   return (
-    <div className="relative -mt-24 overflow-x-clip md:-mt-28">
+    <div className="relative -mt-24 md:-mt-28">
       <PageAtmosphere variant="estimate" />
       <SectionHeading
         eyebrow="Estimate"

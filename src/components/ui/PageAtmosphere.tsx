@@ -72,7 +72,7 @@ export default function PageAtmosphere({ variant }: { variant: AtmosphereVariant
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 top-0 h-[calc(100svh+64rem)]"
+      className="pointer-events-none absolute inset-x-0 top-0 h-[calc(100svh+64rem)] overflow-x-clip"
       aria-hidden="true"
     >
       {/* Veil */}
