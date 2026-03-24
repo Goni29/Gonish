@@ -1015,7 +1015,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
                 {dialItems.map((item) => {
                   const motion = slotMotionMap[item.slot];
                   const orbitMotion = slotOrbitMap[item.slot];
-                  const radiusScale = isSmallMobileDial ? 0.74 : isMobileDial ? 0.81 : isTabletDial ? 0.95 : isSmallDesktop ? 0.93 : 1;
+                  const radiusScale = isSmallMobileDial ? 0.68 : isMobileDial ? 0.75 : isTabletDial ? 0.95 : isSmallDesktop ? 0.93 : 1;
                   const isActive =
                     item.to === "/"
                       ? pathname === "/"
