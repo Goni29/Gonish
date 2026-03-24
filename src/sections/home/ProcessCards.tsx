@@ -365,29 +365,29 @@ function ProcessCardsImpl(
         <div
           key={stepIndex}
           ref={(el) => { containerRefs.current[stepIndex] = el; }}
-          className="absolute inset-0 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 sm:gap-5 lg:gap-6 will-change-transform"
+          className="absolute inset-0 grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4 lg:gap-6 will-change-transform"
           style={{ transformOrigin: "center 40%", backfaceVisibility: "hidden" }}
         >
           {cards.map((card) => (
             <div
               key={card.title}
-              className="group relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-ink/[0.07] bg-white/60 p-6 text-center backdrop-blur-xl transition-shadow sm:p-8 lg:p-10 hover:shadow-[0_24px_80px_rgba(20,16,20,0.08)]"
+              className="group relative flex flex-col items-center justify-center rounded-2xl border border-ink/[0.07] bg-white/60 p-3 text-center backdrop-blur-xl transition-shadow sm:p-6 md:p-8 lg:p-10 hover:shadow-[0_24px_80px_rgba(20,16,20,0.08)]"
             >
               {/* 아이콘 */}
-              <div className="mb-4 size-16 text-ink/80 sm:mb-5 sm:size-20 lg:size-24">
+              <div className="mb-2 size-10 text-ink/80 sm:mb-4 sm:size-16 md:mb-5 md:size-20 lg:size-24">
                 {card.icon}
               </div>
 
               {/* 번호 */}
-              <p className="eyebrow mb-2 text-brand/60">{card.label}</p>
+              <p className="eyebrow mb-1 text-brand/60 sm:mb-2">{card.label}</p>
 
               {/* 타이틀 */}
-              <h3 className="text-lg font-semibold leading-snug tracking-tight text-ink sm:text-xl lg:text-[1.35rem]">
+              <h3 className="text-sm font-semibold leading-snug tracking-tight text-ink sm:text-lg md:text-xl lg:text-[1.35rem]">
                 {card.title}
               </h3>
 
               {/* 본문 */}
-              <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-muted sm:text-[0.94rem]">
+              <p className="mt-1 max-w-xs text-xs leading-relaxed text-ink-muted sm:mt-2 sm:text-sm sm:text-[0.94rem]">
                 {card.body}
               </p>
 

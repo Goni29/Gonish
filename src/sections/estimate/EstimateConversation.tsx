@@ -1214,7 +1214,7 @@ export default function EstimateConversation() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5, ease }}
-        className="fixed bottom-6 left-6 z-50 flex cursor-grab items-end gap-3 select-none active:cursor-grabbing"
+        className="fixed bottom-6 left-6 z-50 hidden cursor-grab items-end gap-3 select-none active:cursor-grabbing xl:flex"
         style={{ touchAction: "none" }}
       >
         <div className="pointer-events-none h-16 w-16 shrink-0 sm:h-20 sm:w-20">

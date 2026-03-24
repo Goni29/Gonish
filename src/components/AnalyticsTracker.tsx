@@ -3,11 +3,30 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+function createSessionId() {
+  const webCrypto = globalThis.crypto;
+  if (typeof webCrypto?.randomUUID === "function") {
+    return webCrypto.randomUUID();
+  }
+
+  if (typeof webCrypto?.getRandomValues === "function") {
+    const bytes = new Uint8Array(16);
+    webCrypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
+    return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex.slice(6, 8).join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10, 16).join("")}`;
+  }
+
+  return `fallback-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 function getSessionId() {
   const key = "gonish_session_id";
   let id = sessionStorage.getItem(key);
   if (!id) {
-    id = crypto.randomUUID();
+    id = createSessionId();
     sessionStorage.setItem(key, id);
   }
   return id;
@@ -30,7 +49,7 @@ function send(payload: Record<string, unknown>) {
 }
 
 export default function AnalyticsTracker() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
   const enteredAtRef = useRef<number>(0);
   const prevPathRef = useRef<string>("");
 

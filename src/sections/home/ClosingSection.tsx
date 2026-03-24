@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import BrandButton from "@/components/ui/BrandButton";
-import SmartLineBreak from "@/components/ui/SmartLineBreak";
 
 type OrbitItem = {
   title: string;
@@ -64,7 +63,11 @@ export default function ClosingSection() {
         >
           <p className="eyebrow">Next orbit</p>
           <p className="mx-auto max-w-3xl font-display text-[clamp(2.2rem,4.5vw,4.8rem)] leading-[0.94] text-ink">
-            <SmartLineBreak text="원하는 궤도를 선택해 다음 장면으로 이어가세요." />
+            원하는 궤도를 선택해
+            <br />
+            다음 장면으로
+            <br />
+            이어가세요.
           </p>
         </motion.div>
 

@@ -117,8 +117,8 @@ export default function SignatureSection() {
         {/* 상단: 기존 텍스트 영역 */}
         <div className="shell shrink-0">
           <div className="soft-divider" />
-          <div className="space-y-8 pt-10 pb-2 sm:space-y-10 sm:pt-12">
-            <div className="font-script text-[clamp(5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
+          <div className="space-y-4 pt-6 pb-1 sm:space-y-8 sm:pt-10 sm:pb-2">
+            <div className="font-script text-[clamp(3.5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
               Gonish
             </div>
 
@@ -127,7 +127,7 @@ export default function SignatureSection() {
         </div>
 
         {/* 하단: 프로세스 카드 (풀 와이드, 남은 공간 전부 사용) */}
-        <div className="flex min-h-[240px] flex-1 px-4 pt-4 pb-6 sm:min-h-0 sm:px-6 sm:pt-5 lg:px-10">
+        <div className="flex min-h-[340px] flex-1 px-4 pt-4 pb-6 sm:min-h-[240px] sm:px-6 sm:pt-5 lg:px-10">
           <ProcessCards ref={cardsRef} />
         </div>
       </div>

@@ -742,8 +742,11 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
     return () => document.removeEventListener("pointermove", syncPointerVector);
   }, [supportsHoverDial]);
 
+  // Route change should force-close the dial immediately. We intentionally scope this
+  // effect to route and interaction-mode changes to avoid extra close cycles.
   useEffect(() => {
     closeImmediately();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, supportsHoverDial]);
 
   useEffect(() => {
@@ -779,6 +782,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
     }, phaseCloseTotalMs);
   }, [isRequestedOpen, phaseCloseTotalMs, phaseOpenTotalMs]);
 
+  // Keep-open/slow-exit decisions are intentionally sampled only when phase/mode changes.
   useEffect(() => {
     if (!supportsHoverDial || phase !== "open" || !pendingCloseAfterOpenRef.current) {
       return;
@@ -810,6 +814,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
         scheduleSlowExitMonitor(slowExitTickMs);
       }
     }, hoverCloseDelayOutward);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, supportsHoverDial]);
 
   useEffect(() => {
@@ -821,6 +826,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
     resetSlowExitTrend();
   }, [phase]);
 
+  // Outside pointer close is re-registered only when mount/mode state changes.
   useEffect(() => {
     if (supportsHoverDial || !isMounted) {
       return;
@@ -840,8 +846,10 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
 
     document.addEventListener("pointerdown", closeOnOutsidePointer);
     return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted, supportsHoverDial]);
 
+  // Escape handling intentionally tracks only mounted state.
   useEffect(() => {
     if (!isMounted) {
       return;
@@ -859,6 +867,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
 
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
 
   const navStyle = {
@@ -1063,6 +1072,7 @@ export default function ClockSweepNav({ isHeroThemeActive }: ClockSweepNavProps)
           />
           <span aria-hidden="true" className="clock-sweep-nav__logoGlow" />
           <span className="clock-sweep-nav__logoFrame">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/Gonish.png"
               alt="Gonish"

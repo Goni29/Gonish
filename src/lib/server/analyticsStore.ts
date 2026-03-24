@@ -73,11 +73,34 @@ export async function insertAnalyticsEvent(event: InsertAnalyticsEvent) {
 export async function updateAnalyticsEventDuration(sessionId: string, pagePath: string, durationMs: number, exitedTo: string) {
   const config = getSupabaseConfig();
 
-  const query = new URLSearchParams({
+  const latestRowQuery = new URLSearchParams({
+    select: "id",
     session_id: `eq.${sessionId}`,
     page_path: `eq.${pagePath}`,
     order: "created_at.desc",
     limit: "1",
+  });
+
+  const latestRowResponse = await fetch(`${config.url}/rest/v1/${SUPABASE_ANALYTICS_TABLE}?${latestRowQuery.toString()}`, {
+    method: "GET",
+    headers: supabaseHeaders(config.serviceRoleKey),
+    cache: "no-store",
+  });
+
+  if (!latestRowResponse.ok) {
+    const errorText = await latestRowResponse.text();
+    throw new Error(`Analytics latest-row fetch failed: ${latestRowResponse.status} ${errorText}`);
+  }
+
+  const latestRows = (await latestRowResponse.json()) as Array<{ id: string }>;
+  const latestId = Array.isArray(latestRows) ? latestRows[0]?.id : null;
+
+  if (!latestId) {
+    return;
+  }
+
+  const query = new URLSearchParams({
+    id: `eq.${latestId}`,
   });
 
   const response = await fetch(`${config.url}/rest/v1/${SUPABASE_ANALYTICS_TABLE}?${query.toString()}`, {

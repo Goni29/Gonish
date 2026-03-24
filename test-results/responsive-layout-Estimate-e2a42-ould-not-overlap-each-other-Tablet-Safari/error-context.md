@@ -1,0 +1,320 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner:
+      - button "Open navigation" [ref=e4] [cursor=pointer]:
+        - img "Gonish" [ref=e6]
+    - main [ref=e8]:
+      - generic [ref=e9]:
+        - generic:
+          - generic:
+            - img
+        - generic [ref=e13]:
+          - paragraph [ref=e14]: Estimate
+          - generic [ref=e15]:
+            - heading "필요한 범위를 함께 정리해볼게요." [level=1] [ref=e16]:
+              - text: 필요한 범위를
+              - text: 함께 정리해볼게요.
+            - img [ref=e19]
+          - generic [ref=e23]:
+            - text: 몇 가지 질문에 답해주시면 필요한 범위와 예상 금액을 함께 정리해드릴게요. 모든 견적은 템플릿
+            - text: 재활용이 아닌 커스텀 제작 기준이며, 최종 금액은 기능 범위와 난이도에 따라 달라질 수 있어요.
+        - generic [ref=e24]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e28]:
+                - paragraph [ref=e29]: Gonish says
+                - paragraph [ref=e30]: 정직한 커스텀 제작 기준으로 안내드릴게요.
+                - paragraph [ref=e31]: 몇 가지 질문에 답해주시면 필요한 범위와 예상 금액을 함께 정리해드릴게요. 모든 견적은 템플릿 재활용이 아닌 커스텀 제작 기준이며, 최종 금액은 기능 범위와 난이도에 따라 달라질 수 있어요.
+              - generic [ref=e34]:
+                - generic [ref=e39]:
+                  - generic [ref=e40]:
+                    - text: "01"
+                    - paragraph [ref=e41]:
+                      - generic [ref=e42]: 어떤 사이트를 생각하고 계신가요?
+                    - paragraph [ref=e43]: 복잡한 개발 용어 대신, 지금 필요한 결과에 가장 가까운 유형을 선택해 주세요.
+                  - generic [ref=e44]:
+                    - button "원페이지 / 랜딩 페이지 이벤트, 광고, 브랜드 소개처럼 한 페이지 중심으로 구성되는 사이트예요." [ref=e45]:
+                      - paragraph [ref=e47]: 원페이지 / 랜딩 페이지
+                      - paragraph [ref=e48]: 이벤트, 광고, 브랜드 소개처럼 한 페이지 중심으로 구성되는 사이트예요.
+                    - button "기업형 / 소개형 사이트 회사 소개, 서비스 소개, 포트폴리오, 문의 페이지 등 일반적인 다페이지 사이트예요." [ref=e49]:
+                      - paragraph [ref=e51]: 기업형 / 소개형 사이트
+                      - paragraph [ref=e52]: 회사 소개, 서비스 소개, 포트폴리오, 문의 페이지 등 일반적인 다페이지 사이트예요.
+                    - button "회원 기능 포함 사이트 회원가입, 로그인, 마이페이지처럼 사용자 계정 기능이 필요한 사이트예요." [ref=e53]:
+                      - paragraph [ref=e55]: 회원 기능 포함 사이트
+                      - paragraph [ref=e56]: 회원가입, 로그인, 마이페이지처럼 사용자 계정 기능이 필요한 사이트예요.
+                    - button "관리자 / 업무형 웹앱 운영 화면, 데이터 관리, 업무 처리 기능이 포함되는 웹앱이에요." [ref=e57]:
+                      - paragraph [ref=e59]: 관리자 / 업무형 웹앱
+                      - paragraph [ref=e60]: 운영 화면, 데이터 관리, 업무 처리 기능이 포함되는 웹앱이에요.
+                    - button "아직 잘 모르겠어요 필요한 범위가 아직 정리되지 않았다면 상담 과정에서 함께 정리해드릴게요." [ref=e61]:
+                      - paragraph [ref=e63]: 아직 잘 모르겠어요
+                      - paragraph [ref=e64]: 필요한 범위가 아직 정리되지 않았다면 상담 과정에서 함께 정리해드릴게요.
+                - generic [ref=e69]:
+                  - generic [ref=e70]:
+                    - text: "02"
+                    - paragraph [ref=e71]:
+                      - generic [ref=e72]: 기본 범위 외에 추가할 화면이 있나요?
+                    - paragraph [ref=e73]: 추가 화면은 페이지/화면 구성 범위를 반영한 비용입니다. 실제 동작 기능이나 외부 연동은 아래 기능 항목에서 별도로 선택해 주세요.
+                  - generic [ref=e74]:
+                    - button "기본 화면 구성으로 시작 선택한 프로젝트 유형의 기본 페이지/화면 구성으로 먼저 시작하는 방식이에요." [ref=e75]:
+                      - paragraph [ref=e77]: 기본 화면 구성으로 시작
+                      - paragraph [ref=e78]: 선택한 프로젝트 유형의 기본 페이지/화면 구성으로 먼저 시작하는 방식이에요.
+                    - button "추가 정적 페이지 회사 소개, 서비스 소개, 브랜드 소개처럼 정보 전달 중심의 일반 페이지예요." [ref=e79]:
+                      - paragraph [ref=e81]: 추가 정적 페이지
+                      - paragraph [ref=e82]: 회사 소개, 서비스 소개, 브랜드 소개처럼 정보 전달 중심의 일반 페이지예요.
+                    - button "추가 입력 페이지 문의, 신청, 예약, 접수처럼 사용자가 정보를 입력하는 화면이에요." [ref=e83]:
+                      - paragraph [ref=e85]: 추가 입력 페이지
+                      - paragraph [ref=e86]: 문의, 신청, 예약, 접수처럼 사용자가 정보를 입력하는 화면이에요.
+                    - button "리스트 + 상세 화면 세트 공지사항, 포트폴리오, 게시글, 상품처럼 목록과 상세가 함께 필요한 화면 구성이에요." [ref=e87]:
+                      - paragraph [ref=e89]: 리스트 + 상세 화면 세트
+                      - paragraph [ref=e90]: 공지사항, 포트폴리오, 게시글, 상품처럼 목록과 상세가 함께 필요한 화면 구성이에요.
+                    - button "로그인 후 개인화 화면 마이페이지, 내 정보, 활동 내역처럼 로그인 이후 사용자 전용 화면이에요." [ref=e91]:
+                      - paragraph [ref=e93]: 로그인 후 개인화 화면
+                      - paragraph [ref=e94]: 마이페이지, 내 정보, 활동 내역처럼 로그인 이후 사용자 전용 화면이에요.
+                    - button "추가 화면 3개 이상 예정 기본 범위 외에 필요한 화면이 여러 개라 전체 구성이 더 커질 가능성이 있는 경우예요." [ref=e95]:
+                      - paragraph [ref=e97]: 추가 화면 3개 이상 예정
+                      - paragraph [ref=e98]: 기본 범위 외에 필요한 화면이 여러 개라 전체 구성이 더 커질 가능성이 있는 경우예요.
+                    - button "화면 수를 아직 모르겠어요 필요한 화면 수와 구성이 아직 명확하지 않은 경우예요." [ref=e99]:
+                      - paragraph [ref=e101]: 화면 수를 아직 모르겠어요
+                      - paragraph [ref=e102]: 필요한 화면 수와 구성이 아직 명확하지 않은 경우예요.
+                - generic [ref=e107]:
+                  - generic [ref=e108]:
+                    - text: "03"
+                    - paragraph [ref=e109]:
+                      - generic [ref=e110]: 추가로 필요한 기능이 있나요?
+                    - paragraph [ref=e111]: 추가 기능은 화면 위에서 실제로 동작하는 로직, 권한, 결제, 외부 연동 등을 의미해요.
+                  - generic [ref=e112]:
+                    - generic [ref=e113]:
+                      - paragraph [ref=e114]: 회원 / 사용자 기능
+                      - generic [ref=e115]:
+                        - button "회원가입 / 로그인 이메일 또는 기본 계정 방식으로 회원가입과 로그인이 가능한 기능이에요." [ref=e116]:
+                          - paragraph [ref=e118]: 회원가입 / 로그인
+                          - paragraph [ref=e119]: 이메일 또는 기본 계정 방식으로 회원가입과 로그인이 가능한 기능이에요.
+                        - button "소셜 로그인 카카오, 구글, 네이버 등 외부 계정으로 로그인하는 기능이에요." [ref=e120]:
+                          - paragraph [ref=e122]: 소셜 로그인
+                          - paragraph [ref=e123]: 카카오, 구글, 네이버 등 외부 계정으로 로그인하는 기능이에요.
+                        - button "사용자 역할 / 권한 분리 일반회원, 파트너, 매니저처럼 사용자 유형별 접근 범위를 나누는 기능이에요." [ref=e124]:
+                          - paragraph [ref=e126]: 사용자 역할 / 권한 분리
+                          - paragraph [ref=e127]: 일반회원, 파트너, 매니저처럼 사용자 유형별 접근 범위를 나누는 기능이에요.
+                    - generic [ref=e128]:
+                      - paragraph [ref=e129]: 운영 / 관리자 기능
+                      - generic [ref=e130]:
+                        - button "관리자 대시보드 관리자 첫 화면에서 전체 현황을 요약해서 보는 화면이에요. 요약 카드, 최근 항목, 간단한 수치 확인이 포함될 수 있어요." [ref=e131]:
+                          - paragraph [ref=e133]: 관리자 대시보드
+                          - paragraph [ref=e134]: 관리자 첫 화면에서 전체 현황을 요약해서 보는 화면이에요. 요약 카드, 최근 항목, 간단한 수치 확인이 포함될 수 있어요.
+                        - button "관리자용 업무 관리 모듈 회원 관리, 주문 관리, 예약 관리, 문의 관리처럼 운영자가 업무 데이터를 처리하는 기능 1개예요." [ref=e135]:
+                          - paragraph [ref=e137]: 관리자용 업무 관리 모듈
+                          - paragraph [ref=e138]: 회원 관리, 주문 관리, 예약 관리, 문의 관리처럼 운영자가 업무 데이터를 처리하는 기능 1개예요.
+                        - button "관리자 권한 세분화 운영자 계정마다 볼 수 있는 메뉴와 수정 가능한 범위를 다르게 설정하는 기능이에요." [ref=e139]:
+                          - paragraph [ref=e141]: 관리자 권한 세분화
+                          - paragraph [ref=e142]: 운영자 계정마다 볼 수 있는 메뉴와 수정 가능한 범위를 다르게 설정하는 기능이에요.
+                        - button "고급 통계 / 리포트 기간별 통계, 필터, 차트, 다운로드처럼 운영 데이터를 더 자세히 분석하는 기능이에요." [ref=e143]:
+                          - paragraph [ref=e145]: 고급 통계 / 리포트
+                          - paragraph [ref=e146]: 기간별 통계, 필터, 차트, 다운로드처럼 운영 데이터를 더 자세히 분석하는 기능이에요.
+                    - generic [ref=e147]:
+                      - paragraph [ref=e148]: 콘텐츠 / 데이터 기능
+                      - button "게시판 / 콘텐츠 관리 공지사항, 블로그, 포트폴리오처럼 콘텐츠를 등록·수정·삭제하는 기능이에요." [ref=e150]:
+                        - paragraph [ref=e152]: 게시판 / 콘텐츠 관리
+                        - paragraph [ref=e153]: 공지사항, 블로그, 포트폴리오처럼 콘텐츠를 등록·수정·삭제하는 기능이에요.
+                    - generic [ref=e154]:
+                      - paragraph [ref=e155]: 결제 / 비즈니스 기능
+                      - generic [ref=e156]:
+                        - button "온라인 결제 일반적인 1회성 결제를 사이트에서 받을 수 있어요." [ref=e157]:
+                          - paragraph [ref=e159]: 온라인 결제
+                          - paragraph [ref=e160]: 일반적인 1회성 결제를 사이트에서 받을 수 있어요.
+                        - button "정기 결제 / 구독 매달 또는 일정 주기로 자동 결제가 필요한 경우예요." [ref=e161]:
+                          - paragraph [ref=e163]: 정기 결제 / 구독
+                          - paragraph [ref=e164]: 매달 또는 일정 주기로 자동 결제가 필요한 경우예요.
+                    - generic [ref=e165]:
+                      - paragraph [ref=e166]: 외부 서비스 연동
+                      - generic [ref=e167]:
+                        - button "기본 지도 표시 매장이나 회사 위치처럼 고정된 장소를 사이트에 보여주는 기능이에요." [ref=e168]:
+                          - paragraph [ref=e170]: 기본 지도 표시
+                          - paragraph [ref=e171]: 매장이나 회사 위치처럼 고정된 장소를 사이트에 보여주는 기능이에요.
+                        - button "자동 이메일 발송 문의 접수, 신청 완료, 알림 메일처럼 자동으로 이메일을 보내는 기능이에요." [ref=e172]:
+                          - paragraph [ref=e174]: 자동 이메일 발송
+                          - paragraph [ref=e175]: 문의 접수, 신청 완료, 알림 메일처럼 자동으로 이메일을 보내는 기능이에요.
+                        - button "문자 / 알림 발송 신청 완료, 상태 변경, 예약 안내 등을 문자나 알림으로 보내는 기능이에요." [ref=e176]:
+                          - paragraph [ref=e178]: 문자 / 알림 발송
+                          - paragraph [ref=e179]: 신청 완료, 상태 변경, 예약 안내 등을 문자나 알림으로 보내는 기능이에요.
+                        - button "기타 외부 API 연동 1종 지도, 이메일, 문자 외에 다른 외부 서비스와 연동이 필요한 경우예요." [ref=e180]:
+                          - paragraph [ref=e182]: 기타 외부 API 연동 1종
+                          - paragraph [ref=e183]: 지도, 이메일, 문자 외에 다른 외부 서비스와 연동이 필요한 경우예요.
+                    - paragraph [ref=e184]: 화면 수(구성)와 기능(동작)은 별도예요. 예를 들어 리스트+상세는 화면 구조이고, 게시판 관리는 등록·수정·삭제 로직이에요.
+                - generic [ref=e185]:
+                  - generic [ref=e190]:
+                    - generic [ref=e191]:
+                      - text: "04"
+                      - paragraph [ref=e192]:
+                        - generic [ref=e193]: 자료는 어느 정도 준비되어 있나요?
+                      - paragraph [ref=e194]: 자료가 완벽하지 않아도 괜찮아요. 현재 준비된 정도에 가장 가까운 항목을 골라주세요.
+                    - generic [ref=e195]:
+                      - button "자료와 방향이 거의 정리되어 있어요 문구, 이미지, 참고 사이트, 필요한 화면 구성이 어느 정도 준비된 상태예요." [ref=e196]:
+                        - paragraph [ref=e198]: 자료와 방향이 거의 정리되어 있어요
+                        - paragraph [ref=e199]: 문구, 이미지, 참고 사이트, 필요한 화면 구성이 어느 정도 준비된 상태예요.
+                      - button "일부만 정리되어 있어요 기본 방향은 있지만 문구나 화면 구성은 함께 정리할 필요가 있어요." [ref=e200]:
+                        - paragraph [ref=e202]: 일부만 정리되어 있어요
+                        - paragraph [ref=e203]: 기본 방향은 있지만 문구나 화면 구성은 함께 정리할 필요가 있어요.
+                      - button "아직 상담이 많이 필요해요 필요한 기능이나 구성 방향이 아직 명확하지 않아 상담을 통해 함께 정리해야 해요." [ref=e204]:
+                        - paragraph [ref=e206]: 아직 상담이 많이 필요해요
+                        - paragraph [ref=e207]: 필요한 기능이나 구성 방향이 아직 명확하지 않아 상담을 통해 함께 정리해야 해요.
+                  - generic [ref=e212]:
+                    - generic [ref=e213]:
+                      - text: "05"
+                      - paragraph [ref=e214]:
+                        - text: 희망 일정은
+                        - text: 어느 정도인가요?
+                      - paragraph [ref=e215]: 일정에 따라 작업 우선순위와 진행 방식이 달라져요.
+                    - generic [ref=e216]:
+                      - generic [ref=e217]:
+                        - button "여유 있게 진행하고 싶어요 일반적인 일정 안에서 차분히 진행해도 괜찮아요." [ref=e218]:
+                          - paragraph [ref=e220]: 여유 있게 진행하고 싶어요
+                          - paragraph [ref=e221]: 일반적인 일정 안에서 차분히 진행해도 괜찮아요.
+                        - button "평균적인 일정으로 진행하고 싶어요 보통 2~4주 내외의 일정으로 생각하고 있어요." [ref=e222]:
+                          - paragraph [ref=e224]: 평균적인 일정으로 진행하고 싶어요
+                          - paragraph [ref=e225]: 보통 2~4주 내외의 일정으로 생각하고 있어요.
+                        - button "조금 더 빠르게 진행하고 싶어요 일정 압축이 필요한 편이라 우선순위 조정이 필요할 수 있어요." [ref=e226]:
+                          - paragraph [ref=e228]: 조금 더 빠르게 진행하고 싶어요
+                          - paragraph [ref=e229]: 일정 압축이 필요한 편이라 우선순위 조정이 필요할 수 있어요.
+                      - paragraph [ref=e230]: 빠른 일정은 작업 우선순위 조정이 필요해 추가 비용이 발생할 수 있어요.
+                - generic [ref=e235]:
+                  - generic [ref=e236]:
+                    - text: "06"
+                    - paragraph [ref=e237]:
+                      - generic [ref=e238]: 사이트 주소와 올릴 공간은 준비되어 있나요?
+                    - paragraph [ref=e239]: 사이트 운영에 필요한 도메인과 호스팅은 별도 준비 또는 대행이 가능해요. 아직 없거나 잘 모르셔도 괜찮아요.
+                  - generic [ref=e240]:
+                    - button "둘 다 있어요 사이트 주소(도메인)와 올릴 공간(호스팅)이 이미 있어서 그대로 연결하면 돼요." [ref=e241]:
+                      - paragraph [ref=e243]: 둘 다 있어요
+                      - paragraph [ref=e244]: 사이트 주소(도메인)와 올릴 공간(호스팅)이 이미 있어서 그대로 연결하면 돼요.
+                    - button "주소(도메인)만 있어요 예를 들면 mybrand.com 같은 주소는 있는데, 사이트를 올릴 공간은 아직 없어요." [ref=e245]:
+                      - paragraph [ref=e247]: 주소(도메인)만 있어요
+                      - paragraph [ref=e248]: 예를 들면 mybrand.com 같은 주소는 있는데, 사이트를 올릴 공간은 아직 없어요.
+                    - button "올릴 공간(호스팅)만 있어요 사이트를 올릴 계정이나 서버는 있는데, 연결할 주소는 아직 없어요." [ref=e249]:
+                      - paragraph [ref=e251]: 올릴 공간(호스팅)만 있어요
+                      - paragraph [ref=e252]: 사이트를 올릴 계정이나 서버는 있는데, 연결할 주소는 아직 없어요.
+                    - button "둘 다 아직 없어요 괜찮아요. 새로 추천받고 같이 준비하는 방향으로 진행할 수 있어요." [ref=e253]:
+                      - paragraph [ref=e255]: 둘 다 아직 없어요
+                      - paragraph [ref=e256]: 괜찮아요. 새로 추천받고 같이 준비하는 방향으로 진행할 수 있어요.
+                    - button "무슨 말인지 잘 모르겠어요 전혀 괜찮아요. 상담 때 쉬운 말로 설명드리고 필요한 것만 같이 정리해 드릴게요." [ref=e257]:
+                      - paragraph [ref=e259]: 무슨 말인지 잘 모르겠어요
+                      - paragraph [ref=e260]: 전혀 괜찮아요. 상담 때 쉬운 말로 설명드리고 필요한 것만 같이 정리해 드릴게요.
+                - generic [ref=e265]:
+                  - generic [ref=e266]:
+                    - text: "07"
+                    - paragraph [ref=e267]:
+                      - generic [ref=e268]: 선택 가능한 혜택이 있을까요?
+                    - paragraph [ref=e269]: 가능한 항목만 편하게 체크해 주세요. 선택하지 않으셔도 괜찮아요.
+                  - generic [ref=e270]:
+                    - button "포트폴리오 소개에 동의할게요 완성 후 일부 화면을 포트폴리오 예시로 소개해도 괜찮아요." [ref=e271]:
+                      - paragraph [ref=e273]: 포트폴리오 소개에 동의할게요
+                      - paragraph [ref=e274]: 완성 후 일부 화면을 포트폴리오 예시로 소개해도 괜찮아요.
+                    - button "작업 후 짧은 후기를 남길게요 작업이 끝난 뒤 간단한 후기 작성에 참여할 수 있어요." [ref=e275]:
+                      - paragraph [ref=e277]: 작업 후 짧은 후기를 남길게요
+                      - paragraph [ref=e278]: 작업이 끝난 뒤 간단한 후기 작성에 참여할 수 있어요.
+                - generic [ref=e283]:
+                  - generic [ref=e284]:
+                    - text: "08"
+                    - paragraph [ref=e285]:
+                      - generic [ref=e286]: 마지막으로 편하게 설명해 주세요.
+                    - paragraph [ref=e287]: "예: 지금 사이트가 너무 오래돼 보여요 / 문의가 더 잘 들어오면 좋겠어요"
+                  - generic [ref=e288]:
+                    - generic [ref=e289]:
+                      - generic [ref=e290]:
+                        - generic [ref=e291]: Name
+                        - textbox "Name" [ref=e292]:
+                          - /placeholder: 성함
+                      - generic [ref=e293]:
+                        - generic [ref=e294]: Brand
+                        - textbox "Brand" [ref=e295]:
+                          - /placeholder: 브랜드명 또는 프로젝트명
+                    - generic [ref=e296]:
+                      - generic [ref=e297]: Reply
+                      - textbox "Reply" [ref=e298]:
+                        - /placeholder: 답변 받을 이메일 또는 연락처
+                    - generic [ref=e299]:
+                      - generic [ref=e300]: Goal
+                      - textbox "Goal" [ref=e301]:
+                        - /placeholder: 가장 중요하게 바라는 결과 한 가지
+                    - generic [ref=e302]:
+                      - generic [ref=e303]: Note
+                      - textbox "Note" [ref=e304]:
+                        - /placeholder: 지금 상황, 참고하고 싶은 사이트, 꼭 반영하고 싶은 분위기 등을 편하게 적어주세요.
+              - generic [ref=e305]:
+                - paragraph [ref=e306]: 선택하신 내용을 바탕으로 더 정확한 범위와 일정, 최종 견적을 함께 정리해드릴게요.
+                - button "이 범위로 상담 요청하기" [ref=e307]
+            - complementary [ref=e308]:
+              - generic [ref=e310]:
+                - generic [ref=e311]:
+                  - paragraph [ref=e312]: 예상 견적
+                  - paragraph [ref=e313]: 예상 시작가
+                  - paragraph [ref=e314]:
+                    - generic [ref=e315]: 60만 원
+                  - paragraph [ref=e316]: 기본 시작가예요. 항목을 선택할수록 선택 반영 기준가가 더 정확해져요.
+                  - paragraph [ref=e317]: 선택하신 범위를 기준으로 계산한 예상 금액입니다. 최종 견적은 기능 상세 범위, 디자인 난이도, 외부 연동 여부에 따라 조정될 수 있어요.
+                - generic [ref=e319]:
+                  - paragraph [ref=e320]: 프로젝트 복잡도 가이드
+                  - paragraph [ref=e321]: 랜딩·소개 중심
+                  - paragraph [ref=e322]: 핵심 소개 화면 위주로 시작하는 비교적 가벼운 범위예요.
+                - generic [ref=e324]:
+                  - generic [ref=e325]:
+                    - generic [ref=e326]: 프로젝트 유형
+                    - generic [ref=e327]: 아직 고르는 중
+                  - generic [ref=e328]:
+                    - generic [ref=e329]: 추가 화면 구성
+                    - generic [ref=e330]: 아직 고르는 중
+                  - generic [ref=e331]:
+                    - generic [ref=e332]: 추가 기능 구성
+                    - generic [ref=e333]: 선택한 추가 기능 없음
+                  - generic [ref=e334]:
+                    - generic [ref=e335]: 자료 준비 상태
+                    - generic [ref=e336]: 아직 고르는 중
+                  - generic [ref=e337]:
+                    - generic [ref=e338]: 희망 일정
+                    - generic [ref=e339]: 아직 고르는 중
+                  - generic [ref=e340]:
+                    - generic [ref=e341]: 도메인 / 호스팅
+                    - generic [ref=e342]: 아직 고르는 중
+                  - generic [ref=e343]:
+                    - generic [ref=e344]: 적용 혜택
+                    - generic [ref=e345]: 아직 선택 안 함
+                - generic [ref=e347]:
+                  - paragraph [ref=e348]: 안내 사항
+                  - paragraph [ref=e349]: 유지보수는 운영 점검과 소규모 수정 중심이며, 신규 기능 개발은 별도예요.
+                  - paragraph [ref=e350]: 모든 견적은 템플릿 재활용이 아닌 맞춤 제작 기준으로 계산됩니다.
+                  - paragraph [ref=e351]: 단순 최저가보다 완성도와 운영 편의성을 우선해 필요한 범위를 정직하게 안내드리고 있어요.
+          - generic [ref=e353]:
+            - paragraph [ref=e354]: 아직 프로젝트가 구체적이지 않거나, 간단한 질문만 있으신가요?
+            - link "부담 없이 문의하기" [ref=e355]:
+              - /url: /contact
+    - contentinfo [ref=e356]:
+      - generic [ref=e360]:
+        - generic [ref=e361]:
+          - generic [ref=e362]:
+            - paragraph [ref=e365]: Gonish
+            - paragraph [ref=e366]:
+              - text: 당신의 브랜드가
+              - text: 당신의 생각보다 더 빛나도록
+          - generic [ref=e367]:
+            - generic [ref=e368]:
+              - link "Main" [ref=e369]:
+                - /url: /
+              - link "About" [ref=e370]:
+                - /url: /about
+              - link "Portfolio" [ref=e371]:
+                - /url: /portfolio
+              - link "Estimate" [ref=e372]:
+                - /url: /estimate
+              - link "Contact" [ref=e373]:
+                - /url: /contact
+            - link "프로젝트 이야기하기" [ref=e374]:
+              - /url: /contact
+        - generic [ref=e376]:
+          - paragraph [ref=e377]: 브랜드의 가치를 더 빛나게 설계해드립니다.
+          - paragraph [ref=e378]: © 2026 Gonish. Brand-focused web studio.
+  - button "Open Next.js Dev Tools" [ref=e384] [cursor=pointer]:
+    - img [ref=e385]
+  - alert [ref=e390]
+```

@@ -143,6 +143,7 @@
       radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
       linear-gradient(180deg, #fffdfd 0%, #f8f3f1 54%, #f5f0ef 100%);
     overscroll-behavior: none;
+    overflow-x: hidden;
   }
 
   body {
@@ -151,6 +152,7 @@
     background: transparent;
     color: #141014;
     overscroll-behavior: none;
+    overflow-x: hidden;
   }
 
   p,

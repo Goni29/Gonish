@@ -190,22 +190,22 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
   }, [setStepInstant, stopTransition]);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">
-      <div className="relative min-h-[clamp(8rem,19vw,12.5rem)]">
+    <div className="grid gap-4 sm:gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">
+      <div className="relative min-h-[clamp(5.5rem,19vw,12.5rem)]">
         {storySteps.map((step, index) => (
           <p
             key={`title-${step.eyebrow}`}
             ref={(node) => {
               titleRefs.current[index] = node;
             }}
-            className="home-story-serif-font absolute inset-x-0 top-0 text-[clamp(4.2rem,11vw,10.8rem)] leading-[0.9] tracking-[-0.03em] text-ink/85 will-change-transform"
+            className="home-story-serif-font absolute inset-x-0 top-0 text-[clamp(3rem,11vw,10.8rem)] leading-[0.9] tracking-[-0.03em] text-ink/85 will-change-transform"
           >
             {step.title}
           </p>
         ))}
       </div>
 
-      <div className="relative min-h-[clamp(11rem,20vw,14rem)]">
+      <div className="relative min-h-[clamp(7rem,20vw,14rem)]">
         {storySteps.map((step, index) => (
           <div key={`copy-${step.eyebrow}`} className="absolute inset-x-0 top-0 space-y-4">
             <p

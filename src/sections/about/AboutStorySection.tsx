@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { motion } from "motion/react";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import { aboutMilestones, aboutPrinciples, aboutStats } from "@/data/siteContent";
@@ -143,10 +144,13 @@ export default function AboutStorySection() {
 
               <div className="panel relative overflow-hidden rounded-[2.2rem] p-4 sm:p-5">
                 <div className="overflow-hidden rounded-[1.8rem] border border-black/10 bg-[#f4eded]">
-                  <img
+                  <Image
                     src="/Gonish_about.png"
                     alt="Gonish portrait photo"
-                    className="w-full object-cover"
+                    width={1200}
+                    height={1500}
+                    className="h-auto w-full object-cover"
+                    sizes="(min-width: 1024px) 32rem, (min-width: 640px) 70vw, 92vw"
                   />
                 </div>
                 <div className="space-y-4 px-2 pb-2 pt-6">
