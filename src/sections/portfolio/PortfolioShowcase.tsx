@@ -249,6 +249,7 @@ function DeviceShowcase({
             ref={ref}
             className="overflow-hidden rounded-[1.4rem]"
             style={{ height: visibleHeight || 720 }}
+            data-lenis-prevent
           >
             <iframe
               src={url}
