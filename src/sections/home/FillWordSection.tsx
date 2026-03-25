@@ -103,9 +103,10 @@ export default function FillWordSection() {
           end: "+=1800",
           scrub: true,
           pin: true,
-          anticipatePin: 0,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
           fastScrollEnd: false,
+          pinType: "transform",
         },
       }).to(liquidState, {
         level: 0,

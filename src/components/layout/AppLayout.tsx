@@ -9,6 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gsap from "gsap";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import SmoothScroll from "@/components/layout/SmoothScroll";
 import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
 
@@ -38,11 +39,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname() ?? "/";
   const isHome = pathname === "/";
   const isAdminRoute = pathname.startsWith("/admin/");
-
-  useEffect(() => {
-    if (isAdminRoute) return;
-    ScrollTrigger.normalizeScroll(true);
-  }, [isAdminRoute]);
 
   useEffect(() => {
     if (isAdminRoute) return;
@@ -76,6 +72,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <div className="min-h-screen">
       <AnalyticsTracker />
       <ScrollToTop />
+      <SmoothScroll />
       <SiteHeader />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

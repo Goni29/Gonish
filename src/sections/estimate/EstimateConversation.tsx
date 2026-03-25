@@ -3,6 +3,7 @@
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useDrag } from "@use-gesture/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
@@ -568,6 +569,19 @@ export default function EstimateConversation() {
   const [sending, setSending] = useState(false);
   const statusMessage = defaultEstimateStatusMessage;
   const [submitCharacterReply, setSubmitCharacterReply] = useState<string | null>(null);
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+
+  const bindCharacterDrag = useDrag(
+    ({ offset: [x, y], event }) => {
+      event?.preventDefault();
+      setDragPos({ x, y });
+    },
+    {
+      filterTaps: true,
+      from: () => [dragPos.x, dragPos.y],
+      pointer: { touch: true },
+    },
+  );
 
   const triggerSmile = useCallback(() => {
     setIsSmiling(true);
@@ -1207,32 +1221,35 @@ export default function EstimateConversation() {
       </div>
 
       {/* ── Fixed character + reply (bottom-left) ── */}
+      {/* ── Draggable character ── */}
       <motion.div
-        drag
-        dragMomentum={false}
-        dragElastic={0.1}
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5, ease }}
-        className="fixed bottom-6 left-6 z-50 hidden cursor-grab items-end gap-3 select-none active:cursor-grabbing xl:flex"
-        style={{ touchAction: "none" }}
+        className="fixed bottom-24 left-4 z-50 md:bottom-28 md:left-6 xl:bottom-6"
       >
-        <div className="pointer-events-none h-16 w-16 shrink-0 sm:h-20 sm:w-20">
-          <GonishCharacter isSmiling={isSmiling} className="h-full w-full drop-shadow-lg" />
+        <div
+          {...bindCharacterDrag()}
+          className="flex cursor-grab items-end gap-3 touch-none select-none active:cursor-grabbing"
+          style={{ transform: `translate3d(${dragPos.x}px, ${dragPos.y}px, 0)` }}
+        >
+          <div className="h-16 w-16 shrink-0 sm:h-20 sm:w-20">
+            <GonishCharacter isSmiling={isSmiling} className="h-full w-full drop-shadow-lg" />
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={conversationReply}
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.95 }}
+              transition={{ duration: 0.35, ease }}
+              className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
+            >
+              <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
+              {conversationReply}
+            </motion.div>
+          </AnimatePresence>
         </div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={conversationReply}
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.95 }}
-            transition={{ duration: 0.35, ease }}
-            className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
-          >
-            <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
-            {conversationReply}
-          </motion.div>
-        </AnimatePresence>
       </motion.div>
     </section>
   );

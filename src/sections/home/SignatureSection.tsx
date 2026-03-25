@@ -48,11 +48,13 @@ export default function SignatureSection() {
       cardsRef.current?.setStepInstant(step);
     };
 
-    // Observer: 휠/터치 한 번 = 한 스텝. preventDefault로 실제 스크롤 차단.
+    // Observer: 휠/터치 한 번 = 한 스텝.
+    // 모바일에서는 preventDefault를 풀어 Lenis/normalizeScroll과 충돌 방지
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     const obs = Observer.create({
       type: "wheel,touch",
-      preventDefault: true,
-      tolerance: 10,
+      preventDefault: !isTouchDevice,
+      tolerance: isTouchDevice ? 30 : 10,
       onDown: () => {
         if (isAnimating) return;
         if (currentStep >= LAST_STEP) {
@@ -83,6 +85,9 @@ export default function SignatureSection() {
         end: `+=${PIN_SCROLL_DISTANCE}`,
         pin: true,
         pinSpacing: true,
+        pinType: "transform",
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
         onEnter: () => {
           setStepInstant(0);
           obs.enable();

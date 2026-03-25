@@ -139,7 +139,7 @@ export default function ContactStage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="relative z-20 order-2 flex items-end justify-start will-change-transform lg:order-1 lg:min-h-[440px]"
+              className="hidden relative z-20 order-2 items-end justify-start will-change-transform lg:flex lg:order-1 lg:min-h-[440px]"
             >
               <div className="pointer-events-none relative h-[240px] w-[240px] sm:h-[280px] sm:w-[280px]">
                 <GonishCharacter isSmiling={smiling} className="size-full drop-shadow-[0_24px_60px_rgba(20,16,20,0.12)]" />
@@ -251,6 +251,40 @@ export default function ContactStage() {
           견적 알아보기
         </BrandButton>
       </div>
+      {/* ── Fixed character + reply (bottom-left, mobile/tablet only) ── */}
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragElastic={0.1}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+        className="fixed bottom-24 left-4 z-50 flex cursor-grab items-end gap-3 select-none active:cursor-grabbing md:bottom-28 md:left-6 lg:hidden"
+        style={{ touchAction: "none" }}
+      >
+        <motion.div
+          animate={{ y: smiling ? [-2, 1, -2] : [0, -4, 0] }}
+          transition={{ duration: smiling ? 0.8 : 3.8, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none h-16 w-16 shrink-0 sm:h-20 sm:w-20"
+        >
+          <GonishCharacter isSmiling={smiling} className="h-full w-full drop-shadow-lg" />
+        </motion.div>
+        <AnimatePresence mode="wait">
+          {submitResultMessage ? (
+            <motion.div
+              key={submitResultMessage}
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.95 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
+            >
+              <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
+              {submitResultMessage}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
     </section>
   );
 }
