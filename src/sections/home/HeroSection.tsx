@@ -46,11 +46,21 @@ export default function HeroSection() {
             disablePictureInPicture
             onError={() => setVideoFailed(true)}
           >
-            <source src="/videos/gonish-hero-web.mp4?v=20260306b" type="video/mp4" />
+            <source src="/videos/gonish-hero-web.mp4?v=20260325" type="video/mp4" />
           </video>
         ) : null}
 
         {videoFailed ? <HeroFilmCanvas /> : null}
+
+        {/* Hero Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <img
+            src="/Gonish_Hero_Overlay_PNG.png"
+            alt="Gonish"
+            className="w-full lg:max-w-[50%] h-auto"
+            draggable={false}
+          />
+        </div>
       </div>
     </section>
   );
