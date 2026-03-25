@@ -1,6 +1,7 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useDrag } from "@use-gesture/react";
 import GonishCharacter from "@/components/GonishCharacter";
 import BrandButton from "@/components/ui/BrandButton";
 import type { InquiryResponse } from "@/lib/inquiry";
@@ -32,6 +33,7 @@ export default function ContactStage() {
   const [smiling, setSmiling] = useState(false);
   const [sending, setSending] = useState(false);
   const [submitResultMessage, setSubmitResultMessage] = useState<string | null>(null);
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const smileTimeoutRef = useRef<number | null>(null);
   const messageTimeoutRef = useRef<number | null>(null);
 
@@ -63,6 +65,19 @@ export default function ContactStage() {
       setSubmitResultMessage(null);
     }, contactBubbleAutoHideMs);
   }, [submitResultMessage]);
+
+  const bindCharacterDrag = useDrag(
+    ({ offset: [x, y], event }) => {
+      event?.preventDefault();
+      setDragPos({ x, y });
+    },
+    {
+      filterTaps: true,
+      from: () => [dragPos.x, dragPos.y],
+      pointer: { touch: true },
+      eventOptions: { passive: false },
+    },
+  );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -253,37 +268,39 @@ export default function ContactStage() {
       </div>
       {/* ── Fixed character + reply (bottom-left, mobile/tablet only) ── */}
       <motion.div
-        drag
-        dragMomentum={false}
-        dragElastic={0.1}
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-        className="fixed bottom-24 left-4 z-50 flex cursor-grab items-end gap-3 select-none active:cursor-grabbing md:bottom-28 md:left-6 lg:hidden"
-        style={{ touchAction: "none" }}
+        className="fixed bottom-24 left-4 z-50 md:bottom-28 md:left-6 lg:hidden"
       >
-        <motion.div
-          animate={{ y: smiling ? [-2, 1, -2] : [0, -4, 0] }}
-          transition={{ duration: smiling ? 0.8 : 3.8, repeat: Infinity, ease: "easeInOut" }}
-          className="pointer-events-none h-16 w-16 shrink-0 sm:h-20 sm:w-20"
+        <div
+          {...bindCharacterDrag()}
+          className="flex cursor-grab items-end gap-3 touch-none select-none active:cursor-grabbing"
+          style={{ transform: `translate3d(${dragPos.x}px, ${dragPos.y}px, 0)` }}
         >
-          <GonishCharacter isSmiling={smiling} className="h-full w-full drop-shadow-lg" />
-        </motion.div>
-        <AnimatePresence mode="wait">
-          {submitResultMessage ? (
-            <motion.div
-              key={submitResultMessage}
-              initial={{ opacity: 0, y: 8, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.95 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
-            >
-              <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
-              {submitResultMessage}
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+          <motion.div
+            animate={{ y: smiling ? [-2, 1, -2] : [0, -4, 0] }}
+            transition={{ duration: smiling ? 0.8 : 3.8, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none h-16 w-16 shrink-0 sm:h-20 sm:w-20"
+          >
+            <GonishCharacter isSmiling={smiling} className="h-full w-full drop-shadow-lg" />
+          </motion.div>
+          <AnimatePresence mode="wait">
+            {submitResultMessage ? (
+              <motion.div
+                key={submitResultMessage}
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
+              >
+                <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
+                {submitResultMessage}
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </div>
       </motion.div>
     </section>
   );
