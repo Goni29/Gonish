@@ -9,11 +9,12 @@ import StoryScrollSection, {
 import ProcessCards, {
   type ProcessCardsHandle,
 } from "@/sections/home/ProcessCards";
+import { getLenis } from "@/components/layout/SmoothScroll";
 
 gsap.registerPlugin(ScrollTrigger, Observer);
 
 const LAST_STEP = STORY_STEP_COUNT - 1;
-const PIN_SCROLL_DISTANCE = STORY_STEP_COUNT * 700;
+const PIN_SCROLL_DISTANCE = STORY_STEP_COUNT * 250;
 
 export default function SignatureSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -48,6 +49,17 @@ export default function SignatureSection() {
       cardsRef.current?.setStepInstant(step);
     };
 
+    // 핀 구간을 즉시 벗어나는 헬퍼 — Lenis lerp를 무시하고 즉시 점프
+    const scrollToImmediate = (position: number) => {
+      const lenis = getLenis();
+      if (lenis) {
+        lenis.scrollTo(position, { immediate: true });
+      } else {
+        window.scrollTo(0, position);
+      }
+      ScrollTrigger.update();
+    };
+
     // Observer: 휠/터치 한 번 = 한 스텝.
     // 모바일에서는 preventDefault를 풀어 Lenis/normalizeScroll과 충돌 방지
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
@@ -58,9 +70,9 @@ export default function SignatureSection() {
       onDown: () => {
         if (isAnimating) return;
         if (currentStep >= LAST_STEP) {
-          // 마지막 스텝 → 다음 섹션으로 이동
+          // 마지막 스텝 → 다음 섹션으로 즉시 이동
           obs.disable();
-          trigger.scroll(trigger.end + 1);
+          scrollToImmediate(trigger.end + 1);
           return;
         }
         goToStep(currentStep + 1);
@@ -68,9 +80,9 @@ export default function SignatureSection() {
       onUp: () => {
         if (isAnimating) return;
         if (currentStep <= 0) {
-          // 첫 스텝 → 이전 섹션으로 이동
+          // 첫 스텝 → 이전 섹션으로 즉시 이동
           obs.disable();
-          trigger.scroll(Math.max(trigger.start - 1, 0));
+          scrollToImmediate(Math.max(trigger.start - 1, 0));
           return;
         }
         goToStep(currentStep - 1);

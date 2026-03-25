@@ -7,6 +7,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ── 전역 Lenis 접근 ── */
+let globalLenis: Lenis | null = null;
+export function getLenis(): Lenis | null {
+  return globalLenis;
+}
+
 export default function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
 
@@ -21,6 +27,7 @@ export default function SmoothScroll() {
     });
 
     lenisRef.current = lenis;
+    globalLenis = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -35,6 +42,7 @@ export default function SmoothScroll() {
       gsap.ticker.remove(tickHandler);
       lenis.destroy();
       lenisRef.current = null;
+      globalLenis = null;
     };
   }, []);
 
