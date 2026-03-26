@@ -24,53 +24,53 @@ type StoryStep = {
 const storySteps: StoryStep[] = [
   {
     eyebrow: "Scene 01",
-    progressLabel: "신뢰",
-    keyword: "신뢰감",
-    headline: "고객이 3초 안에 '여기 괜찮다'고 느끼는 홈페이지.",
+    progressLabel: "품격",
+    keyword: "품격",
+    headline: "첫 화면만으로도, \n브랜드의 수준은 조용히 전달됩니다.",
     body:
-      "아무리 좋은 서비스를 갖고 있어도, 홈페이지가 허술하면 고객은 떠납니다. 깔끔하고 세련된 디자인이 말보다 먼저 신뢰를 만들고, 문의와 예약으로 자연스럽게 이어지게 합니다.",
-    pullQuote: "홈페이지 하나로, 방문자가 고객이 됩니다.",
-    detailTitle: "디자인이 곧 매출입니다",
+      "고객은 설명을 읽기 전에 분위기를 먼저 받아들입니다. 정제된 화면, 균형 잡힌 정보, 섬세한 디테일은 브랜드를 더 신뢰할 만한 선택으로 보이게 합니다. Gonish는 방문이 문의로 이어지는 첫인상을 설계합니다.",
+    pullQuote: "처음 스친 순간의 확신이, 결국 선택을 만듭니다.",
+    detailTitle: "좋은 디자인은 신뢰를 대신 말합니다",
     detailBody:
-      "방문자의 75%는 홈페이지 디자인만 보고 그 업체를 판단합니다. 전문적인 첫인상이 문의와 매출로 이어집니다.",
+      "브랜드의 격은 한 장면 안에서 느껴집니다. 고급스럽게 정돈된 첫인상은 가격보다 먼저 신뢰를 만들고, 비교보다 먼저 마음을 움직입니다.",
     reactions: [
-      "'여기 뭔가 다르다'는 첫인상",
-      "'한번 연락해볼까'라는 마음",
-      "경쟁사보다 먼저 기억에 남는 브랜드",
+      "\"여기는 다르다\"는 조용한 확신",
+      "가격보다 가치가 먼저 느껴지는 인상",
+      "오래 기억되고 다시 찾게 되는 브랜드",
     ],
   },
   {
     eyebrow: "Scene 02",
-    progressLabel: "소통",
-    keyword: "편안하게",
-    headline: "웹사이트, 전혀 몰라도 괜찮습니다. 전부 알아서 해드려요.",
+    progressLabel: "안심",
+    keyword: "안심",
+    headline: "준비가 완벽하지 않아도 괜찮습니다. \n브랜드의 결만 들려주세요.",
     body:
-      "기획서도, 전문 용어도 필요 없습니다. 원하시는 분위기만 편하게 말씀해 주세요. 어떤 느낌이 좋은지, 어떤 정보를 넣고 싶은지 대화하다 보면 방향이 잡힙니다. 복잡한 건 Gonish가 전부 처리합니다.",
-    pullQuote: "대화만 하시면, 완성은 저희 몫입니다.",
-    detailTitle: "전문 지식 없이도 만족스러운 결과",
+      "기획서와 전문 용어 없이도 충분합니다. 원하는 무드와 목표를 편하게 말씀해 주시면, 필요한 구조와 표현은 Gonish가 정교하게 정리합니다. 과정은 가볍고, 결과는 깊이 있게 완성합니다.",
+    pullQuote: "설명은 편안하게, 완성은 정교하게.",
+    detailTitle: "복잡한 준비 없이도 시작할 수 있습니다",
     detailBody:
-      "어떤 업종이든, 어떤 규모든 상관없습니다. 사장님이 말씀해주신 것만으로 충분히 멋진 결과가 나옵니다.",
+      "자료가 완벽하지 않아도 괜찮습니다. 대화 속에서 브랜드의 핵심을 선별하고, 고객이 이해하기 쉬운 흐름으로 번역해드립니다.",
     reactions: [
-      "전문 용어 없이 편하게 소통",
-      "내가 원하는 게 그대로 반영되는 경험",
-      "수정 사항도 빠르고 깔끔하게 처리",
+      "어려운 용어 없이도 자연스러운 진행",
+      "취향과 목표가 세심하게 반영되는 과정",
+      "피드백이 가볍고 매끄럽게 이어지는 경험",
     ],
   },
   {
     eyebrow: "Scene 03",
-    progressLabel: "속도",
-    keyword: "빠르게",
-    headline: "기다림 없이, 사업에 바로 도움이 되는 속도.",
+    progressLabel: "완성",
+    keyword: "완성",
+    headline: "늦지 않게, 가볍지 않게. \n완성도 높은 속도로 오픈합니다.",
     body:
-      "홈페이지가 늦어지면 사업 기회도 늦어집니다. Gonish는 빠르게, 하지만 꼼꼼하게 작업합니다. 중간중간 진행 상황을 보여드리니 안심하고 맡기실 수 있습니다.",
-    pullQuote: "빠른 오픈이 곧 빠른 매출입니다.",
-    detailTitle: "체계적인 일정, 확실한 결과",
+      "런칭이 늦어질수록 기회도 함께 미뤄집니다. Gonish는 빠른 초안과 명확한 진행 공유로 불확실성을 줄이고, 약속한 일정 안에서 품질을 놓치지 않는 제작을 지향합니다.",
+    pullQuote: "속도는 빠르게, 완성은 우아하게.",
+    detailTitle: "일정은 명확하게, 결과는 단단하게",
     detailBody:
-      "정해진 일정 안에 확실하게 완성합니다. 진행 과정을 투명하게 공유하니 불안하게 기다리실 일이 없습니다.",
+      "중간 단계마다 필요한 판단만 편하게 하실 수 있도록 정리합니다. 불필요한 지연 없이, 브랜드의 완성도를 지키며 오픈까지 이어갑니다.",
     reactions: [
-      "약속한 일정에 맞춰 확실하게 오픈",
-      "중간 확인으로 방향 틀어질 걱정 없음",
-      "오픈 후에도 안정적으로 관리",
+      "빠른 초안으로 초반 감도를 먼저 확인",
+      "과정이 투명해 일정이 흔들리지 않는 진행",
+      "오픈 이후까지 안정감을 남기는 마무리",
     ],
   },
 ];
@@ -284,28 +284,28 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
               </p>
 
               <h2
-                className="mt-3 max-w-3xl font-display leading-[1.1] tracking-[-0.04em] text-ink"
+                className="mt-3 max-w-3xl whitespace-pre-line font-display leading-[1.1] tracking-[-0.04em] text-ink"
                 style={{ fontSize: "clamp(1.4rem, 2.8vw, 2.8rem)" }}
               >
                 {step.headline}
               </h2>
 
-              <p className="mt-3 max-w-2xl text-[0.88rem] leading-[1.7] text-ink-muted sm:text-[0.94rem]">
+              <p className="mt-3 max-w-2xl whitespace-pre-line text-[0.88rem] leading-[1.7] text-ink-muted sm:text-[0.94rem]">
                 {step.body}
               </p>
 
-              <p className="mt-4 max-w-md border-l-2 border-brand/18 pl-4 font-display text-[clamp(0.92rem,1.4vw,1.12rem)] leading-[1.5] text-ink/50">
+              <p className="mt-4 max-w-md whitespace-pre-line border-l-2 border-brand/18 pl-4 font-display text-[clamp(0.92rem,1.4vw,1.12rem)] leading-[1.5] text-ink/50">
                 {step.pullQuote}
               </p>
             </div>
 
             {/* ── Right: Detail panel ── */}
             <div className="flex flex-col justify-center border-t border-ink/8 pt-4 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6">
-              <p className="font-display text-[clamp(1.2rem,1.7vw,1.65rem)] leading-[1.2] tracking-[-0.03em] text-ink">
+              <p className="whitespace-pre-line font-display text-[clamp(1.2rem,1.7vw,1.65rem)] leading-[1.2] tracking-[-0.03em] text-ink">
                 {step.detailTitle}
               </p>
 
-              <p className="mt-3 text-[0.84rem] leading-[1.6] text-ink-muted">
+              <p className="mt-3 whitespace-pre-line text-[0.84rem] leading-[1.6] text-ink-muted">
                 {step.detailBody}
               </p>
 
@@ -315,7 +315,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
                     <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-brand/8 font-display text-[9px] text-brand/60">
                       {ri + 1}
                     </span>
-                    <p className="text-[0.82rem] leading-[1.45] text-ink/55">{reaction}</p>
+                    <p className="whitespace-pre-line text-[0.82rem] leading-[1.45] text-ink/55">{reaction}</p>
                   </div>
                 ))}
               </div>

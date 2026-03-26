@@ -17,19 +17,19 @@ type ProcessStep = ProcessPoint[];
 
 const processSteps: ProcessStep[] = [
   [
-    { number: "01", title: "고객이 신뢰하는 디자인으로 시작합니다" },
-    { number: "02", title: "중요한 정보가 한눈에 보이게 정리합니다" },
-    { number: "03", title: "문의·예약까지 자연스럽게 연결합니다" },
+    { number: "01", title: "첫 화면에서 브랜드의 격을 또렷하게 전합니다" },
+    { number: "02", title: "핵심 메시지를 정제해 신뢰를 세웁니다" },
+    { number: "03", title: "문의와 상담까지 자연스럽게 연결합니다" },
   ],
   [
-    { number: "01", title: "원하시는 분위기만 말씀해 주세요" },
-    { number: "02", title: "전문 용어 없이 쉽게 소통합니다" },
-    { number: "03", title: "수정 사항도 빠르게 반영합니다" },
+    { number: "01", title: "브랜드의 분위기와 목표만 들려주세요" },
+    { number: "02", title: "어려운 설명 없이 방향을 정교하게 잡습니다" },
+    { number: "03", title: "피드백은 가볍게, 반영은 세심하게 진행합니다" },
   ],
   [
-    { number: "01", title: "빠르게 초안을 보여드립니다" },
-    { number: "02", title: "진행 상황을 투명하게 공유합니다" },
-    { number: "03", title: "약속한 일정에 맞춰 오픈합니다" },
+    { number: "01", title: "빠른 초안으로 전체 무드를 먼저 확인합니다" },
+    { number: "02", title: "진행 과정은 투명하게 계속 공유합니다" },
+    { number: "03", title: "약속한 일정 안에 완성도 있게 오픈합니다" },
   ],
 ];
 

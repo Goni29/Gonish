@@ -145,7 +145,7 @@ export default function SignatureSection() {
           </div>
 
           <p className="mt-2 max-w-2xl font-display text-[clamp(1.3rem,2.6vw,2.2rem)] leading-[1.14] tracking-[-0.035em] text-ink">
-            사업의 첫인상을 바꿔드립니다.
+            브랜드의 선택 이유를 첫 화면에서 완성합니다.
           </p>
         </div>
 
