@@ -1,20 +1,20 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Observer } from "gsap/Observer";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { getLenis } from "@/components/layout/SmoothScroll";
+import ProcessCards, {
+  type ProcessCardsHandle,
+} from "@/sections/home/ProcessCards";
 import StoryScrollSection, {
   STORY_STEP_COUNT,
   type StoryScrollSectionHandle,
 } from "@/sections/home/StoryScrollSection";
-import ProcessCards, {
-  type ProcessCardsHandle,
-} from "@/sections/home/ProcessCards";
-import { getLenis } from "@/components/layout/SmoothScroll";
 
 gsap.registerPlugin(ScrollTrigger, Observer);
 
 const LAST_STEP = STORY_STEP_COUNT - 1;
-const PIN_SCROLL_DISTANCE = STORY_STEP_COUNT * 250;
+const PIN_SCROLL_DISTANCE = STORY_STEP_COUNT * 320;
 
 export default function SignatureSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -34,6 +34,7 @@ export default function SignatureSection() {
 
     const goToStep = (step: number) => {
       if (step === currentStep) return;
+
       isAnimating = true;
       currentStep = step;
       storyRef.current?.animateToStep(step, () => {
@@ -49,46 +50,47 @@ export default function SignatureSection() {
       cardsRef.current?.setStepInstant(step);
     };
 
-    // 핀 구간을 즉시 벗어나는 헬퍼 — Lenis lerp를 무시하고 즉시 점프
     const scrollToImmediate = (position: number) => {
       const lenis = getLenis();
+
       if (lenis) {
         lenis.scrollTo(position, { immediate: true });
       } else {
         window.scrollTo(0, position);
       }
+
       ScrollTrigger.update();
     };
 
-    // Observer: 휠/터치 한 번 = 한 스텝.
-    // 모바일에서는 preventDefault를 풀어 Lenis/normalizeScroll과 충돌 방지
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-    const obs = Observer.create({
+    const observer = Observer.create({
       type: "wheel,touch",
       preventDefault: !isTouchDevice,
       tolerance: isTouchDevice ? 30 : 10,
       onDown: () => {
         if (isAnimating) return;
+
         if (currentStep >= LAST_STEP) {
-          // 마지막 스텝 → 다음 섹션으로 즉시 이동
-          obs.disable();
+          observer.disable();
           scrollToImmediate(trigger.end + 1);
           return;
         }
+
         goToStep(currentStep + 1);
       },
       onUp: () => {
         if (isAnimating) return;
+
         if (currentStep <= 0) {
-          // 첫 스텝 → 이전 섹션으로 즉시 이동
-          obs.disable();
+          observer.disable();
           scrollToImmediate(Math.max(trigger.start - 1, 0));
           return;
         }
+
         goToStep(currentStep - 1);
       },
     });
-    obs.disable();
+    observer.disable();
 
     const context = gsap.context(() => {
       trigger = ScrollTrigger.create({
@@ -102,50 +104,72 @@ export default function SignatureSection() {
         invalidateOnRefresh: true,
         onEnter: () => {
           setStepInstant(0);
-          obs.enable();
+          observer.enable();
         },
         onEnterBack: () => {
           setStepInstant(LAST_STEP);
-          obs.enable();
+          observer.enable();
         },
         onLeave: () => {
           setStepInstant(LAST_STEP);
-          obs.disable();
+          observer.disable();
         },
         onLeaveBack: () => {
           setStepInstant(0);
-          obs.disable();
+          observer.disable();
         },
       });
     }, section);
 
     return () => {
-      obs.kill();
+      observer.kill();
       context.revert();
     };
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative h-[100svh] overflow-hidden bg-[url('/ScrollSection.png')] bg-cover bg-top bg-no-repeat"
-    >
-      <div className="relative z-10 flex h-full flex-col">
-        {/* 상단: 기존 텍스트 영역 */}
-        <div className="shell shrink-0">
-          <div className="soft-divider" />
-          <div className="space-y-4 pt-6 pb-1 sm:space-y-8 sm:pt-10 sm:pb-2">
-            <div className="font-script text-[clamp(3.5rem,17vw,12rem)] leading-none text-brand/95 [text-shadow:0_18px_48px_rgba(243,29,91,0.12)]">
-              Gonish
-            </div>
+    <section ref={sectionRef} className="relative isolate h-[100svh] overflow-hidden">
+      {/* ── Background — ScrollSection.png ── */}
+      <div className="pointer-events-none absolute inset-0 bg-[url('/ScrollSection.png')] bg-cover bg-center bg-no-repeat" />
 
-            <StoryScrollSection ref={storyRef} />
+      {/* ── Content ── */}
+      <div className="shell relative z-10 flex h-full flex-col py-4 lg:py-5">
+        {/* Header — compact */}
+        <div className="shrink-0 pb-2">
+          <div className="flex items-center gap-4">
+            <span className="h-px w-10 bg-brand/40" />
+            <p className="eyebrow">Why Gonish</p>
+            <p className="font-script text-[clamp(1.8rem,5vw,3rem)] leading-none text-brand/80">
+              Gonish
+            </p>
           </div>
+
+          <p className="mt-2 max-w-2xl font-display text-[clamp(1.3rem,2.6vw,2.2rem)] leading-[1.14] tracking-[-0.035em] text-ink">
+            사업의 첫인상을 바꿔드립니다.
+          </p>
         </div>
 
-        {/* 하단: 프로세스 카드 (풀 와이드, 남은 공간 전부 사용) */}
-        <div className="flex min-h-[340px] flex-1 px-4 pt-4 pb-6 sm:min-h-[240px] sm:px-6 sm:pt-5 lg:px-10">
-          <ProcessCards ref={cardsRef} />
+        {/* Soft divider */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-ink/10 to-transparent" />
+
+        {/* Main story area */}
+        <div className="mt-2 min-h-0 flex-1">
+          <StoryScrollSection ref={storyRef} />
+        </div>
+
+        {/* Soft divider */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-ink/10 to-transparent" />
+
+        {/* Process orbital flow */}
+        <div className="shrink-0 pt-3">
+          <div className="mb-2 flex items-center gap-3">
+            <span className="h-px w-10 bg-brand/30" />
+            <p className="eyebrow">How it works</p>
+          </div>
+
+          <div className="h-[110px] sm:h-[120px]">
+            <ProcessCards ref={cardsRef} />
+          </div>
         </div>
       </div>
     </section>

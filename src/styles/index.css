@@ -279,3 +279,38 @@
   0%, 100% { transform: translateY(-7px); }
   50%      { transform: translateY(7px); }
 }
+
+@keyframes storyHaloFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(0, 16px, 0) scale(1.05); }
+}
+
+@keyframes storyLineDrift {
+  0%, 100% { transform: translate3d(-1.5%, 0, 0); opacity: 0.5; }
+  50%      { transform: translate3d(1.5%, 0, 0); opacity: 0.95; }
+}
+
+.story-halo-float {
+  animation: storyHaloFloat 15s ease-in-out infinite;
+}
+
+.story-halo-float-delayed {
+  animation: storyHaloFloat 19s ease-in-out infinite reverse;
+}
+
+.story-line-drift {
+  animation: storyLineDrift 9s ease-in-out infinite;
+}
+
+.story-line-drift-delayed {
+  animation: storyLineDrift 11s ease-in-out infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-halo-float,
+  .story-halo-float-delayed,
+  .story-line-drift,
+  .story-line-drift-delayed {
+    animation: none !important;
+  }
+}
