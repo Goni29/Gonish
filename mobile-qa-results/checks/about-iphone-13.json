@@ -1,0 +1,69 @@
+{
+  "page": "About",
+  "path": "/about",
+  "device": "iPhone-13",
+  "slug": "about-iphone-13",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "checks": {
+    "overflow": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "touch-targets": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "font-size": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "viewport-meta": {
+      "pass": true,
+      "detail": "width=device-width, initial-scale=1"
+    },
+    "images": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "viewport-bounds": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "console-errors": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "safe-area": {
+      "pass": false,
+      "detail": "1개 요소가 safe area 침범",
+      "fix": "CSS에서 env(safe-area-inset-top), env(safe-area-inset-bottom) 사용. 예: padding-top: env(safe-area-inset-top); 고정 헤더/푸터에는 반드시 적용. Tailwind: pt-[env(safe-area-inset-top)] 또는 globals.css에 직접 작성.",
+      "items": [
+        {
+          "area": "home-indicator",
+          "tag": "button",
+          "text": ""
+        }
+      ]
+    },
+    "css-animation": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "scroll-animation": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "pin-section": {
+      "pass": true,
+      "detail": "해당 없음"
+    },
+    "reduced-motion": {
+      "pass": true,
+      "detail": "OK"
+    }
+  },
+  "timestamp": "2026-03-28T00:26:14.764Z"
+}

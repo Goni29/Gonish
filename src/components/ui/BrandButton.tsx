@@ -13,7 +13,7 @@ type BrandButtonProps = {
 };
 
 const baseClasses =
-  "inline-flex items-center justify-center rounded-full px-6 py-3 text-xs uppercase tracking-[0.26em] transition-all duration-300";
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-6 py-3 text-xs uppercase tracking-[0.26em] transition-all duration-300";
 
 const variantClasses = {
   primary:

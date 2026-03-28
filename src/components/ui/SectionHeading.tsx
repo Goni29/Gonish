@@ -375,8 +375,10 @@ function SectionOrbitStage({ theme }: { theme: HeadingTheme }) {
       </svg>
 
       <div
-        className={["absolute -translate-x-1/2 -translate-y-1/2", theme.planetWrapperClassName].join(" ")}
-        style={{ animation: "float 8s ease-in-out infinite" }}
+        className={[
+          "section-heading-planet-float absolute -translate-x-1/2 -translate-y-1/2",
+          theme.planetWrapperClassName,
+        ].join(" ")}
       >
         <Image
           src="/planet.svg"

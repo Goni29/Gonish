@@ -1,0 +1,144 @@
+{
+  "page": "Portfolio",
+  "path": "/portfolio",
+  "device": "Pixel-5",
+  "slug": "portfolio-pixel-5",
+  "viewport": {
+    "width": 393,
+    "height": 727
+  },
+  "checks": {
+    "overflow": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "touch-targets": {
+      "pass": false,
+      "detail": "9개 요소 < 44px",
+      "fix": "min-height: 44px; min-width: 44px; 을 적용하거나, padding을 늘려서 터치 영역을 확보. 아이콘 버튼이라면 p-3 (12px) 이상 권장. 인라인 링크(<a>)는 display: inline-block; padding: 8px 0; 으로 높이 확보.",
+      "items": [
+        {
+          "tag": "button",
+          "size": "133×37",
+          "text": "PC version"
+        },
+        {
+          "tag": "button",
+          "size": "171×37",
+          "text": "Tablet version"
+        },
+        {
+          "tag": "button",
+          "size": "172×37",
+          "text": "Mobile version"
+        },
+        {
+          "tag": "a",
+          "size": "34×23",
+          "text": "Main"
+        },
+        {
+          "tag": "a",
+          "size": "43×23",
+          "text": "About"
+        },
+        {
+          "tag": "a",
+          "size": "62×23",
+          "text": "Portfolio"
+        },
+        {
+          "tag": "a",
+          "size": "62×23",
+          "text": "Estimate"
+        },
+        {
+          "tag": "a",
+          "size": "55×23",
+          "text": "Contact"
+        },
+        {
+          "tag": "a",
+          "size": "184×42",
+          "text": "프로젝트 이야기하기"
+        }
+      ]
+    },
+    "font-size": {
+      "pass": false,
+      "detail": "3개 요소 < 12px",
+      "fix": "최소 font-size: 12px (권장 14px 이상). iOS Safari는 16px 미만 input에서 자동 줌이 발생하므로 폼 요소는 font-size: 16px 이상 권장. Tailwind: text-xs(12px) 이상 사용.",
+      "items": [
+        {
+          "tag": "p",
+          "fontSize": "11.52px",
+          "text": "Portfolio"
+        },
+        {
+          "tag": "span",
+          "fontSize": "10px",
+          "text": "2026"
+        },
+        {
+          "tag": "span",
+          "fontSize": "11px",
+          "text": "PC version"
+        }
+      ]
+    },
+    "viewport-meta": {
+      "pass": true,
+      "detail": "width=device-width, initial-scale=1"
+    },
+    "images": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "viewport-bounds": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "console-errors": {
+      "pass": false,
+      "detail": "Access to font at 'http://cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff2' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header i",
+      "fix": "브라우저 DevTools Console에서 에러 메시지를 확인. 모바일 전용 에러라면 특정 뷰포트에서만 실행되는 코드(IntersectionObserver, touch 이벤트 등)를 점검."
+    },
+    "safe-area": {
+      "pass": false,
+      "detail": "1개 요소가 safe area 침범",
+      "fix": "CSS에서 env(safe-area-inset-top), env(safe-area-inset-bottom) 사용. 예: padding-top: env(safe-area-inset-top); 고정 헤더/푸터에는 반드시 적용. Tailwind: pt-[env(safe-area-inset-top)] 또는 globals.css에 직접 작성.",
+      "items": [
+        {
+          "area": "home-indicator",
+          "tag": "button",
+          "text": ""
+        }
+      ]
+    },
+    "css-animation": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "scroll-animation": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "pin-section": {
+      "pass": true,
+      "detail": "해당 없음"
+    },
+    "reduced-motion": {
+      "pass": false,
+      "detail": "1개 애니메이션이 reduced-motion 무시",
+      "fix": "@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } } 글로벌 추가. Framer Motion: useReducedMotion() 훅. GSAP: gsap.matchMedia()로 조건부 비활성화.",
+      "items": [
+        {
+          "element": "<div>.absolute.-translate-x-1/2",
+          "animation": "float",
+          "duration": "8s"
+        }
+      ]
+    }
+  },
+  "timestamp": "2026-03-27T23:09:13.071Z"
+}

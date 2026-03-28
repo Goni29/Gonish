@@ -235,7 +235,7 @@ function StoryScrollSectionImpl(_: StoryScrollSectionProps, ref: ForwardedRef<St
                 )}
               </div>
               <span
-                className="text-[0.6rem] uppercase tracking-[0.18em] transition-all duration-400"
+                className="text-[0.75rem] uppercase tracking-[0.18em] transition-all duration-400"
                 style={{
                   color: isActive ? "#F31D5B" : "rgba(20,16,20,0.25)",
                 }}

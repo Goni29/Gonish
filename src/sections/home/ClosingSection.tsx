@@ -233,7 +233,7 @@ function OrbitLabel({ item }: { item: OrbitItem }) {
       {/* 타이틀 */}
       <Link
         href={item.to}
-        className="relative -translate-x-1/2 -translate-y-[calc(100%+12px)] block whitespace-nowrap"
+        className="relative -translate-x-1/2 -translate-y-[calc(100%+12px)] inline-flex min-h-[44px] items-center whitespace-nowrap"
       >
         <motion.span
           className="inline-block rounded-full border border-black/8 bg-white/76 px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] text-ink backdrop-blur-xl transition-all duration-300 hover:border-brand/25 hover:text-brand"

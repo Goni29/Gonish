@@ -1,0 +1,208 @@
+{
+  "page": "Home",
+  "path": "/",
+  "device": "iPhone-13-Pro-Max",
+  "slug": "home-iphone-13-pro-max",
+  "viewport": {
+    "width": 428,
+    "height": 746
+  },
+  "checks": {
+    "overflow": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "touch-targets": {
+      "pass": false,
+      "detail": "11개 요소 < 44px",
+      "fix": "min-height: 44px; min-width: 44px; 을 적용하거나, padding을 늘려서 터치 영역을 확보. 아이콘 버튼이라면 p-3 (12px) 이상 권장. 인라인 링크(<a>)는 display: inline-block; padding: 8px 0; 으로 높이 확보.",
+      "items": [
+        {
+          "tag": "a",
+          "size": "89×33",
+          "text": "About"
+        },
+        {
+          "tag": "a",
+          "size": "127×33",
+          "text": "Portfolio"
+        },
+        {
+          "tag": "a",
+          "size": "113×33",
+          "text": "Estimate"
+        },
+        {
+          "tag": "a",
+          "size": "108×33",
+          "text": "Contact"
+        },
+        {
+          "tag": "a",
+          "size": "201×39",
+          "text": "프로젝트 상담 시작하기"
+        },
+        {
+          "tag": "a",
+          "size": "34×22",
+          "text": "Main"
+        },
+        {
+          "tag": "a",
+          "size": "43×22",
+          "text": "About"
+        },
+        {
+          "tag": "a",
+          "size": "62×22",
+          "text": "Portfolio"
+        },
+        {
+          "tag": "a",
+          "size": "62×22",
+          "text": "Estimate"
+        },
+        {
+          "tag": "a",
+          "size": "55×22",
+          "text": "Contact"
+        },
+        {
+          "tag": "a",
+          "size": "183×41",
+          "text": "프로젝트 이야기하기"
+        }
+      ]
+    },
+    "font-size": {
+      "pass": false,
+      "detail": "3개 요소 < 12px",
+      "fix": "최소 font-size: 12px (권장 14px 이상). iOS Safari는 16px 미만 input에서 자동 줌이 발생하므로 폼 요소는 font-size: 16px 이상 권장. Tailwind: text-xs(12px) 이상 사용.",
+      "items": [
+        {
+          "tag": "p",
+          "fontSize": "11.52px",
+          "text": "Why Gonish"
+        },
+        {
+          "tag": "span",
+          "fontSize": "9.6px",
+          "text": "품격"
+        },
+        {
+          "tag": "p",
+          "fontSize": "10.88px",
+          "text": "01"
+        }
+      ]
+    },
+    "viewport-meta": {
+      "pass": true,
+      "detail": "width=device-width, initial-scale=1"
+    },
+    "images": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "viewport-bounds": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "console-errors": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "safe-area": {
+      "pass": false,
+      "detail": "1개 요소가 safe area 침범",
+      "fix": "CSS에서 env(safe-area-inset-top), env(safe-area-inset-bottom) 사용. 예: padding-top: env(safe-area-inset-top); 고정 헤더/푸터에는 반드시 적용. Tailwind: pt-[env(safe-area-inset-top)] 또는 globals.css에 직접 작성.",
+      "items": [
+        {
+          "area": "home-indicator",
+          "tag": "button",
+          "text": ""
+        }
+      ]
+    },
+    "css-animation": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "scroll-animation": {
+      "pass": true,
+      "detail": "OK"
+    },
+    "pin-section": {
+      "pass": true,
+      "detail": "2개 핀 섹션 정상"
+    },
+    "reduced-motion": {
+      "pass": false,
+      "detail": "12개 애니메이션이 reduced-motion 무시",
+      "fix": "@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } } 글로벌 추가. Framer Motion: useReducedMotion() 훅. GSAP: gsap.matchMedia()로 조건부 비활성화.",
+      "items": [
+        {
+          "element": "<div>.absolute.inset-0",
+          "animation": "ping",
+          "duration": "1s"
+        },
+        {
+          "element": "<div>.pointer-events-none.absolute",
+          "animation": "spin",
+          "duration": "60s"
+        },
+        {
+          "element": "<div>.pointer-events-none.absolute",
+          "animation": "spin",
+          "duration": "45s"
+        },
+        {
+          "element": "<div>.pointer-events-none.absolute",
+          "animation": "spin",
+          "duration": "80s"
+        },
+        {
+          "element": "<div>.animate-[float_ease-in-out_infinite_alternate]",
+          "animation": "float",
+          "duration": "5.25s"
+        },
+        {
+          "element": "<div>.absolute.inset-0",
+          "animation": "ping",
+          "duration": "1s"
+        },
+        {
+          "element": "<div>.animate-[float_ease-in-out_infinite_alternate]",
+          "animation": "float",
+          "duration": "6.3s"
+        },
+        {
+          "element": "<div>.absolute.inset-0",
+          "animation": "ping",
+          "duration": "1s"
+        },
+        {
+          "element": "<div>.animate-[float_ease-in-out_infinite_alternate]",
+          "animation": "float",
+          "duration": "4.6s"
+        },
+        {
+          "element": "<div>.absolute.inset-0",
+          "animation": "ping",
+          "duration": "1s"
+        },
+        {
+          "element": "<div>.animate-[float_ease-in-out_infinite_alternate]",
+          "animation": "float",
+          "duration": "3.45s"
+        },
+        {
+          "element": "<div>.absolute.inset-0",
+          "animation": "ping",
+          "duration": "1s"
+        }
+      ]
+    }
+  },
+  "timestamp": "2026-03-27T23:05:20.862Z"
+}

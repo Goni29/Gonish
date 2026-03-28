@@ -45,14 +45,14 @@ export default function SiteFooter() {
                       <Link
                         key={link.label}
                         href={link.to}
-                        className="transition-colors duration-300 hover:text-brand"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 py-2 transition-colors duration-300 hover:text-brand"
                       >
                         {link.label}
                       </Link>
                     ))}
                   </div>
 
-                  <BrandButton to="/contact" variant="ghost" className="px-5 py-2.5">
+                  <BrandButton to="/contact" variant="ghost" className="min-h-12 min-w-11 px-6 py-3">
                     프로젝트 이야기하기
                   </BrandButton>
                 </div>

@@ -431,6 +431,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: 10px;
+  padding-block: 10px;
   white-space: nowrap;
   pointer-events: auto;
   text-decoration: none;
@@ -787,6 +791,8 @@
 
   .clock-sweep-nav__link {
     font-size: clamp(0.9rem, 3.7vw, 1rem);
+    min-height: 44px;
+    padding-block: 10px;
   }
 }
 

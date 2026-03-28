@@ -171,7 +171,7 @@ function ProcessCardsImpl(_: {}, ref: ForwardedRef<ProcessCardsHandle>) {
                 </div>
 
                 {/* Number */}
-                <p className="mt-2 font-display text-[0.68rem] tracking-[0.2em] text-brand/50">
+                <p className="mt-2 font-display text-[0.75rem] tracking-[0.2em] text-brand/50">
                   {point.number}
                 </p>
 

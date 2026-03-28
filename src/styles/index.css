@@ -1,4 +1,4 @@
-@import url("//fonts.googleapis.com/earlyaccess/notosanskr.css");
+@import url("https://fonts.googleapis.com/earlyaccess/notosanskr.css");
 @import "lenis/dist/lenis.css";
 @import "tailwindcss";
 
@@ -79,28 +79,6 @@
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.0/RIDIBatang.woff")
     format("woff");
   font-weight: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Godo";
-  src:
-    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff2")
-      format("woff2"),
-    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff")
-      format("woff");
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Godo";
-  src:
-    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoB.woff2")
-      format("woff2"),
-    url("//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoB.woff")
-      format("woff");
-  font-weight: 700;
   font-display: swap;
 }
 
@@ -230,7 +208,7 @@
 }
 
 .eyebrow {
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   letter-spacing: 0.36em;
   text-transform: uppercase;
   color: rgba(20, 16, 20, 0.5);
@@ -255,7 +233,7 @@
 }
 
 .detail-hero-title-font {
-  font-family: "Godo", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif;
+  font-family: "GangwonSpecialSelfGoverningProvince", "Paperozi", "Noto Sans KR", "Aptos", "Segoe UI", sans-serif;
 }
 
 .home-story-serif-font {
@@ -306,11 +284,39 @@
   animation: storyLineDrift 11s ease-in-out infinite reverse;
 }
 
+.section-heading-planet-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* safe area: 하단 고정 헤더가 home-indicator 영역을 침범하지 않도록 */
+.site-header--dock-bottom-right {
+  right: max(0.75rem, env(safe-area-inset-right, 0px));
+  bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (min-width: 640px) {
+  .site-header--dock-bottom-right {
+    right: max(1.5rem, env(safe-area-inset-right, 0px));
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  /* CSS 애니메이션 전역 비활성화 */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
   .story-halo-float,
   .story-halo-float-delayed,
   .story-line-drift,
-  .story-line-drift-delayed {
+  .story-line-drift-delayed,
+  .section-heading-planet-float {
     animation: none !important;
   }
 }
