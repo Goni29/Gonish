@@ -258,6 +258,10 @@
   50%      { transform: translateY(7px); }
 }
 
+@keyframes orbitRingFlow {
+  to { stroke-dashoffset: -200; }
+}
+
 @keyframes storyHaloFloat {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50%      { transform: translate3d(0, 16px, 0) scale(1.05); }
@@ -317,6 +321,11 @@
   .story-line-drift,
   .story-line-drift-delayed,
   .section-heading-planet-float {
+    animation: none !important;
+  }
+
+  /* Orbit ring flow */
+  [style*="orbitRingFlow"] {
     animation: none !important;
   }
 }

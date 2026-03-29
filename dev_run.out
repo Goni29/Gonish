@@ -3,17 +3,10 @@
 > next dev
 
 ▲ Next.js 16.1.7 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.35.51:3000
+- Local:         http://localhost:3001
+- Network:       http://192.168.35.51:3001
 - Environments: .env.local
 
 ✓ Starting...
-Creating turbopack project { dir: 'D:\\Python\\Portfolio\\Gonish', testMode: true }
-✓ Ready in 2.5s
-○ Compiling / ...
- GET / 200 in 4.1s (compile: 3.7s, render: 358ms)
- GET / 200 in 432ms (compile: 17ms, render: 415ms)
- POST /api/analytics 200 in 1486ms (compile: 186ms, render: 1300ms)
-✓ Compiled in 599ms
-✓ Compiled in 286ms
-✓ Compiled in 387ms
+  Suggestion: If you intended to restart next dev, terminate the other process, and then try again.
+[?25h

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" fill="none">
+  <defs>
+    <radialGradient id="p1-bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(160 160) rotate(90) scale(132)">
+      <stop offset="0" stop-color="#FFF8FD"/>
+      <stop offset="0.42" stop-color="#FFD8EB"/>
+      <stop offset="1" stop-color="#F26BA7"/>
+    </radialGradient>
+    <radialGradient id="p1-core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(132 114) rotate(48) scale(138 126)">
+      <stop offset="0" stop-color="#FFFDFE"/>
+      <stop offset="0.3" stop-color="#FFE3F0"/>
+      <stop offset="0.62" stop-color="#FF9FCA"/>
+      <stop offset="1" stop-color="#B92A72"/>
+    </radialGradient>
+    <linearGradient id="p1-ring" x1="63" y1="145" x2="257" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFEAF5"/>
+      <stop offset="0.26" stop-color="#FFB9D9"/>
+      <stop offset="0.52" stop-color="#FFF9FD"/>
+      <stop offset="0.76" stop-color="#F47BB4"/>
+      <stop offset="1" stop-color="#A02263"/>
+    </linearGradient>
+    <linearGradient id="p1-crown" x1="118" y1="59" x2="201" y2="101" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF6FB"/>
+      <stop offset="0.42" stop-color="#FFD5E9"/>
+      <stop offset="1" stop-color="#EC73AD"/>
+    </linearGradient>
+    <linearGradient id="p1-facet" x1="94" y1="100" x2="211" y2="197" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF9FD" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#F05D9E" stop-opacity="0.14"/>
+    </linearGradient>
+    <filter id="p1-glow" x="32" y="35" width="256" height="252" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#F47BB4" flood-opacity="0.28"/>
+      <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#742048" flood-opacity="0.18"/>
+    </filter>
+    <filter id="p1-spark" x="-20" y="-20" width="360" height="360" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="1.6"/>
+    </filter>
+    <clipPath id="p1-clip">
+      <circle cx="160" cy="170" r="84"/>
+    </clipPath>
+  </defs>
+
+  <g filter="url(#p1-spark)" opacity="0.45">
+    <circle cx="86" cy="86" r="10" fill="#FFC5E0"/>
+    <circle cx="247" cy="99" r="12" fill="#FFB6D8"/>
+    <circle cx="225" cy="235" r="9" fill="#FFB5D3"/>
+  </g>
+
+  <ellipse cx="160" cy="176" rx="106" ry="32" transform="rotate(-10 160 176)" stroke="url(#p1-ring)" stroke-width="9" stroke-linecap="round" opacity="0.42"/>
+  <ellipse cx="160" cy="176" rx="106" ry="32" transform="rotate(-10 160 176)" stroke="#FFF6FB" stroke-width="2.5" stroke-dasharray="1 10" opacity="0.95"/>
+
+  <g filter="url(#p1-glow)">
+    <circle cx="160" cy="170" r="84" fill="url(#p1-bg)" stroke="#6B2140" stroke-width="2"/>
+
+    <g clip-path="url(#p1-clip)">
+      <circle cx="160" cy="170" r="84" fill="url(#p1-core)"/>
+
+      <path d="M67 157C101 120 148 108 204 122C221 126 243 136 253 150V188C236 203 207 214 178 218C128 225 89 212 67 188V157Z" fill="#FF8ABF" opacity="0.34"/>
+      <path d="M84 110C111 86 152 79 203 96C222 103 236 112 244 124C214 119 186 121 152 132C117 144 97 162 77 188L72 180C71 154 75 127 84 110Z" fill="#FFF3F9" opacity="0.56"/>
+      <path d="M92 200C120 179 150 168 188 162C216 158 235 160 248 166C237 187 220 202 196 212C170 224 134 226 105 217C98 213 95 207 92 200Z" fill="#C82C76" opacity="0.18"/>
+
+      <path d="M94 106L127 135L102 176L80 150L94 106Z" fill="url(#p1-facet)" opacity="0.82"/>
+      <path d="M128 135L170 120L194 150L151 175L128 135Z" fill="url(#p1-facet)" opacity="0.68"/>
+      <path d="M151 175L194 150L225 179L183 207L151 175Z" fill="url(#p1-facet)" opacity="0.8"/>
+      <path d="M102 176L151 175L183 207L126 217L93 200L102 176Z" fill="url(#p1-facet)" opacity="0.76"/>
+
+      <path d="M97 118C118 129 144 133 173 130C198 127 221 118 236 106" stroke="#FFF8FC" stroke-width="3" stroke-linecap="round" opacity="0.68"/>
+      <path d="M88 151C123 163 154 167 195 163C214 161 228 156 240 149" stroke="#FFF6FB" stroke-width="2.5" stroke-linecap="round" opacity="0.62"/>
+      <path d="M103 201C123 194 140 191 163 191C182 191 198 193 215 199" stroke="#742048" stroke-width="2" stroke-linecap="round" opacity="0.26"/>
+
+      <path d="M113 90C130 82 148 78 171 79C183 80 194 82 204 87" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.58"/>
+      <ellipse cx="126" cy="121" rx="22" ry="13" transform="rotate(-24 126 121)" fill="#FFF9FD" opacity="0.48"/>
+      <ellipse cx="194" cy="182" rx="18" ry="9" transform="rotate(-18 194 182)" fill="#FFBCD8" opacity="0.28"/>
+
+      <path d="M161 87V255" stroke="#FFF7FC" stroke-width="2" stroke-linecap="round" opacity="0.22"/>
+      <path d="M110 97C131 111 146 139 151 172C154 193 153 214 148 233" stroke="#6B2140" stroke-width="1.6" stroke-linecap="round" opacity="0.18"/>
+      <path d="M209 109C194 125 185 145 181 169C176 194 176 211 180 229" stroke="#6B2140" stroke-width="1.6" stroke-linecap="round" opacity="0.18"/>
+    </g>
+
+    <path d="M106 102C121 70 199 67 214 102" stroke="#FFEAF6" stroke-width="7" stroke-linecap="round" opacity="0.82"/>
+    <path d="M94 190C114 205 137 213 163 214C188 215 211 208 230 194" stroke="#FFF6FB" stroke-width="5" stroke-linecap="round" opacity="0.44"/>
+
+    <path d="M80 190C110 168 133 158 161 156C193 152 221 161 250 184" stroke="url(#p1-ring)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M90 190C113 175 135 168 161 166C189 163 212 169 239 186" stroke="#FFF8FC" stroke-width="3.5" stroke-linecap="round" opacity="0.92"/>
+  </g>
+
+  <g>
+    <path d="M126 103L136 67L149 90L126 103Z" fill="url(#p1-crown)" stroke="#6B2140" stroke-width="1.8"/>
+    <path d="M149 90L160 48L171 90L149 90Z" fill="#FFF7FC" stroke="#6B2140" stroke-width="1.8"/>
+    <path d="M171 90L184 64L193 102L171 90Z" fill="url(#p1-crown)" stroke="#6B2140" stroke-width="1.8"/>
+    <path d="M113 95L125 81L130 100L113 95Z" fill="#FFD8EB" stroke="#6B2140" stroke-width="1.6"/>
+    <path d="M193 101L203 84L209 106L193 101Z" fill="#FFD8EB" stroke="#6B2140" stroke-width="1.6"/>
+    <circle cx="160" cy="47" r="5" fill="#FFF8FD" stroke="#6B2140" stroke-width="1.4"/>
+  </g>
+
+  <g stroke="#6B2140" stroke-width="1.3" stroke-linecap="round">
+    <path d="M78 84L84 90"/>
+    <path d="M81 87L75 93"/>
+    <path d="M240 81L247 87"/>
+    <path d="M244 86L237 93"/>
+    <path d="M219 238L225 244"/>
+    <path d="M222 241L216 247"/>
+  </g>
+</svg>

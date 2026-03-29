@@ -125,7 +125,10 @@ export default function FillWordSection() {
 
   return (
     <section ref={sectionRef} className="relative h-[100svh] overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[url('/FillWordSection.png')] bg-cover bg-center bg-no-repeat" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/FillWordSection.png')" }}
+      />
 
       <div className="shell relative z-10 flex h-full items-center">
         <div className="w-full space-y-12">
