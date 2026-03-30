@@ -262,6 +262,20 @@
   to { stroke-dashoffset: -200; }
 }
 
+@keyframes starTextFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+.star-text-float {
+  animation: starTextFloat 3.8s ease-in-out infinite;
+}
+
+.star-text-float-slow {
+  animation: starTextFloat 5.2s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
 @keyframes storyHaloFloat {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50%      { transform: translate3d(0, 16px, 0) scale(1.05); }
@@ -326,6 +340,11 @@
 
   /* Orbit ring flow */
   [style*="orbitRingFlow"] {
+    animation: none !important;
+  }
+
+  .star-text-float,
+  .star-text-float-slow {
     animation: none !important;
   }
 }

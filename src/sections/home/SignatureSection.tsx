@@ -70,19 +70,16 @@ const FRONT_ARC = `M ${ARC_START.x} ${ARC_START.y} A ${ORBIT_RX} ${ORBIT_RY} ${O
 const ACTIVE_PT = getOrbitPoint(90);
 const LEFT_PT   = getOrbitPoint(205);
 const RIGHT_PT  = getOrbitPoint(335);
-// Planet sizes in SVG units at reference container (700px = VW)
-// clamp(14rem,30vw,22rem) → 352px at 700px container → 352 SVG units
-// clamp(4rem,7vw,5.5rem)  →  88px at 700px container →  88 SVG units
-const ACTIVE_HALF = 176;
-const SMALL_HALF  = 44;
-
-// ── Planet layout — positions computed from orbit ring ────────────────────────
+// ── Star layout — positions computed from orbit ring ─────────────────────────
 type PlanetSlot = "active" | "left" | "right";
 
-const PLANET_LAYOUT: Record<PlanetSlot, { left: string; top: string; size: string; zIndex: number; opacity: number }> = {
-  active: { ...toPct(getOrbitPoint(90)),  size: "clamp(14rem, 30vw, 22rem)", zIndex: 3, opacity: 1 },
-  left:   { ...toPct(getOrbitPoint(205)), size: "clamp(4rem, 7vw, 5.5rem)",  zIndex: 2, opacity: 0.88 },
-  right:  { ...toPct(getOrbitPoint(335)), size: "clamp(4rem, 7vw, 5.5rem)",  zIndex: 2, opacity: 0.88 },
+const ORBIT_STAR_SIZE = 40;
+const ORBIT_STICK_HEIGHT = 52;
+
+const PLANET_LAYOUT: Record<PlanetSlot, { left: string; top: string; zIndex: number; opacity: number; contentScale: number }> = {
+  active: { ...toPct(getOrbitPoint(90)),  zIndex: 3, opacity: 1,    contentScale: 1 },
+  left:   { ...toPct(getOrbitPoint(205)), zIndex: 2, opacity: 0.82, contentScale: 0.65 },
+  right:  { ...toPct(getOrbitPoint(335)), zIndex: 1, opacity: 0.65, contentScale: 0.50 },
 };
 
 function getSlot(i: number, active: number): PlanetSlot {
@@ -401,7 +398,6 @@ export default function SignatureSection() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
   const planetRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const maskPlanetRefs = useRef<Array<SVGImageElement | null>>([]);
   const prevStepRef = useRef(0);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const currentStepRef = useRef(0);
@@ -483,29 +479,6 @@ export default function SignatureSection() {
     animateToStep(targetStep, () => { isBusyRef.current = false; });
   }, [animateToStep]);
 
-  const syncOrbitMaskToPlanets = useCallback(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    const stageRect = stage.getBoundingClientRect();
-    if (!stageRect.width || !stageRect.height) return;
-
-    planetRefs.current.forEach((planet, index) => {
-      const maskPlanet = maskPlanetRefs.current[index];
-      if (!planet || !maskPlanet) return;
-
-      const rect = planet.getBoundingClientRect();
-      const x = ((rect.left - stageRect.left) / stageRect.width) * VW;
-      const y = ((rect.top - stageRect.top) / stageRect.height) * VH;
-      const width = (rect.width / stageRect.width) * VW;
-      const height = (rect.height / stageRect.height) * VH;
-
-      maskPlanet.setAttribute("x", x.toFixed(3));
-      maskPlanet.setAttribute("y", y.toFixed(3));
-      maskPlanet.setAttribute("width", width.toFixed(3));
-      maskPlanet.setAttribute("height", height.toFixed(3));
-    });
-  }, []);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -582,43 +555,6 @@ export default function SignatureSection() {
     };
   }, [animateToStep, setStepInstant]);
 
-  useLayoutEffect(() => {
-    let frame = 0;
-    let start = 0;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const duration = reducedMotion ? 180 : 900;
-
-    syncOrbitMaskToPlanets();
-
-    const tick = (timestamp: number) => {
-      if (!start) start = timestamp;
-      syncOrbitMaskToPlanets();
-      if (timestamp - start < duration) frame = window.requestAnimationFrame(tick);
-    };
-
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
-  }, [activeStep, syncOrbitMaskToPlanets]);
-
-  useLayoutEffect(() => {
-    const stage = stageRef.current;
-    if (!stage || typeof ResizeObserver === "undefined") return;
-
-    let frame = 0;
-    const queueSync = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(syncOrbitMaskToPlanets);
-    };
-
-    const observer = new ResizeObserver(queueSync);
-    observer.observe(stage);
-    queueSync();
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
-  }, [syncOrbitMaskToPlanets]);
 
   return (
     <section ref={sectionRef} className="relative isolate h-[100svh] overflow-hidden">
@@ -676,28 +612,7 @@ export default function SignatureSection() {
                 className="pointer-events-none absolute inset-0 h-full w-full"
                 aria-hidden="true"
               >
-                <defs>
-                  <mask
-                    id="orbit-planet-mask"
-                    maskUnits="userSpaceOnUse"
-                    maskContentUnits="userSpaceOnUse"
-                    style={{ maskType: "luminance" }}
-                  >
-                    <rect x="0" y="0" width={VW} height={VH} fill="white" />
-                    {steps.map((step, index) => (
-                      <image
-                        key={`orbit-mask-${step.keyword}`}
-                        ref={(node) => { maskPlanetRefs.current[index] = node; }}
-                        href="/Planet_main_black.png"
-                        width="0"
-                        height="0"
-                        preserveAspectRatio="none"
-                      />
-                    ))}
-                  </mask>
-                </defs>
-
-                <g mask="url(#orbit-planet-mask)">
+                <g>
                   <ellipse
                     cx={CX} cy={CY}
                     rx={ORBIT_RX + 38} ry={ORBIT_RY + 20}
@@ -724,56 +639,106 @@ export default function SignatureSection() {
 
               </svg>
 
-              {/* Planets — CSS absolute positioned on orbit ring */}
+              {/* Stars — CSS absolute positioned on orbit ring */}
               {steps.map((step, i) => {
                 const slot = getSlot(i, activeStep);
                 const layout = PLANET_LAYOUT[slot];
                 const isActive = slot === "active";
+                const floatClass = slot === "right" ? "star-text-float-slow" : "star-text-float";
 
                 return (
                   <div
                     key={step.keyword}
                     ref={(node) => { planetRefs.current[i] = node; }}
-                    className={`absolute transition-[left,top,width,height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]${!isActive ? " cursor-pointer" : ""}`}
+                    className={`absolute${!isActive ? " cursor-pointer" : ""}`}
                     style={{
                       left: layout.left,
                       top: layout.top,
-                      width: layout.size,
-                      height: layout.size,
+                      width: `${ORBIT_STAR_SIZE}px`,
+                      height: `${ORBIT_STAR_SIZE}px`,
+                      zIndex: layout.zIndex,
                       opacity: layout.opacity,
                       transform: "translate(-50%, -50%)",
-                      containerType: "inline-size",
-                      zIndex: layout.zIndex,
+                      transition: "left 0.7s cubic-bezier(0.22,1,0.36,1), top 0.7s cubic-bezier(0.22,1,0.36,1), opacity 0.7s cubic-bezier(0.22,1,0.36,1)",
                     }}
                     onClick={!isActive ? () => handlePlanetClick(i) : undefined}
                   >
-                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    {/* Content scale wrapper — handles perspective + active growth */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        transform: `scale(${layout.contentScale})`,
+                        transformOrigin: "center center",
+                        transition: "transform 0.7s cubic-bezier(0.22,1,0.36,1)",
+                      }}
+                    >
+                      {/* Text centering wrapper — slides up when stick appears */}
+                      <span
+                        style={{
+                          position: "absolute",
+                          bottom: isActive ? `calc(100% + ${ORBIT_STICK_HEIGHT + 6}px)` : "calc(100% + 10px)",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          transition: "bottom 0.7s cubic-bezier(0.22,1,0.36,1)",
+                        }}
+                      >
                         <span
-                          className="font-display font-bold leading-none tracking-[-0.04em]"
+                          className={`font-display font-bold${!isActive ? ` ${floatClass}` : ""}`}
                           style={{
-                            fontSize: "14.5cqw",
+                            display: "block",
+                            fontSize: "2.2rem",
+                            lineHeight: 1,
+                            letterSpacing: "-0.04em",
                             color: "#F31D5B",
                             textShadow: isActive
-                              ? "0 0 18px rgba(243,29,91,0.35), 0 0 6px rgba(255,255,255,0.5)"
-                              : "0 0 6px rgba(243,29,91,0.25)",
-                            transition: "text-shadow 0.7s cubic-bezier(0.22,1,0.36,1)",
+                              ? "0 0 24px rgba(243,29,91,0.5), 0 0 8px rgba(255,255,255,0.35)"
+                              : "0 0 14px rgba(243,29,91,0.32)",
                             whiteSpace: "nowrap",
+                            transition: "text-shadow 0.5s ease",
                           }}
                         >
                           {step.keyword}
                         </span>
-                    </span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/Planet_main.svg"
-                      alt=""
-                      className="pointer-events-none h-full w-full"
-                      style={{
-                        filter: isActive
-                          ? "drop-shadow(0 0 28px rgba(243,29,91,0.28)) drop-shadow(0 6px 16px rgba(243,29,91,0.18))"
-                          : "drop-shadow(0 0 8px rgba(243,29,91,0.12))",
-                      }}
-                    />
+                      </span>
+
+                      {/* Shooting-star stick — grows from bottom when active */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "100%",
+                          left: "50%",
+                          marginLeft: "-0.75px",
+                          width: "1.5px",
+                          height: `${ORBIT_STICK_HEIGHT}px`,
+                          background: "linear-gradient(to top, rgba(243,29,91,0.55), rgba(243,29,91,0.06))",
+                          borderRadius: "1px",
+                          transformOrigin: "bottom center",
+                          transform: `scaleY(${isActive ? 1 : 0})`,
+                          opacity: isActive ? 1 : 0,
+                          transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease",
+                        }}
+                      />
+
+                      {/* Star SVG — center is exactly at orbit point */}
+                      <svg
+                        width={ORBIT_STAR_SIZE}
+                        height={ORBIT_STAR_SIZE}
+                        viewBox="-20 -20 40 40"
+                        style={{
+                          display: "block",
+                          overflow: "visible",
+                          filter: isActive
+                            ? "drop-shadow(0 0 12px rgba(243,29,91,0.8)) drop-shadow(0 0 4px rgba(255,255,255,0.5))"
+                            : "drop-shadow(0 0 7px rgba(243,29,91,0.55))",
+                          transition: "filter 0.7s ease",
+                        }}
+                        aria-hidden="true"
+                      >
+                        <path d="M0,-15 C2.5,-3.5 3.5,-2.5 15,0 C3.5,2.5 2.5,3.5 0,15 C-2.5,3.5 -3.5,2.5 -15,0 C-3.5,-2.5 -2.5,-3.5 0,-15 Z" fill="#F31D5B" />
+                        <circle cx="0" cy="0" r="3" fill="rgba(255,240,245,0.9)" />
+                      </svg>
+                    </div>
                   </div>
                 );
               })}
