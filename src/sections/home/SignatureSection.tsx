@@ -375,7 +375,7 @@ function SignatureKeywordMark({
     return stopAnimations;
   }, [fillSvgMarkup, isActive, keyword, replayToken, svgMarkup]);
 
-  const mergedStyle: CSSProperties = scale === 1
+  const baseStyle: CSSProperties = scale === 1
     ? (style ?? {})
     : {
       ...(style ?? {}),
@@ -384,7 +384,7 @@ function SignatureKeywordMark({
     };
 
   return (
-    <span aria-hidden={ariaHidden} className={className} style={mergedStyle}>
+    <span aria-hidden={ariaHidden} className={className} style={baseStyle}>
       {svgMarkup ? (
         <span ref={markupRef} className="block w-full" dangerouslySetInnerHTML={{ __html: svgMarkup }} />
       ) : (
@@ -524,12 +524,6 @@ export default function SignatureSection() {
       animateToStep(step, () => { isBusyRef.current = false; });
     };
 
-    const snapTo = (step: number) => {
-      currentStepRef.current = step;
-      isBusyRef.current = false;
-      setStepInstant(step, true);
-    };
-
     const scrollTo = (position: number) => {
       const lenis = getLenis();
       if (lenis) lenis.scrollTo(position, { immediate: true });
@@ -565,8 +559,18 @@ export default function SignatureSection() {
         pinType: "transform",
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        onEnter: () => { snapTo(0); observer.enable(); },
-        onEnterBack: () => { snapTo(STEP_COUNT - 1); observer.enable(); },
+        onEnter: () => {
+          currentStepRef.current = 0;
+          isBusyRef.current = false;
+          setStepInstant(0, false);
+          observer.enable();
+        },
+        onEnterBack: () => {
+          currentStepRef.current = STEP_COUNT - 1;
+          isBusyRef.current = false;
+          setStepInstant(STEP_COUNT - 1, false);
+          observer.enable();
+        },
         onLeave: () => { setStepInstant(STEP_COUNT - 1); observer.disable(); },
         onLeaveBack: () => { setStepInstant(0); observer.disable(); },
       });
