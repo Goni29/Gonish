@@ -73,8 +73,8 @@ const RIGHT_PT  = getOrbitPoint(335);
 // ── Star layout — positions computed from orbit ring ─────────────────────────
 type PlanetSlot = "active" | "left" | "right";
 
-const ORBIT_STAR_SIZE = 40;
-const ORBIT_STICK_HEIGHT = 52;
+const ORBIT_STAR_SIZE = "clamp(2.55rem, 4.2vw, 2.95rem)";
+const ORBIT_STICK_HEIGHT = "clamp(3.2rem, 5.4vw, 4rem)";
 
 const PLANET_LAYOUT: Record<PlanetSlot, { left: string; top: string; zIndex: number; opacity: number; contentScale: number }> = {
   active: { ...toPct(getOrbitPoint(90)),  zIndex: 3, opacity: 1,    contentScale: 1 },
@@ -557,7 +557,7 @@ export default function SignatureSection() {
 
 
   return (
-    <section ref={sectionRef} className="relative isolate h-[100svh] overflow-hidden">
+    <section ref={sectionRef} className="signature-section relative isolate h-[100svh] overflow-hidden">
       {/* Ambient background */}
       <div className="pointer-events-none absolute inset-0">
         <div
@@ -573,7 +573,7 @@ export default function SignatureSection() {
         />
       </div>
 
-      <div className="shell relative z-10 flex h-full flex-col py-5 lg:py-7">
+      <div className="signature-section__shell shell relative z-10 flex h-full flex-col lg:py-7">
         {/* Header */}
         <div className="shrink-0 flex items-center gap-3 pb-3">
           <span className="h-px w-10 bg-brand/40" />
@@ -596,14 +596,11 @@ export default function SignatureSection() {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-ink/[0.07] to-transparent" />
 
         {/* Two-column layout */}
-        <div className="mt-3 flex min-h-0 flex-1 flex-col items-center gap-5 lg:flex-row lg:items-center lg:gap-12 xl:gap-16">
+        <div className="signature-section__layout flex min-h-0 flex-1 flex-col items-center lg:mt-3 lg:flex-row lg:items-center lg:gap-12 xl:gap-16">
 
           {/* ── Left: Planet stage ── */}
-          <div
-            className="relative shrink-0 self-center pb-4 lg:pb-0"
-            style={{ width: "min(100%, min(58vw, 700px))" }}
-          >
-            <div ref={stageRef} className="relative" style={{ aspectRatio: `${VW} / ${VH}` }}>
+          <div className="signature-section__stage-shell relative w-full shrink-0 self-center lg:w-[min(100%,min(58vw,700px))] lg:max-w-none lg:pb-0">
+            <div ref={stageRef} className="signature-section__stage relative" style={{ aspectRatio: `${VW} / ${VH}` }}>
 
               {/* Orbit ring SVG */}
               <svg
@@ -654,8 +651,8 @@ export default function SignatureSection() {
                     style={{
                       left: layout.left,
                       top: layout.top,
-                      width: `${ORBIT_STAR_SIZE}px`,
-                      height: `${ORBIT_STAR_SIZE}px`,
+                      width: ORBIT_STAR_SIZE,
+                      height: ORBIT_STAR_SIZE,
                       zIndex: layout.zIndex,
                       opacity: layout.opacity,
                       transform: "translate(-50%, -50%)",
@@ -677,17 +674,16 @@ export default function SignatureSection() {
                       <span
                         style={{
                           position: "absolute",
-                          bottom: isActive ? `calc(100% + ${ORBIT_STICK_HEIGHT + 6}px)` : "calc(100% + 10px)",
+                          bottom: isActive ? `calc(100% + ${ORBIT_STICK_HEIGHT} + 0.375rem)` : "calc(100% + 0.75rem)",
                           left: "50%",
                           transform: "translateX(-50%)",
                           transition: "bottom 0.7s cubic-bezier(0.22,1,0.36,1)",
                         }}
                       >
                         <span
-                          className={`font-display font-bold${!isActive ? ` ${floatClass}` : ""}`}
+                          className={`signature-section__star-label font-display text-[1.65rem] font-bold sm:text-[2.2rem]${!isActive ? ` ${floatClass}` : ""}`}
                           style={{
                             display: "block",
-                            fontSize: "2.2rem",
                             lineHeight: 1,
                             letterSpacing: "-0.04em",
                             color: "#F31D5B",
@@ -710,7 +706,7 @@ export default function SignatureSection() {
                           left: "50%",
                           marginLeft: "-0.75px",
                           width: "1.5px",
-                          height: `${ORBIT_STICK_HEIGHT}px`,
+                          height: ORBIT_STICK_HEIGHT,
                           background: "linear-gradient(to top, rgba(243,29,91,0.55), rgba(243,29,91,0.06))",
                           borderRadius: "1px",
                           transformOrigin: "bottom center",
@@ -746,17 +742,17 @@ export default function SignatureSection() {
           </div>
 
           {/* ── Right: Content panel ── */}
-          <div className="relative w-full flex-1 self-center" style={{ minHeight: "clamp(220px, 38vh, 360px)" }}>
+          <div className="signature-section__content-panel relative w-full flex-1 self-center lg:pb-0">
             {steps.map((step, i) => (
               <div
                 key={step.keyword}
                 ref={(node) => { contentRefs.current[i] = node; }}
-                className="absolute inset-0 flex flex-col justify-center will-change-transform"
+                className="signature-section__content-step absolute inset-0 flex flex-col will-change-transform"
               >
                 <div className="text-ink/80">
                   <SignatureKeywordMark
                     asset={step.wordAsset}
-                    className="block w-[clamp(7.8rem,18vw,14.2rem)] max-w-full"
+                    className="signature-section__keyword-mark block w-[clamp(7.8rem,18vw,14.2rem)] max-w-full"
                     fallbackClassName="font-display font-bold leading-none tracking-[-0.04em]"
                     fallbackStyle={{ fontSize: "clamp(3.8rem, 9vw, 8rem)" }}
                     isActive={i === activeStep}
@@ -768,21 +764,21 @@ export default function SignatureSection() {
                 </div>
 
                 <h2
-                  className="mt-3 whitespace-pre-line font-display leading-[1.1] tracking-[-0.04em] text-ink"
+                  className="signature-section__headline mt-3 whitespace-pre-line font-display leading-[1.1] tracking-[-0.04em] text-ink"
                   style={{ fontSize: "clamp(1.15rem, 2.1vw, 2rem)" }}
                 >
                   {step.headline}
                 </h2>
 
-                <p className="mt-3 max-w-lg text-[0.87rem] leading-[1.78] text-ink-muted sm:text-[0.92rem]">
+                <p className="signature-section__body mt-3 max-w-lg text-[0.87rem] leading-[1.78] text-ink-muted sm:text-[0.92rem]">
                   {step.body}
                 </p>
 
-                <div className="mt-4 space-y-2">
+                <div className="signature-section__points mt-4 flex flex-col gap-2">
                   {step.points.map((point) => (
                     <div key={point} className="flex items-start gap-2.5">
                       <span className="mt-[0.38rem] h-1.5 w-1.5 shrink-0 rounded-full bg-brand/55" />
-                      <p className="text-[0.80rem] leading-[1.5] text-ink/50">{point}</p>
+                      <p className="signature-section__point text-[0.80rem] leading-[1.5] text-ink/50">{point}</p>
                     </div>
                   ))}
                 </div>
@@ -820,7 +816,7 @@ export default function SignatureSection() {
         </div>
 
         {/* ── Mobile progress dots ── */}
-        <div className="pointer-events-none absolute bottom-3 left-0 right-0 flex justify-center gap-2 lg:hidden">
+        <div className="signature-section__mobile-progress pointer-events-none absolute left-0 right-0 flex justify-center gap-2 lg:hidden">
           {steps.map((step, i) => (
             <div
               key={step.keyword}
