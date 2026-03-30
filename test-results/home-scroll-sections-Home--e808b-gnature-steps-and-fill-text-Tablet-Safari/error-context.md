@@ -1,0 +1,121 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner:
+      - button "Open navigation" [ref=e4] [cursor=pointer]:
+        - img "Gonish" [ref=e6]
+    - main [ref=e8]:
+      - generic [ref=e10]:
+        - generic:
+          - img "Gonish"
+      - generic [ref=e14]:
+        - paragraph [ref=e17]: Why Gonish
+        - generic [ref=e19]:
+          - generic [ref=e21]:
+            - img
+            - generic [ref=e22]:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+            - generic [ref=e23] [cursor=pointer]:
+              - generic:
+                - generic: 맞춤
+            - generic [ref=e24] [cursor=pointer]:
+              - generic:
+                - generic: 속도
+          - generic [ref=e26]:
+            - img [ref=e30]
+            - heading "첫 화면만으로도, 브랜드의 수준은 조용히 전달됩니다." [level=2] [ref=e33]
+            - paragraph [ref=e34]: 고객은 설명을 읽기 전에 분위기를 먼저 받아들입니다. 정제된 화면, 균형 잡힌 정보, 섬세한 디테일은 브랜드를 더 신뢰할 만한 선택으로 보이게 합니다.
+            - generic [ref=e35]:
+              - paragraph [ref=e38]: "\"여기는 다르다\"는 조용한 확신"
+              - paragraph [ref=e41]: 가격보다 가치가 먼저 느껴지는 인상
+              - paragraph [ref=e44]: 오래 기억되고 다시 찾게 되는 브랜드
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: Signature invitation
+          - paragraph [ref=e51]: 브랜드가 가장 빛나는 순간, 그 느낌을 놓치지 않도록. Gonish가 당신의 브랜드를 완성해드릴게요.
+        - generic [ref=e52]:
+          - paragraph [ref=e53]:
+            - generic [ref=e54]:
+              - text: Gonish와
+              - text: 완성하세요.
+          - paragraph [ref=e55]:
+            - generic [ref=e56]:
+              - text: Gonish와
+              - text: 완성하세요.
+        - paragraph [ref=e58]:
+          - generic [ref=e59]:
+            - text: 한 번 스쳐 가는 화면보다,
+            - text: 오래 남는 첫인상을 설계합니다.
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - paragraph [ref=e63]: Next orbit
+          - paragraph [ref=e64]:
+            - text: 원하는 궤도를 선택해
+            - text: 다음 장면으로
+            - text: 이어가세요.
+        - generic [ref=e65]:
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - img
+          - link "About" [ref=e72]:
+            - /url: /about
+            - generic [ref=e73]: About
+          - link "Portfolio" [ref=e79]:
+            - /url: /portfolio
+            - generic [ref=e80]: Portfolio
+          - link "Estimate" [ref=e86]:
+            - /url: /estimate
+            - generic [ref=e87]: Estimate
+          - link "Contact" [ref=e93]:
+            - /url: /contact
+            - generic [ref=e94]: Contact
+        - generic [ref=e95]:
+          - link "프로젝트 상담 시작하기" [ref=e96]:
+            - /url: /contact
+          - paragraph [ref=e97]: 궤도 위의 항목을 선택하거나, 바로 상담을 시작하실 수 있습니다.
+    - contentinfo [ref=e98]:
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - generic [ref=e104]:
+            - paragraph [ref=e107]: Gonish
+            - paragraph [ref=e108]:
+              - text: 당신의 브랜드가
+              - text: 당신의 생각보다 더 빛나도록
+          - generic [ref=e109]:
+            - generic [ref=e110]:
+              - link "Main" [ref=e111]:
+                - /url: /
+              - link "About" [ref=e112]:
+                - /url: /about
+              - link "Portfolio" [ref=e113]:
+                - /url: /portfolio
+              - link "Estimate" [ref=e114]:
+                - /url: /estimate
+              - link "Contact" [ref=e115]:
+                - /url: /contact
+            - link "프로젝트 이야기하기" [ref=e116]:
+              - /url: /contact
+        - generic [ref=e118]:
+          - paragraph [ref=e119]: 브랜드의 가치를 더 빛나게 설계해드립니다.
+          - paragraph [ref=e120]: © 2026 Gonish. Brand-focused web studio.
+  - button "Open Next.js Dev Tools" [ref=e126] [cursor=pointer]:
+    - img [ref=e127]
+  - alert [ref=e132]
+```
