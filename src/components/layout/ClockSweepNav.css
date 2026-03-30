@@ -25,8 +25,11 @@
   --interaction-zone-size: clamp(26.25rem, 30vw, 28.75rem);
   --dock-shift-x: 0px;
   --dock-shift-y: 0px;
-  --dock-shift-open-x: clamp(-8.2rem, -8vw, -4.8rem);
-  --dock-shift-open-y: clamp(-12.5rem, -15vh, -9rem);
+  --dock-anchor-inset: 4.5rem;
+  --dock-height-pad: 4.3rem;
+  --dock-shift-open-x: calc(var(--dock-anchor-inset) - (var(--dial-size) * 0.5));
+  --dock-open-lift-bias: 0rem;
+  --dock-shift-open-y: calc(clamp(-12.5rem, -15vh, -9rem) - var(--dock-open-lift-bias));
   --anchor-center-y: calc(var(--logo-top) + (var(--logo-height) / 2));
   --dial-origin-top: calc(var(--anchor-center-y) - (var(--dial-size) * 0.5));
   --nub-height: 1.42rem;
@@ -43,7 +46,7 @@
 
   position: relative;
   width: min(calc(var(--dial-size) + 2rem), calc(100vw - 1rem));
-  height: calc(var(--dial-size) + 4.3rem);
+  height: calc(var(--dial-size) + var(--dock-height-pad));
   margin-left: clamp(0.9rem, 2vw, 1.9rem);
   pointer-events: none;
   overflow: visible;
@@ -51,12 +54,13 @@
 }
 
 .site-header--dock-bottom-right .clock-sweep-nav {
-  --anchor-x: calc(100% - 4.5rem);
+  --anchor-x: calc(100% - var(--dock-anchor-inset));
   margin-left: 0;
   transform: translate3d(
     var(--dock-shift-x),
     calc(
-      (var(--dial-size) + 4.3rem) - var(--logo-top) - var(--logo-height) + var(--dock-shift-y)
+      (var(--dial-size) + var(--dock-height-pad)) - var(--logo-top) - var(--logo-height) +
+        var(--dock-shift-y)
     ),
     0
   );
@@ -756,15 +760,15 @@
     --logo-height: 2.96rem;
     --nub-height: 1.35rem;
     --interaction-zone-size: clamp(24rem, 38vw, 27rem);
-    --dock-shift-open-x: clamp(-5.4rem, -13vw, -3.5rem);
-    --dock-shift-open-y: clamp(-10rem, -14vh, -7.9rem);
+    --dock-shift-open-y: calc(clamp(-10rem, -14vh, -7.9rem) - var(--dock-open-lift-bias));
     margin-left: clamp(0.2rem, 1vw, 0.7rem);
   }
 }
 
 @media (max-width: 639px) {
   .site-header--dock-bottom-right .clock-sweep-nav {
-    --anchor-x: calc(100% - 4.2rem);
+    --dock-anchor-inset: 4.2rem;
+    --dock-open-lift-bias: 0.125rem;
   }
 
   .clock-sweep-nav {
@@ -772,9 +776,8 @@
     --logo-height: 2.82rem;
     --nub-height: 1.28rem;
     --interaction-zone-size: clamp(20rem, 78vw, 24rem);
-    --dock-shift-open-x: clamp(-4.2rem, -14vw, -2.6rem);
-    --dock-shift-open-y: clamp(-8.2rem, -16svh, -6.8rem);
-    height: calc(var(--dial-size) + 4rem);
+    --dock-height-pad: 4rem;
+    --dock-shift-open-y: calc(clamp(-8.2rem, -16svh, -6.8rem) - var(--dock-open-lift-bias));
     margin-left: 0;
   }
 
@@ -800,15 +803,14 @@
 @media (max-width: 359px) {
   .clock-sweep-nav {
     --dial-size: min(72vw, 16rem);
-    --dock-shift-open-x: clamp(-3.2rem, -10vw, -2rem);
-    --dock-shift-open-y: clamp(-6rem, -14svh, -4.8rem);
+    --dock-shift-open-y: calc(clamp(-6rem, -14svh, -4.8rem) - var(--dock-open-lift-bias));
   }
 }
 
 @media (max-height: 420px) and (orientation: landscape) {
   .clock-sweep-nav {
     --dial-size: min(52vh, 16rem);
-    --dock-shift-open-y: clamp(-5rem, -12svh, -3.6rem);
+    --dock-shift-open-y: calc(clamp(-5rem, -12svh, -3.6rem) - var(--dock-open-lift-bias));
   }
 }
 
