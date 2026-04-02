@@ -1,11 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
-import { Observer } from "gsap/Observer";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
-import { getLenis, isIosTouchDevice } from "@/components/layout/SmoothScroll";
-
-gsap.registerPlugin(ScrollTrigger, Observer);
+import { getLenis } from "@/components/layout/SmoothScroll";
 
 /* ── wave config ─────────────────────────────────── */
 const WAVE_POINT_COUNT = 24;
@@ -46,41 +42,57 @@ export default function FillWordSection() {
     const fillText = fillTextRef.current;
     if (!section || !fillText) return undefined;
 
-    const prefersFixedPin = isIosTouchDevice();
     const isCompactTouch = window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 640;
     const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
     const progressStep = isCompactTouch ? 0.24 : isCoarsePointer ? 0.2 : 0.16;
-    const fillPinDistance = Math.max(window.innerHeight * (isCoarsePointer ? 1.08 : 1.18), isCoarsePointer ? 720 : 860);
     const liquidState = { level: 100 };
     const fillState = { progress: 0 };
     let rafId = 0;
-    let trigger: ScrollTrigger | null = null;
-    let preventScrollObserver: Observer | null = null;
-    let wheelObserver: Observer | null = null;
     let progressTween: gsap.core.Tween | null = null;
-    let exitTween: gsap.core.Tween | null = null;
-    let observersEnabled = false;
-    let gestureConsumed = false;
-    let touchStartY: number | null = null;
-    let savedScroll = 0;
-    let exitDirection: "forward" | "backward" | null = null;
-    let lockBias = 0.12;
-    let lockSettling = false;
-    let lockSettleFrame = 0;
+    let isBusy = false;
+    let isStepping = false;
+    let isLocked = false;
+    let lastScrollY = window.scrollY;
+    let touchStartY = 0;
+    let safetyTimer: ReturnType<typeof setTimeout> | null = null;
+    let cooldownTimer: ReturnType<typeof setTimeout> | null = null;
+    let wheelIdleTimer: ReturnType<typeof setTimeout> | null = null;
+    let scrollRafId: number | null = null;
+    let syncRafId: number | null = null;
+    let exitRafId: number | null = null;
+    let wheelDelta = 0;
+    let wheelGestureConsumed = false;
+    let suppressLockUntil = 0;
+
+    const COOLDOWN_MS = 520;
+    const SAFETY_MS = 900;
+    const LOCK_TRIGGER_SLOP_PX = 2;
+    const WHEEL_THRESHOLD = 40;
+    const WHEEL_IDLE_MS = 160;
+    const EXIT_SUPPRESSION_MS = 900;
+    const captureOnly = { capture: true };
+    const capturePassive = { capture: true, passive: true };
+    const captureActive = { capture: true, passive: false };
 
     const scrollToPosition = (position: number) => {
       const lenis = getLenis();
       if (lenis) lenis.scrollTo(position, { immediate: true });
-      else window.scrollTo(0, position);
-      ScrollTrigger.update();
+      else window.scrollTo({ top: position, behavior: "instant" });
     };
 
-    const setSavedScroll = (position: number) => {
-      savedScroll = Math.max(0, position);
+    const clearSafety = () => {
+      if (safetyTimer) clearTimeout(safetyTimer);
     };
 
-    const clearGesture = () => {
-      gestureConsumed = false;
+    const clearCooldown = () => {
+      if (cooldownTimer) clearTimeout(cooldownTimer);
+    };
+
+    const clearWheelGesture = () => {
+      if (wheelIdleTimer) clearTimeout(wheelIdleTimer);
+      wheelIdleTimer = null;
+      wheelDelta = 0;
+      wheelGestureConsumed = false;
     };
 
     const applyFillProgress = (progress: number) => {
@@ -89,73 +101,91 @@ export default function FillWordSection() {
       fillText.dataset.fillLevel = liquidState.level.toFixed(2);
     };
 
-    const getLockScroll = () => {
-      if (!trigger) return window.scrollY;
-
-      const safeStart = trigger.start + 2;
-      const safeEnd = Math.max(safeStart, trigger.end - 2);
-      const lockPosition = trigger.start + (trigger.end - trigger.start) * lockBias;
-      return clamp(lockPosition, safeStart, safeEnd);
+    const stopProgressTween = () => {
+      progressTween?.kill();
+      progressTween = null;
+      isBusy = false;
     };
 
-    const getActiveScrollBounds = () => {
-      if (!trigger) {
-        return { start: window.scrollY, end: window.scrollY };
-      }
-
-      const span = trigger.end - trigger.start;
-      const edgeBuffer = Math.min(span * 0.16, Math.max(window.innerHeight * 0.12, 84));
-      return {
-        start: trigger.start + edgeBuffer,
-        end: trigger.end - edgeBuffer,
-      };
+    const setFillProgressInstant = (progress: number) => {
+      stopProgressTween();
+      applyFillProgress(progress);
+      if (isLocked) syncLockedScroll();
     };
 
-    const getLockBiasForProgress = (progress: number) => {
-      if (progress <= 0.001) return 0.12;
-      if (progress >= 0.999) return 0.88;
-      return 0.5;
-    };
+    const getSectionTop = () => Math.round(section.getBoundingClientRect().top + window.scrollY);
 
-    const syncLockedScroll = (mode: "lock" | "preserve" = "lock") => {
-      if (mode === "preserve") {
-        setSavedScroll(window.scrollY);
-        return;
-      }
-
-      const targetScroll = getLockScroll();
-      setSavedScroll(targetScroll);
+    const syncLockedScroll = () => {
+      if (!isLocked) return;
+      const targetScroll = getSectionTop();
       if (Math.abs(window.scrollY - targetScroll) > 1) {
-        scrollToPosition(targetScroll);
-      }
-    };
-
-    const settleLock = () => {
-      lockSettling = true;
-      if (lockSettleFrame !== 0) {
-        window.cancelAnimationFrame(lockSettleFrame);
-      }
-
-      lockSettleFrame = window.requestAnimationFrame(() => {
-        lockSettleFrame = window.requestAnimationFrame(() => {
-          lockSettling = false;
-          lockSettleFrame = 0;
+        if (syncRafId !== null) window.cancelAnimationFrame(syncRafId);
+        syncRafId = window.requestAnimationFrame(() => {
+          syncRafId = null;
+          window.scrollTo({ top: targetScroll, behavior: "instant" });
         });
-      });
+      }
     };
 
-    const disableInputObservers = () => {
-      if (!observersEnabled) return;
-      preventScrollObserver?.disable();
-      wheelObserver?.disable();
-      observersEnabled = false;
-      section.style.touchAction = "";
+    const setLockState = (locked: boolean, mode: "idle" | "locked") => {
+      section.dataset.sceneLocked = locked ? "true" : "false";
+      section.dataset.sceneMode = mode;
+    };
+
+    const cancelExitAnimation = () => {
+      if (exitRafId !== null) {
+        window.cancelAnimationFrame(exitRafId);
+        exitRafId = null;
+      }
+    };
+
+    const startCooldown = () => {
+      isStepping = true;
+      clearCooldown();
+      clearSafety();
+      cooldownTimer = setTimeout(() => {
+        isStepping = false;
+      }, COOLDOWN_MS);
+      safetyTimer = setTimeout(() => {
+        isBusy = false;
+        isStepping = false;
+      }, SAFETY_MS);
+    };
+
+    const scheduleWheelReset = () => {
+      if (wheelIdleTimer) clearTimeout(wheelIdleTimer);
+      wheelIdleTimer = setTimeout(() => {
+        wheelDelta = 0;
+        wheelGestureConsumed = false;
+      }, WHEEL_IDLE_MS);
+    };
+
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16;
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight;
+      return event.deltaY;
+    };
+
+    const enableScrollLock = () => {
+      if (isLocked) return;
+      isLocked = true;
+      setLockState(true, "locked");
+      section.style.touchAction = "none";
+      getLenis()?.stop();
+      clearWheelGesture();
+      syncLockedScroll();
+      document.addEventListener("wheel", onWheel, captureActive);
+      document.addEventListener("touchstart", onTouchStart, capturePassive);
+      document.addEventListener("touchmove", onTouchMove, captureActive);
+      document.addEventListener("touchend", onTouchEnd, capturePassive);
+      document.addEventListener("touchcancel", onTouchCancel, capturePassive);
     };
 
     const transitionToProgress = (targetProgress: number) => {
       const nextProgress = clamp(targetProgress, 0, 1);
-      if (Math.abs(nextProgress - fillState.progress) < 0.001 || progressTween) return;
+      if (Math.abs(nextProgress - fillState.progress) < 0.001 || progressTween || isBusy) return false;
 
+      isBusy = true;
       progressTween = gsap.to(fillState, {
         progress: nextProgress,
         duration: isCoarsePointer ? 0.46 : 0.4,
@@ -166,62 +196,124 @@ export default function FillWordSection() {
         },
         onComplete: () => {
           applyFillProgress(nextProgress);
-          lockBias = getLockBiasForProgress(nextProgress);
-          if (observersEnabled) syncLockedScroll("lock");
           progressTween = null;
+          isBusy = false;
+          clearSafety();
+          if (isLocked) syncLockedScroll();
+        },
+        onInterrupt: () => {
+          progressTween = null;
+          isBusy = false;
+          clearSafety();
         },
       });
+
+      return true;
     };
 
-    const releasePinnedControl = (direction: "forward" | "backward", impulse = 0) => {
-      if (!trigger) return;
+    const disableScrollLock = () => {
+      if (!isLocked) return;
+      isLocked = false;
+      setLockState(false, "idle");
+      if (syncRafId !== null) {
+        window.cancelAnimationFrame(syncRafId);
+        syncRafId = null;
+      }
+      clearSafety();
+      clearCooldown();
+      clearWheelGesture();
+      isStepping = false;
+      isBusy = false;
+      section.style.touchAction = "";
+      document.removeEventListener("wheel", onWheel, captureOnly);
+      document.removeEventListener("touchstart", onTouchStart, captureOnly);
+      document.removeEventListener("touchmove", onTouchMove, captureOnly);
+      document.removeEventListener("touchend", onTouchEnd, captureOnly);
+      document.removeEventListener("touchcancel", onTouchCancel, captureOnly);
+    };
 
-      const bounds = getActiveScrollBounds();
-      const nudge = Math.max(14, Math.min(impulse * 0.45, 56));
-      const targetScroll = direction === "forward"
-        ? Math.min(trigger.end - 2, bounds.end + nudge)
-        : Math.max(trigger.start + 2, bounds.start - nudge);
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-      clearGesture();
-      touchStartY = null;
-      exitDirection = direction;
-      disableInputObservers();
-      setSavedScroll(targetScroll);
-      scrollToPosition(targetScroll);
-      applyFillProgress(direction === "forward" ? 1 : 0);
+    const animateExitScroll = (target: number) => {
+      cancelExitAnimation();
+
+      const startScroll = window.scrollY;
+      const delta = target - startScroll;
+      if (Math.abs(delta) <= 1) {
+        window.scrollTo({ top: target, behavior: "instant" });
+        getLenis()?.start();
+        return;
+      }
+
+      const startedAt = performance.now();
+      const durationMs = 720;
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - startedAt) / durationMs);
+        const eased = easeOutCubic(progress);
+        const nextScroll = Math.round(startScroll + delta * eased);
+        window.scrollTo({ top: nextScroll, behavior: "instant" });
+
+        if (progress < 1) {
+          exitRafId = window.requestAnimationFrame(tick);
+          return;
+        }
+
+        exitRafId = null;
+        window.scrollTo({ top: target, behavior: "instant" });
+        getLenis()?.start();
+      };
+
+      exitRafId = window.requestAnimationFrame(tick);
+    };
+
+    const exitScene = (direction: "forward" | "backward", impulse = 0) => {
+      suppressLockUntil = performance.now() + EXIT_SUPPRESSION_MS;
+      disableScrollLock();
+
+      const signedImpulse = direction === "forward" ? 1 : -1;
+      const rawCarry = Math.abs(impulse) > 0 ? Math.abs(impulse) : window.innerHeight * 0.18;
+      const carryDistance = Math.min(rawCarry, window.innerHeight * 0.75);
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const target = Math.max(0, Math.min(maxScroll, Math.round(window.scrollY + carryDistance * signedImpulse)));
+
+      animateExitScroll(target);
+    };
+
+    const lockScene = (entryDirection: "forward" | "backward") => {
+      enableScrollLock();
+      const sectionTop = getSectionTop();
+      window.scrollTo({ top: sectionTop, behavior: "instant" });
+      lastScrollY = sectionTop;
+
+      if (entryDirection === "forward") {
+        setFillProgressInstant(0);
+        return;
+      }
+
+      setFillProgressInstant(1);
     };
 
     const stepFillDirection = (direction: "forward" | "backward", impulse = 0) => {
-      if (progressTween || exitTween) return;
+      if (!isLocked || isStepping || isBusy) return;
 
       if (direction === "forward") {
         if (fillState.progress >= 0.999) {
-          releasePinnedControl("forward", impulse);
+          exitScene("forward", impulse);
           return;
         }
-        transitionToProgress(fillState.progress + progressStep);
+
+        const started = transitionToProgress(fillState.progress + progressStep);
+        if (started) startCooldown();
         return;
       }
 
       if (fillState.progress <= 0.001) {
-        releasePinnedControl("backward", impulse);
+        exitScene("backward", impulse);
         return;
       }
 
-      transitionToProgress(fillState.progress - progressStep);
-    };
-
-    const maybeEnableInputObservers = () => {
-      if (observersEnabled || !trigger || progressTween || exitTween) return;
-
-      const bounds = getActiveScrollBounds();
-      if (window.scrollY < bounds.start || window.scrollY > bounds.end) {
-        setSavedScroll(window.scrollY);
-        return;
-      }
-
-      exitDirection = null;
-      enableInputObservers(fillState.progress, getLockBiasForProgress(fillState.progress), true);
+      const started = transitionToProgress(fillState.progress - progressStep);
+      if (started) startCooldown();
     };
 
     const handleFillProgressRequest = (event: Event) => {
@@ -234,9 +326,9 @@ export default function FillWordSection() {
       }
 
       if (typeof detail.level === "number") {
-        applyFillProgress(1 - clamp(detail.level, 0, 100) / 100);
+        setFillProgressInstant(1 - clamp(detail.level, 0, 100) / 100);
       } else if (typeof detail.progress === "number") {
-        applyFillProgress(detail.progress);
+        setFillProgressInstant(detail.progress);
       }
     };
 
@@ -278,190 +370,140 @@ export default function FillWordSection() {
       rafId = requestAnimationFrame(updateWave);
     };
 
-    const enableInputObservers = (
-      progress: number,
-      nextLockBias = getLockBiasForProgress(progress),
-      preserveScroll = false
-    ) => {
-      exitTween?.kill();
-      exitTween = null;
-      exitDirection = null;
-      progressTween?.kill();
-      progressTween = null;
-      lockBias = nextLockBias;
-      applyFillProgress(progress);
-      clearGesture();
-      touchStartY = null;
-      section.style.touchAction = "none";
-
-      if (!observersEnabled) {
-        preventScrollObserver?.enable();
-        wheelObserver?.enable();
-        observersEnabled = true;
-      }
-
-      syncLockedScroll(preserveScroll ? "preserve" : "lock");
-      if (preserveScroll) {
-        lockSettling = false;
-        if (lockSettleFrame !== 0) {
-          window.cancelAnimationFrame(lockSettleFrame);
-          lockSettleFrame = 0;
-        }
-      } else {
-        settleLock();
-      }
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      if (!observersEnabled) return;
-      touchStartY = event.touches[0]?.clientY ?? null;
-      clearGesture();
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      if (!observersEnabled) return;
-
-      const currentY = event.touches[0]?.clientY;
-      if (currentY === undefined) return;
-
+    const onWheel = (event: WheelEvent) => {
+      if (!isLocked) return;
       if (event.cancelable) event.preventDefault();
 
-      if (touchStartY === null) {
-        touchStartY = currentY;
-        clearGesture();
+      const delta = normalizeWheelDelta(event);
+      if (Math.abs(delta) < 0.5) return;
+
+      scheduleWheelReset();
+      wheelDelta += delta;
+
+      if (wheelGestureConsumed || Math.abs(wheelDelta) < WHEEL_THRESHOLD) return;
+      wheelGestureConsumed = true;
+      stepFillDirection(wheelDelta > 0 ? "forward" : "backward", Math.abs(wheelDelta));
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0].clientY;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.cancelable) event.preventDefault();
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      const delta = touchStartY - event.changedTouches[0].clientY;
+      touchStartY = 0;
+      if (Math.abs(delta) < (isCoarsePointer ? 15 : 5)) return;
+      stepFillDirection(delta > 0 ? "forward" : "backward", Math.abs(delta));
+    };
+
+    const onTouchCancel = () => {
+      touchStartY = 0;
+    };
+
+    const maybeLockScene = () => {
+      const currentY = window.scrollY;
+
+      if (isLocked) {
+        syncLockedScroll();
+        lastScrollY = getSectionTop();
         return;
       }
 
-      const deltaY = touchStartY - currentY;
-      if (Math.abs(deltaY) < 22 || gestureConsumed) return;
-
-      gestureConsumed = true;
-      stepFillDirection(deltaY > 0 ? "forward" : "backward", Math.abs(deltaY));
-    };
-
-    const handleTouchEnd = () => {
-      touchStartY = null;
-      clearGesture();
-    };
-
-    const handleRefresh = () => {
-      if (observersEnabled) {
-        syncLockedScroll("preserve");
+      if (performance.now() < suppressLockUntil) {
+        lastScrollY = currentY;
         return;
       }
-      maybeEnableInputObservers();
+
+      const direction =
+        currentY > lastScrollY + 1
+          ? "forward"
+          : currentY < lastScrollY - 1
+            ? "backward"
+            : null;
+      const sectionTop = getSectionTop();
+      const rect = section.getBoundingClientRect();
+      const sectionVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+      const crossedFromAbove =
+        direction === "forward" &&
+        lastScrollY < sectionTop - LOCK_TRIGGER_SLOP_PX &&
+        currentY >= sectionTop - LOCK_TRIGGER_SLOP_PX;
+      const crossedFromBelow =
+        direction === "backward" &&
+        lastScrollY > sectionTop + LOCK_TRIGGER_SLOP_PX &&
+        currentY <= sectionTop + LOCK_TRIGGER_SLOP_PX;
+
+      if (sectionVisible && (crossedFromAbove || crossedFromBelow)) {
+        const fallbackDirection = currentY >= sectionTop ? "forward" : "backward";
+        lockScene(direction ?? fallbackDirection);
+        return;
+      }
+
+      lastScrollY = currentY;
     };
 
-    const gsapCtx = gsap.context(() => {
-      preventScrollObserver = Observer.create({
-        target: window,
-        type: "wheel,scroll",
-        preventDefault: true,
-        allowClicks: true,
-        onEnable: (self) => {
-          document.documentElement.style.overscrollBehavior = "none";
-          if (ScrollTrigger.isTouch) self.event?.preventDefault?.();
-        },
-        onDisable: () => {
-          document.documentElement.style.overscrollBehavior = "";
-        },
-        onPress: (self) => {
-          if (ScrollTrigger.isTouch) self.event?.preventDefault?.();
-        },
-        onChangeY: () => {
-          if (Math.abs(window.scrollY - savedScroll) > 1) {
-            scrollToPosition(savedScroll);
-          }
-        },
+    const handleWindowScroll = () => {
+      if (isLocked) {
+        syncLockedScroll();
+        lastScrollY = getSectionTop();
+        return;
+      }
+
+      if (scrollRafId !== null) return;
+      scrollRafId = window.requestAnimationFrame(() => {
+        scrollRafId = null;
+        maybeLockScene();
       });
-      preventScrollObserver.disable();
+    };
 
-      wheelObserver = Observer.create({
-        target: window,
-        type: "wheel",
-        preventDefault: true,
-        allowClicks: true,
-        tolerance: 12,
-        onChangeY: (self) => {
-          if (self.deltaY > 0) stepFillDirection("forward", Math.abs(self.deltaY));
-          else if (self.deltaY < 0) stepFillDirection("backward", Math.abs(self.deltaY));
-        },
-      });
-      wheelObserver.disable();
+    const handleResize = () => {
+      if (isLocked) {
+        syncLockedScroll();
+        return;
+      }
+      lastScrollY = window.scrollY;
+    };
 
-      trigger = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: `+=${fillPinDistance}`,
-        pin: true,
-        pinType: prefersFixedPin ? "fixed" : "transform",
-        pinReparent: prefersFixedPin,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        fastScrollEnd: false,
-        onUpdate: () => {
-          if (!observersEnabled) maybeEnableInputObservers();
-        },
-        onEnter: () => {
-          exitDirection = null;
-          disableInputObservers();
-          applyFillProgress(0);
-          setSavedScroll(window.scrollY);
-          maybeEnableInputObservers();
-        },
-        onEnterBack: () => {
-          exitDirection = null;
-          disableInputObservers();
-          applyFillProgress(1);
-          setSavedScroll(window.scrollY);
-          maybeEnableInputObservers();
-        },
-        onLeave: () => {
-          exitDirection = null;
-          disableInputObservers();
-          applyFillProgress(1);
-        },
-        onLeaveBack: () => {
-          exitDirection = null;
-          disableInputObservers();
-          applyFillProgress(0);
-        },
-      });
-    }, section);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isLocked) return;
+      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        stepFillDirection("forward");
+      } else if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        stepFillDirection("backward");
+      }
+    };
 
-    if (isCoarsePointer) {
-      window.addEventListener("touchstart", handleTouchStart, { passive: true });
-      window.addEventListener("touchmove", handleTouchMove, { passive: false });
-      window.addEventListener("touchend", handleTouchEnd, { passive: true });
-      window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
-    }
-
-    ScrollTrigger.addEventListener("refresh", handleRefresh);
     section.addEventListener("gonish:fill-progress", handleFillProgressRequest as EventListener);
     applyFillProgress(0);
     rafId = requestAnimationFrame(updateWave);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+    setLockState(false, "idle");
+    maybeLockScene();
 
     return () => {
       cancelAnimationFrame(rafId);
-      ScrollTrigger.removeEventListener("refresh", handleRefresh);
       section.removeEventListener("gonish:fill-progress", handleFillProgressRequest as EventListener);
-      if (isCoarsePointer) {
-        window.removeEventListener("touchstart", handleTouchStart);
-        window.removeEventListener("touchmove", handleTouchMove);
-        window.removeEventListener("touchend", handleTouchEnd);
-        window.removeEventListener("touchcancel", handleTouchEnd);
-      }
-      progressTween?.kill();
-      exitTween?.kill();
-      if (lockSettleFrame !== 0) {
-        window.cancelAnimationFrame(lockSettleFrame);
-      }
-      disableInputObservers();
-      preventScrollObserver?.kill();
-      wheelObserver?.kill();
-      document.documentElement.style.overscrollBehavior = "";
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("scroll", handleWindowScroll);
+      window.removeEventListener("resize", handleResize);
+      clearSafety();
+      clearCooldown();
+      clearWheelGesture();
+      cancelExitAnimation();
+      stopProgressTween();
+      disableScrollLock();
+      if (scrollRafId !== null) window.cancelAnimationFrame(scrollRafId);
+      if (syncRafId !== null) window.cancelAnimationFrame(syncRafId);
+      setLockState(false, "idle");
       section.style.touchAction = "";
-      gsapCtx.revert();
+      getLenis()?.start();
     };
   }, []);
 
