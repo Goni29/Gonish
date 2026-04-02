@@ -240,11 +240,13 @@ test.describe("Home scroll sections", () => {
     await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
 
     await dispatchWheelBurst(page, 180);
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(450);
+    await expect.poll(() => getFillLevel(page)).toBeLessThan(78);
     await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
 
     await dispatchWheelBurst(page, -180);
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(450);
+    await expect.poll(() => getFillLevel(page)).toBeGreaterThan(95);
     await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
     await expect.poll(() => getScrollTop(page)).toBe(lockedY);
   });

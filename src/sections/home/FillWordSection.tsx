@@ -46,7 +46,7 @@ export default function FillWordSection() {
 
     const isCompactTouch = window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 640;
     const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
-    const progressStep = isCompactTouch ? 0.24 : isCoarsePointer ? 0.2 : 0.16;
+    const progressStep = isCompactTouch ? 0.34 : isCoarsePointer ? 0.3 : 0.26;
     const liquidState = { level: 100 };
     const fillState = { progress: 0 };
     let rafId = 0;
@@ -66,8 +66,8 @@ export default function FillWordSection() {
     let wheelGestureConsumed = false;
     let suppressLockUntil = 0;
 
-    const COOLDOWN_MS = 520;
-    const SAFETY_MS = 900;
+    const COOLDOWN_MS = 440;
+    const SAFETY_MS = 760;
     const LOCK_TRIGGER_SLOP_PX = 2;
     const WHEEL_THRESHOLD = 40;
     const WHEEL_IDLE_MS = 160;
@@ -185,7 +185,7 @@ export default function FillWordSection() {
       isBusy = true;
       progressTween = gsap.to(fillState, {
         progress: nextProgress,
-        duration: isCoarsePointer ? 0.46 : 0.4,
+        duration: isCoarsePointer ? 0.36 : 0.3,
         ease: "power2.out",
         overwrite: true,
         onUpdate: () => {
