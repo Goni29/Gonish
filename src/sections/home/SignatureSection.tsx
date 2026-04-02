@@ -544,7 +544,6 @@ export default function SignatureSection() {
     let wheelIdleTimer: ReturnType<typeof setTimeout> | null = null;
     let scrollRafId: number | null = null;
     let syncRafId: number | null = null;
-    let exitRafId: number | null = null;
     let wheelDelta = 0;
     let wheelGestureConsumed = false;
     let suppressLockUntil = 0;
@@ -566,13 +565,6 @@ export default function SignatureSection() {
       section.dataset.sceneMode = mode;
       sceneViewport.dataset.locked = locked ? "true" : "false";
     };
-    const cancelExitAnimation = () => {
-      if (exitRafId !== null) {
-        window.cancelAnimationFrame(exitRafId);
-        exitRafId = null;
-      }
-    };
-
     const startCooldown = () => {
       isStepping = true;
       clearCooldown();
@@ -641,37 +633,18 @@ export default function SignatureSection() {
       document.removeEventListener("touchend", onTouchEnd, captureOnly);
       document.removeEventListener("touchcancel", onTouchCancel, captureOnly);
     };
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-    const animateExitScroll = (target: number) => {
-      cancelExitAnimation();
-
-      const startScroll = window.scrollY;
-      const delta = target - startScroll;
-      if (Math.abs(delta) <= 1) {
+    const releaseExitScroll = (target: number) => {
+      const lenis = getLenis();
+      if (!lenis) {
         window.scrollTo({ top: target, behavior: "instant" });
-        getLenis()?.start();
         return;
       }
 
-      const startedAt = performance.now();
-      const durationMs = 720;
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - startedAt) / durationMs);
-        const eased = easeOutCubic(progress);
-        const nextScroll = Math.round(startScroll + delta * eased);
-        window.scrollTo({ top: nextScroll, behavior: "instant" });
-
-        if (progress < 1) {
-          exitRafId = window.requestAnimationFrame(tick);
-          return;
-        }
-
-        exitRafId = null;
-        window.scrollTo({ top: target, behavior: "instant" });
-        getLenis()?.start();
-      };
-
-      exitRafId = window.requestAnimationFrame(tick);
+      lenis.start();
+      lenis.scrollTo(target, {
+        immediate: true,
+        force: true,
+      });
     };
     const exitScene = (direction: "forward" | "backward", impulse = 0) => {
       suppressLockUntil = performance.now() + EXIT_SUPPRESSION_MS;
@@ -683,7 +656,7 @@ export default function SignatureSection() {
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       const target = Math.max(0, Math.min(maxScroll, Math.round(window.scrollY + carryDistance * signedImpulse)));
 
-      animateExitScroll(target);
+      releaseExitScroll(target);
     };
     const lockScene = (entryDirection: "forward" | "backward") => {
       enableScrollLock();
@@ -846,7 +819,6 @@ export default function SignatureSection() {
       clearSafety();
       clearCooldown();
       clearWheelGesture();
-      cancelExitAnimation();
       onStepSettledRef.current = null;
       isCoarsePointerRef.current = false;
       disableScrollLock();

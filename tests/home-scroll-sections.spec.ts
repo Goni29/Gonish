@@ -101,6 +101,10 @@ async function getFillViewportState(page: Page) {
   });
 }
 
+async function isLenisStopped(page: Page) {
+  return page.evaluate(() => document.documentElement.classList.contains("lenis-stopped"));
+}
+
 async function dispatchWheelBurst(page: Page, deltaY: number, events = 6) {
   await page.evaluate(({ requestedDeltaY, requestedEvents }) => {
     const perEventDelta = requestedDeltaY / requestedEvents;
@@ -190,6 +194,7 @@ test.describe("Home scroll sections", () => {
     await dispatchWheelBurst(page, 180);
     await page.waitForTimeout(900);
     await expect.poll(() => getSignatureLockState(page)).toBe("false");
+    await expect.poll(() => isLenisStopped(page)).toBe(false);
     const forwardExitY = await getScrollTop(page);
     expect(forwardExitY).toBeGreaterThan(lockedY + 40);
     expect(forwardExitY).toBeLessThan(fillTop - 80);
@@ -284,5 +289,32 @@ test.describe("Home scroll sections", () => {
     await expect.poll(() => getFillLevel(page)).toBeGreaterThan(95);
     await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
     await expect.poll(() => getScrollTop(page)).toBe(lockedY);
+  });
+
+  test("fill word scene releases scroll immediately on exit", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "Desktop Safari", "Wheel gesture regression is desktop-focused");
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1200);
+
+    const [, , fillTop] = await getSectionTops(page);
+    expect(fillTop).toBeGreaterThan(0);
+
+    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), fillTop + 12);
+    await page.waitForTimeout(500);
+    await expect.poll(() => getFillLockState(page)).toBe("true");
+
+    const lockedY = await getScrollTop(page);
+
+    await requestFillProgress(page, 1);
+    await page.waitForTimeout(200);
+    await dispatchWheelBurst(page, 180);
+    await page.waitForTimeout(900);
+
+    await expect.poll(() => getFillLockState(page)).toBe("false");
+    await expect.poll(() => isLenisStopped(page)).toBe(false);
+
+    const exitY = await getScrollTop(page);
+    expect(exitY).toBeGreaterThan(lockedY + 40);
   });
 });
