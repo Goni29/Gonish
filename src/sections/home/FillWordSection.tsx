@@ -69,6 +69,7 @@ export default function FillWordSection() {
     const COOLDOWN_MS = 440;
     const SAFETY_MS = 760;
     const LOCK_TRIGGER_SLOP_PX = 2;
+    const LOCK_APPROACH_SLOP_PX = 6;
     const WHEEL_THRESHOLD = 40;
     const WHEEL_IDLE_MS = 160;
     const EXIT_SUPPRESSION_MS = 900;
@@ -416,9 +417,9 @@ export default function FillWordSection() {
       }
 
       const direction =
-        currentY > lastScrollY + 1
+        currentY > lastScrollY
           ? "forward"
-          : currentY < lastScrollY - 1
+          : currentY < lastScrollY
             ? "backward"
             : null;
       const sectionTop = getSectionTop();
@@ -432,8 +433,16 @@ export default function FillWordSection() {
         direction === "backward" &&
         lastScrollY > sectionTop + LOCK_TRIGGER_SLOP_PX &&
         currentY <= sectionTop + LOCK_TRIGGER_SLOP_PX;
+      const enteredForwardLockZone =
+        direction === "forward" &&
+        lastScrollY < sectionTop &&
+        currentY >= sectionTop - LOCK_APPROACH_SLOP_PX;
+      const enteredBackwardLockZone =
+        direction === "backward" &&
+        lastScrollY > sectionTop &&
+        currentY <= sectionTop + LOCK_APPROACH_SLOP_PX;
 
-      if (sectionVisible && (crossedFromAbove || crossedFromBelow)) {
+      if (sectionVisible && (crossedFromAbove || crossedFromBelow || enteredForwardLockZone || enteredBackwardLockZone)) {
         const fallbackDirection = currentY >= sectionTop ? "forward" : "backward";
         lockScene(direction ?? fallbackDirection);
         return;

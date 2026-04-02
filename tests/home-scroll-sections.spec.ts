@@ -222,6 +222,41 @@ test.describe("Home scroll sections", () => {
     expect(backwardExitY).toBeGreaterThan(heroTop + 80);
   });
 
+  test("signature and fill scenes lock on tiny wheel entries near the top boundary", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "Desktop Safari", "Wheel gesture regression is desktop-focused");
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1200);
+
+    const [, signatureTop, fillTop] = await getSectionTops(page);
+    expect(signatureTop).toBeGreaterThan(0);
+    expect(fillTop).toBeGreaterThan(signatureTop);
+
+    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), signatureTop - 6);
+    await page.waitForTimeout(250);
+    await page.mouse.wheel(0, 6);
+    await page.waitForTimeout(900);
+
+    await expect.poll(() => getSignatureLockState(page)).toBe("true");
+    const signatureLockedY = await getScrollTop(page);
+    expect(Math.abs(signatureLockedY - signatureTop)).toBeLessThanOrEqual(4);
+
+    await requestSignatureStep(page, { step: 2 });
+    await page.waitForTimeout(700);
+    await dispatchWheelBurst(page, 180);
+    await page.waitForTimeout(900);
+    await expect.poll(() => getSignatureLockState(page)).toBe("false");
+
+    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), fillTop - 6);
+    await page.waitForTimeout(250);
+    await page.mouse.wheel(0, 6);
+    await page.waitForTimeout(900);
+
+    await expect.poll(() => getFillLockState(page)).toBe("true");
+    const fillLockedY = await getScrollTop(page);
+    expect(Math.abs(fillLockedY - fillTop)).toBeLessThanOrEqual(4);
+  });
+
   test("fill word scene keeps a fixed viewport while locked", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "Desktop Safari", "Wheel gesture regression is desktop-focused");
 
