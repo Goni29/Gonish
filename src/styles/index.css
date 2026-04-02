@@ -123,6 +123,7 @@
       linear-gradient(180deg, #fffdfd 0%, #f8f3f1 54%, #f5f0ef 100%);
     overscroll-behavior: none;
     overflow-x: clip;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -281,6 +282,15 @@
 .signature-section__shell {
   padding-top: var(--signature-shell-top);
   padding-bottom: var(--signature-shell-bottom);
+}
+
+.signature-section__scene-viewport[data-locked="true"] {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .signature-section__layout {

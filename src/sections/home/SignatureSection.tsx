@@ -3,11 +3,7 @@
 import { animate, createDrawable, type JSAnimation } from "animejs";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import gsap from "gsap";
-import { Observer } from "gsap/Observer";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { getLenis } from "@/components/layout/SmoothScroll";
-
-gsap.registerPlugin(ScrollTrigger, Observer);
 
 const steps = [
   {
@@ -37,7 +33,6 @@ const steps = [
 ] as const;
 
 const STEP_COUNT = steps.length;
-const PIN_SCROLL = STEP_COUNT * 380;
 
 // ── Orbit geometry ────────────────────────────────────────────────────────────
 const VW = 700;
@@ -395,6 +390,7 @@ function SignatureKeywordMark({
 
 export default function SignatureSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const sceneViewportRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
   const planetRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -402,6 +398,9 @@ export default function SignatureSection() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const currentStepRef = useRef(0);
   const isBusyRef = useRef(false);
+  const pendingStepRef = useRef<number | null>(null);
+  const isCoarsePointerRef = useRef(false);
+  const onStepSettledRef = useRef<((step: number) => void) | null>(null);
   const replayHistoryRef = useRef<{ step: number; at: number }>({ step: -1, at: Number.NEGATIVE_INFINITY });
   const [activeStep, setActiveStep] = useState(0);
   const [wordReplay, setWordReplay] = useState<{ step: number; token: number }>({ step: -1, token: 0 });
@@ -433,6 +432,7 @@ export default function SignatureSection() {
     contentRefs.current.forEach((node, i) => {
       if (node) gsap.set(node, { autoAlpha: i === index ? 1 : 0, y: 0 });
     });
+    currentStepRef.current = index;
     prevStepRef.current = index;
     if (replayWord) fireKeywordReplay(index);
     setActiveStep(index);
@@ -472,108 +472,407 @@ export default function SignatureSection() {
     return true;
   }, [clamp, fireKeywordReplay, stopTl]);
 
-  const handlePlanetClick = useCallback((targetStep: number) => {
-    if (isBusyRef.current || targetStep === currentStepRef.current) return;
-    isBusyRef.current = true;
-    currentStepRef.current = targetStep;
-    animateToStep(targetStep, () => { isBusyRef.current = false; });
-  }, [animateToStep]);
+  const transitionToStep = useCallback((step: number) => {
+    const index = clamp(step);
+    if (index === currentStepRef.current) {
+      pendingStepRef.current = null;
+      return false;
+    }
 
+    if (isBusyRef.current) {
+      pendingStepRef.current = index;
+      return false;
+    }
+
+    const completeTransition = () => {
+      const queuedStep = pendingStepRef.current;
+      pendingStepRef.current = null;
+
+      if (queuedStep !== null && queuedStep !== currentStepRef.current) {
+        currentStepRef.current = queuedStep;
+        const startedQueuedAnimation = animateToStep(queuedStep, completeTransition);
+        if (startedQueuedAnimation) return;
+      }
+
+      onStepSettledRef.current?.(currentStepRef.current);
+      isBusyRef.current = false;
+    };
+
+    isBusyRef.current = true;
+    currentStepRef.current = index;
+
+    const startedAnimation = animateToStep(index, completeTransition);
+    if (!startedAnimation) {
+      pendingStepRef.current = null;
+      isBusyRef.current = false;
+    }
+
+    return startedAnimation;
+  }, [animateToStep, clamp]);
+
+  const handlePlanetClick = useCallback((targetStep: number) => {
+    const index = clamp(targetStep);
+    if (index === currentStepRef.current) return;
+
+    transitionToStep(index);
+  }, [clamp, transitionToStep]);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const sceneViewport = sceneViewportRef.current;
+    if (!section || !sceneViewport) return;
 
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    isCoarsePointerRef.current = isCoarsePointer;
     currentStepRef.current = 0;
     isBusyRef.current = false;
-    let trigger: ScrollTrigger;
-
+    pendingStepRef.current = null;
     setStepInstant(0);
 
-    const goTo = (step: number) => {
-      if (step === currentStepRef.current) return;
-      isBusyRef.current = true;
-      currentStepRef.current = step;
-      animateToStep(step, () => { isBusyRef.current = false; });
+    const COOLDOWN_MS = 520;
+    const SAFETY_MS = 900;
+    const LOCK_TRIGGER_SLOP_PX = 2;
+    const WHEEL_THRESHOLD = 40;
+    const WHEEL_IDLE_MS = 160;
+    const EXIT_SUPPRESSION_MS = 900;
+    let isStepping = false;
+    let isLocked = false;
+    let lastScrollY = window.scrollY;
+    let safetyTimer: ReturnType<typeof setTimeout> | null = null;
+    let cooldownTimer: ReturnType<typeof setTimeout> | null = null;
+    let wheelIdleTimer: ReturnType<typeof setTimeout> | null = null;
+    let scrollRafId: number | null = null;
+    let syncRafId: number | null = null;
+    let exitRafId: number | null = null;
+    let wheelDelta = 0;
+    let wheelGestureConsumed = false;
+    let suppressLockUntil = 0;
+    const clearSafety = () => { if (safetyTimer) clearTimeout(safetyTimer); };
+    const clearCooldown = () => { if (cooldownTimer) clearTimeout(cooldownTimer); };
+    const captureOnly = { capture: true };
+    const capturePassive = { capture: true, passive: true };
+    const captureActive = { capture: true, passive: false };
+    const clearWheelGesture = () => {
+      if (wheelIdleTimer) clearTimeout(wheelIdleTimer);
+      wheelIdleTimer = null;
+      wheelDelta = 0;
+      wheelGestureConsumed = false;
+    };
+    const getSectionTop = () => Math.round(section.getBoundingClientRect().top + window.scrollY);
+    const getSectionBottom = () => getSectionTop() + section.offsetHeight;
+    const setLockState = (locked: boolean, mode: "idle" | "locked") => {
+      section.dataset.sceneLocked = locked ? "true" : "false";
+      section.dataset.sceneMode = mode;
+      sceneViewport.dataset.locked = locked ? "true" : "false";
+    };
+    const cancelExitAnimation = () => {
+      if (exitRafId !== null) {
+        window.cancelAnimationFrame(exitRafId);
+        exitRafId = null;
+      }
     };
 
-    const scrollTo = (position: number) => {
-      const lenis = getLenis();
-      if (lenis) lenis.scrollTo(position, { immediate: true });
-      else window.scrollTo(0, position);
-      ScrollTrigger.update();
+    const startCooldown = () => {
+      isStepping = true;
+      clearCooldown();
+      clearSafety();
+      cooldownTimer = setTimeout(() => { isStepping = false; }, COOLDOWN_MS);
+      safetyTimer = setTimeout(() => {
+        isBusyRef.current = false;
+        pendingStepRef.current = null;
+        isStepping = false;
+      }, SAFETY_MS);
     };
 
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
-    const observer = Observer.create({
-      type: "wheel,touch",
-      preventDefault: !isTouch,
-      tolerance: isTouch ? 30 : 10,
-      onDown: () => {
-        if (isBusyRef.current) return;
-        if (currentStepRef.current >= STEP_COUNT - 1) { observer.disable(); scrollTo(trigger.end + 1); return; }
-        goTo(currentStepRef.current + 1);
-      },
-      onUp: () => {
-        if (isBusyRef.current) return;
-        if (currentStepRef.current <= 0) { observer.disable(); scrollTo(Math.max(trigger.start - 1, 0)); return; }
-        goTo(currentStepRef.current - 1);
-      },
-    });
-    observer.disable();
-
-    const context = gsap.context(() => {
-      trigger = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: `+=${PIN_SCROLL}`,
-        pin: true,
-        pinSpacing: true,
-        pinType: "transform",
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onEnter: () => {
-          currentStepRef.current = 0;
-          isBusyRef.current = false;
-          setStepInstant(0, false);
-          observer.enable();
-        },
-        onEnterBack: () => {
-          currentStepRef.current = STEP_COUNT - 1;
-          isBusyRef.current = false;
-          setStepInstant(STEP_COUNT - 1, false);
-          observer.enable();
-        },
-        onLeave: () => { setStepInstant(STEP_COUNT - 1); observer.disable(); },
-        onLeaveBack: () => { setStepInstant(0); observer.disable(); },
+    let touchStartY = 0;
+    const scheduleWheelReset = () => {
+      if (wheelIdleTimer) clearTimeout(wheelIdleTimer);
+      wheelIdleTimer = setTimeout(() => {
+        wheelDelta = 0;
+        wheelGestureConsumed = false;
+      }, WHEEL_IDLE_MS);
+    };
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16;
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight;
+      return event.deltaY;
+    };
+    const syncLockedScroll = () => {
+      if (!isLocked) return;
+      const target = getSectionTop();
+      if (Math.abs(window.scrollY - target) <= 1) return;
+      if (syncRafId !== null) window.cancelAnimationFrame(syncRafId);
+      syncRafId = window.requestAnimationFrame(() => {
+        syncRafId = null;
+        window.scrollTo({ top: target, behavior: "instant" });
       });
-    }, section);
+    };
+    const enableScrollLock = () => {
+      if (isLocked) return;
+      isLocked = true;
+      setLockState(true, "locked");
+      getLenis()?.stop();
+      clearWheelGesture();
+      syncLockedScroll();
+      document.addEventListener("wheel", onWheel, captureActive);
+      document.addEventListener("touchstart", onTouchStart, capturePassive);
+      document.addEventListener("touchmove", onTouchMove, captureActive);
+      document.addEventListener("touchend", onTouchEnd, capturePassive);
+      document.addEventListener("touchcancel", onTouchCancel, capturePassive);
+    };
+    const disableScrollLock = () => {
+      if (!isLocked) return;
+      isLocked = false;
+      setLockState(false, "idle");
+      if (syncRafId !== null) {
+        window.cancelAnimationFrame(syncRafId);
+        syncRafId = null;
+      }
+      clearSafety();
+      clearCooldown();
+      clearWheelGesture();
+      isStepping = false;
+      isBusyRef.current = false;
+      pendingStepRef.current = null;
+      document.removeEventListener("wheel", onWheel, captureOnly);
+      document.removeEventListener("touchstart", onTouchStart, captureOnly);
+      document.removeEventListener("touchmove", onTouchMove, captureOnly);
+      document.removeEventListener("touchend", onTouchEnd, captureOnly);
+      document.removeEventListener("touchcancel", onTouchCancel, captureOnly);
+    };
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const animateExitScroll = (target: number) => {
+      cancelExitAnimation();
+
+      const startScroll = window.scrollY;
+      const delta = target - startScroll;
+      if (Math.abs(delta) <= 1) {
+        window.scrollTo({ top: target, behavior: "instant" });
+        getLenis()?.start();
+        return;
+      }
+
+      const startedAt = performance.now();
+      const durationMs = 720;
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - startedAt) / durationMs);
+        const eased = easeOutCubic(progress);
+        const nextScroll = Math.round(startScroll + delta * eased);
+        window.scrollTo({ top: nextScroll, behavior: "instant" });
+
+        if (progress < 1) {
+          exitRafId = window.requestAnimationFrame(tick);
+          return;
+        }
+
+        exitRafId = null;
+        window.scrollTo({ top: target, behavior: "instant" });
+        getLenis()?.start();
+      };
+
+      exitRafId = window.requestAnimationFrame(tick);
+    };
+    const exitScene = (direction: "forward" | "backward", impulse = 0) => {
+      suppressLockUntil = performance.now() + EXIT_SUPPRESSION_MS;
+      disableScrollLock();
+
+      const signedImpulse = direction === "forward" ? 1 : -1;
+      const rawCarry = Math.abs(impulse) > 0 ? Math.abs(impulse) : window.innerHeight * 0.18;
+      const carryDistance = Math.min(rawCarry, window.innerHeight * 0.75);
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const target = Math.max(0, Math.min(maxScroll, Math.round(window.scrollY + carryDistance * signedImpulse)));
+
+      animateExitScroll(target);
+    };
+    const lockScene = (entryDirection: "forward" | "backward") => {
+      enableScrollLock();
+      const sectionTop = getSectionTop();
+      window.scrollTo({ top: sectionTop, behavior: "instant" });
+      lastScrollY = sectionTop;
+
+      if (entryDirection === "forward") {
+        if (currentStepRef.current !== 0) setStepInstant(0, false);
+        return;
+      }
+
+      if (currentStepRef.current !== STEP_COUNT - 1) setStepInstant(STEP_COUNT - 1, false);
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (!isLocked) return;
+      if (e.cancelable) e.preventDefault();
+
+      const delta = normalizeWheelDelta(e);
+      if (Math.abs(delta) < 0.5) return;
+
+      scheduleWheelReset();
+      wheelDelta += delta;
+
+      if (wheelGestureConsumed || Math.abs(wheelDelta) < WHEEL_THRESHOLD) return;
+      wheelGestureConsumed = true;
+      stepScene(wheelDelta > 0 ? "forward" : "backward", Math.abs(wheelDelta));
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const delta = touchStartY - e.changedTouches[0].clientY;
+      touchStartY = 0;
+      if (Math.abs(delta) < (isCoarsePointer ? 15 : 5)) return;
+      stepScene(delta > 0 ? "forward" : "backward", Math.abs(delta));
+    };
+    const onTouchCancel = () => {
+      touchStartY = 0;
+    };
+    const stepScene = (direction: "forward" | "backward", impulse = 0) => {
+      if (!isLocked || isStepping || isBusyRef.current) return;
+
+      const next =
+        direction === "forward"
+          ? currentStepRef.current + 1
+          : currentStepRef.current - 1;
+
+      if (next < 0 || next > STEP_COUNT - 1) {
+        exitScene(direction, impulse);
+        return;
+      }
+
+      const started = transitionToStep(next);
+      if (started) startCooldown();
+    };
+    const maybeLockScene = () => {
+      const currentY = window.scrollY;
+
+      if (isLocked) {
+        syncLockedScroll();
+        lastScrollY = getSectionTop();
+        return;
+      }
+
+      if (performance.now() < suppressLockUntil) {
+        lastScrollY = currentY;
+        return;
+      }
+
+      const direction =
+        currentY > lastScrollY + 1
+          ? "forward"
+          : currentY < lastScrollY - 1
+            ? "backward"
+            : null;
+      const sectionTop = getSectionTop();
+      const rect = section.getBoundingClientRect();
+      const sectionVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+      const crossedFromAbove =
+        direction === "forward" &&
+        lastScrollY < sectionTop - LOCK_TRIGGER_SLOP_PX &&
+        currentY >= sectionTop - LOCK_TRIGGER_SLOP_PX;
+      const crossedFromBelow =
+        direction === "backward" &&
+        lastScrollY > sectionTop + LOCK_TRIGGER_SLOP_PX &&
+        currentY <= sectionTop + LOCK_TRIGGER_SLOP_PX;
+
+      if (sectionVisible && (crossedFromAbove || crossedFromBelow)) {
+        const fallbackDirection = currentY >= sectionTop ? "forward" : "backward";
+        lockScene(direction ?? fallbackDirection);
+        return;
+      }
+
+      lastScrollY = currentY;
+    };
+    const handleWindowScroll = () => {
+      if (isLocked) {
+        syncLockedScroll();
+        lastScrollY = getSectionTop();
+        return;
+      }
+
+      if (scrollRafId !== null) return;
+      scrollRafId = window.requestAnimationFrame(() => {
+        scrollRafId = null;
+        maybeLockScene();
+      });
+    };
+    const handleResize = () => {
+      if (isLocked) {
+        syncLockedScroll();
+        return;
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    const handleSignatureStepRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ step?: number; direction?: "forward" | "backward" }>).detail;
+      if (!detail) return;
+      if (typeof detail.step === "number") { transitionToStep(clamp(detail.step)); return; }
+      if (detail.direction === "forward" || detail.direction === "backward") stepScene(detail.direction);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isLocked) return;
+      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        stepScene("forward");
+      } else if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        stepScene("backward");
+      }
+    };
+
+    section.addEventListener("gonish:signature-step", handleSignatureStepRequest as EventListener);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+    onStepSettledRef.current = () => {};
+    setLockState(false, "idle");
+    maybeLockScene();
 
     return () => {
-      observer.kill();
-      context.revert();
+      clearSafety();
+      clearCooldown();
+      clearWheelGesture();
+      cancelExitAnimation();
+      onStepSettledRef.current = null;
+      isCoarsePointerRef.current = false;
+      disableScrollLock();
+      if (scrollRafId !== null) window.cancelAnimationFrame(scrollRafId);
+      if (syncRafId !== null) window.cancelAnimationFrame(syncRafId);
+      section.removeEventListener("gonish:signature-step", handleSignatureStepRequest as EventListener);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("scroll", handleWindowScroll);
+      window.removeEventListener("resize", handleResize);
+      setLockState(false, "idle");
+      getLenis()?.start();
+      pendingStepRef.current = null;
     };
-  }, [animateToStep, setStepInstant]);
+  }, [animateToStep, clamp, setStepInstant, transitionToStep]);
 
 
   return (
-    <section ref={sectionRef} className="signature-section relative isolate h-[100svh] overflow-hidden">
-      {/* Ambient background */}
-      <div className="pointer-events-none absolute inset-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 55% at 50% 48%, rgba(243,29,91,0.06) 0%, transparent 100%), radial-gradient(ellipse 35% 30% at 82% 75%, rgba(255,173,197,0.09) 0%, transparent 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
-          style={{ backgroundImage: "url('/ScrollSection.png')" }}
-        />
-      </div>
+    <section ref={sectionRef} data-active-step={activeStep} data-home-section="signature" className="signature-section relative isolate h-[100svh] overflow-hidden">
+      <div ref={sceneViewportRef} className="signature-section__scene-viewport absolute inset-0">
+        {/* Ambient background */}
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 55% at 50% 48%, rgba(243,29,91,0.06) 0%, transparent 100%), radial-gradient(ellipse 35% 30% at 82% 75%, rgba(255,173,197,0.09) 0%, transparent 100%)",
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+            style={{ backgroundImage: "url('/ScrollSection.png')" }}
+          />
+        </div>
 
-      <div className="signature-section__shell shell relative z-10 flex h-full flex-col lg:py-7">
+        <div className="signature-section__shell shell relative z-10 flex h-full flex-col lg:py-7">
         {/* Header */}
         <div className="shrink-0 flex items-center gap-3 pb-3">
           <span className="h-px w-10 bg-brand/40" />
@@ -647,6 +946,7 @@ export default function SignatureSection() {
                   <div
                     key={step.keyword}
                     ref={(node) => { planetRefs.current[i] = node; }}
+                    data-step-target={i}
                     className={`absolute${!isActive ? " cursor-pointer" : ""}`}
                     style={{
                       left: layout.left,
@@ -718,10 +1018,10 @@ export default function SignatureSection() {
 
                       {/* Star SVG — center is exactly at orbit point */}
                       <svg
-                        width={ORBIT_STAR_SIZE}
-                        height={ORBIT_STAR_SIZE}
                         viewBox="-20 -20 40 40"
                         style={{
+                          width: ORBIT_STAR_SIZE,
+                          height: ORBIT_STAR_SIZE,
                           display: "block",
                           overflow: "visible",
                           filter: isActive
@@ -829,6 +1129,7 @@ export default function SignatureSection() {
             />
           ))}
         </div>
+      </div>
       </div>
     </section>
   );
