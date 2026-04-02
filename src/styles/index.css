@@ -293,6 +293,15 @@
   touch-action: none;
 }
 
+.fill-word-section__scene-viewport[data-locked="true"] {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 .signature-section__layout {
   margin-top: var(--signature-layout-margin-top);
   gap: var(--signature-layout-gap);

@@ -81,6 +81,26 @@ async function getSignatureLockState(page: Page) {
   });
 }
 
+async function getFillLockState(page: Page) {
+  return page.evaluate(() => {
+    const section = document.querySelector('[data-home-section="fill-word"]');
+    return section?.getAttribute("data-scene-locked") ?? "false";
+  });
+}
+
+async function getFillViewportState(page: Page) {
+  return page.evaluate(() => {
+    const viewport = document.querySelector('[data-home-section="fill-word"] .fill-word-section__scene-viewport');
+    if (!(viewport instanceof HTMLElement)) return { position: "missing", top: Number.NaN };
+
+    const style = getComputedStyle(viewport);
+    return {
+      position: style.position,
+      top: Math.round(viewport.getBoundingClientRect().top),
+    };
+  });
+}
+
 async function dispatchWheelBurst(page: Page, deltaY: number, events = 6) {
   await page.evaluate(({ requestedDeltaY, requestedEvents }) => {
     const perEventDelta = requestedDeltaY / requestedEvents;
@@ -200,5 +220,32 @@ test.describe("Home scroll sections", () => {
     const backwardExitY = await getScrollTop(page);
     expect(backwardExitY).toBeLessThan(relockedY - 40);
     expect(backwardExitY).toBeGreaterThan(heroTop + 80);
+  });
+
+  test("fill word scene keeps a fixed viewport while locked", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "Desktop Safari", "Wheel gesture regression is desktop-focused");
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1200);
+
+    const [, , fillTop] = await getSectionTops(page);
+    expect(fillTop).toBeGreaterThan(0);
+
+    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), fillTop + 12);
+    await page.waitForTimeout(500);
+
+    await expect.poll(() => getFillLockState(page)).toBe("true");
+    const lockedY = await getScrollTop(page);
+    expect(Math.abs(lockedY - fillTop)).toBeLessThanOrEqual(4);
+    await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
+
+    await dispatchWheelBurst(page, 180);
+    await page.waitForTimeout(120);
+    await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
+
+    await dispatchWheelBurst(page, -180);
+    await page.waitForTimeout(120);
+    await expect.poll(() => getFillViewportState(page)).toMatchObject({ position: "fixed", top: 0 });
+    await expect.poll(() => getScrollTop(page)).toBe(lockedY);
   });
 });

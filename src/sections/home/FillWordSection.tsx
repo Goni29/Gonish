@@ -35,12 +35,14 @@ function getWaveY(xRatio: number, level: number, phase: number) {
 
 export default function FillWordSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const sceneViewportRef = useRef<HTMLDivElement | null>(null);
   const fillTextRef = useRef<HTMLParagraphElement | null>(null);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
+    const sceneViewport = sceneViewportRef.current;
     const fillText = fillTextRef.current;
-    if (!section || !fillText) return undefined;
+    if (!section || !sceneViewport || !fillText) return undefined;
 
     const isCompactTouch = window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 640;
     const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
@@ -73,12 +75,6 @@ export default function FillWordSection() {
     const captureOnly = { capture: true };
     const capturePassive = { capture: true, passive: true };
     const captureActive = { capture: true, passive: false };
-
-    const scrollToPosition = (position: number) => {
-      const lenis = getLenis();
-      if (lenis) lenis.scrollTo(position, { immediate: true });
-      else window.scrollTo({ top: position, behavior: "instant" });
-    };
 
     const clearSafety = () => {
       if (safetyTimer) clearTimeout(safetyTimer);
@@ -130,6 +126,7 @@ export default function FillWordSection() {
     const setLockState = (locked: boolean, mode: "idle" | "locked") => {
       section.dataset.sceneLocked = locked ? "true" : "false";
       section.dataset.sceneMode = mode;
+      sceneViewport.dataset.locked = locked ? "true" : "false";
     };
 
     const cancelExitAnimation = () => {
@@ -508,15 +505,16 @@ export default function FillWordSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} data-home-section="fill-word" className="relative h-[100svh] overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/FillWordSection.png')" }}
-      />
+    <section ref={sectionRef} data-home-section="fill-word" className="fill-word-section relative isolate h-[100svh] overflow-hidden">
+      <div ref={sceneViewportRef} className="fill-word-section__scene-viewport absolute inset-0">
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/FillWordSection.png')" }}
+        />
 
-      <div className="shell relative z-10 flex h-full items-center">
-        <div className="w-full space-y-12">
-          <div className="max-w-xl space-y-4">
+        <div className="shell relative z-10 flex h-full items-center">
+          <div className="w-full space-y-12">
+            <div className="max-w-xl space-y-4">
             <p className="eyebrow">Signature invitation</p>
             <p className="text-base leading-7 text-ink-muted md:text-lg">
               브랜드가 가장 빛나는 순간, 그 느낌을 놓치지 않도록.
@@ -524,7 +522,7 @@ export default function FillWordSection() {
             </p>
           </div>
 
-          <div className="relative isolate">
+            <div className="relative isolate">
             <p
               aria-hidden="true"
               className="select-none font-display text-[clamp(3.8rem,11vw,9.5rem)] leading-[0.92] tracking-[-0.04em] opacity-0"
@@ -563,10 +561,11 @@ export default function FillWordSection() {
             </p>
           </div>
 
-          <div className="max-w-2xl rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl">
+            <div className="max-w-2xl rounded-[1.8rem] border border-black/10 bg-white/72 p-6 backdrop-blur-xl">
             <p className="font-display text-2xl leading-tight text-ink md:text-3xl">
               <SmartLineBreak text="한 번 스쳐 가는 화면보다, 오래 남는 첫인상을 설계합니다." />
             </p>
+          </div>
           </div>
         </div>
       </div>
