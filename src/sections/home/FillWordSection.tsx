@@ -64,6 +64,7 @@ export default function FillWordSection() {
     let wheelDelta = 0;
     let wheelGestureConsumed = false;
     let suppressLockUntil = 0;
+    let suppressedExitDirection: "forward" | "backward" | null = null;
 
     const COOLDOWN_MS = 440;
     const SAFETY_MS = 760;
@@ -89,6 +90,11 @@ export default function FillWordSection() {
       wheelIdleTimer = null;
       wheelDelta = 0;
       wheelGestureConsumed = false;
+    };
+
+    const clearExitSuppression = () => {
+      suppressLockUntil = 0;
+      suppressedExitDirection = null;
     };
 
     const applyFillProgress = (progress: number) => {
@@ -238,6 +244,7 @@ export default function FillWordSection() {
 
     const exitScene = (direction: "forward" | "backward", impulse = 0) => {
       suppressLockUntil = performance.now() + EXIT_SUPPRESSION_MS;
+      suppressedExitDirection = direction;
       disableScrollLock();
 
       const signedImpulse = direction === "forward" ? 1 : -1;
@@ -250,6 +257,7 @@ export default function FillWordSection() {
     };
 
     const lockScene = (entryDirection: "forward" | "backward") => {
+      clearExitSuppression();
       enableScrollLock();
       const sectionTop = getSectionTop();
       window.scrollTo({ top: sectionTop, behavior: "instant" });
@@ -383,17 +391,24 @@ export default function FillWordSection() {
         return;
       }
 
-      if (performance.now() < suppressLockUntil) {
-        lastScrollY = currentY;
-        return;
-      }
-
       const direction =
         currentY > lastScrollY
           ? "forward"
           : currentY < lastScrollY
             ? "backward"
             : null;
+
+      if (performance.now() < suppressLockUntil) {
+        if (!direction || direction === suppressedExitDirection) {
+          lastScrollY = currentY;
+          return;
+        }
+
+        clearExitSuppression();
+      } else if (suppressedExitDirection !== null) {
+        suppressedExitDirection = null;
+      }
+
       const sectionTop = getSectionTop();
       const rect = section.getBoundingClientRect();
       const sectionVisible = rect.bottom > 0 && rect.top < window.innerHeight;

@@ -119,6 +119,13 @@ async function dispatchWheelBurst(page: Page, deltaY: number, events = 6) {
   }, { requestedDeltaY: deltaY, requestedEvents: events });
 }
 
+async function sendMouseWheelBurst(page: Page, deltaY: number, events = 6) {
+  const perEventDelta = deltaY / events;
+  for (let index = 0; index < events; index += 1) {
+    await page.mouse.wheel(0, perEventDelta);
+  }
+}
+
 test.describe("Home scroll sections", () => {
   test("signature steps and fill text update across devices", async ({ page }) => {
     test.slow();
@@ -316,5 +323,67 @@ test.describe("Home scroll sections", () => {
 
     const exitY = await getScrollTop(page);
     expect(exitY).toBeGreaterThan(lockedY + 40);
+  });
+
+  test("signature scene relocks when immediately scrolling back down after a backward exit", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "Desktop Safari", "Wheel gesture regression is desktop-focused");
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1200);
+
+    const [, signatureTop] = await getSectionTops(page);
+    expect(signatureTop).toBeGreaterThan(0);
+
+    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), signatureTop + 12);
+    await page.waitForTimeout(500);
+
+    await expect.poll(() => getSignatureLockState(page)).toBe("true");
+    await expect.poll(() => getSignatureActiveStep(page)).toBe(0);
+
+    const lockedY = await getScrollTop(page);
+    expect(Math.abs(lockedY - signatureTop)).toBeLessThanOrEqual(4);
+
+    await dispatchWheelBurst(page, -180);
+    await page.waitForTimeout(120);
+    await expect.poll(() => getSignatureLockState(page)).toBe("false");
+
+    await sendMouseWheelBurst(page, 600);
+    await page.waitForTimeout(700);
+    await expect.poll(() => getSignatureLockState(page)).toBe("true");
+    await expect.poll(() => getSignatureActiveStep(page)).toBe(1);
+
+    const relockedY = await getScrollTop(page);
+    expect(Math.abs(relockedY - signatureTop)).toBeLessThanOrEqual(4);
+  });
+
+  test("fill word scene relocks when immediately scrolling back down after a backward exit", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "Desktop Safari", "Wheel gesture regression is desktop-focused");
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1200);
+
+    const [, , fillTop] = await getSectionTops(page);
+    expect(fillTop).toBeGreaterThan(0);
+
+    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), fillTop + 12);
+    await page.waitForTimeout(500);
+
+    await expect.poll(() => getFillLockState(page)).toBe("true");
+    await expect.poll(() => getFillLevel(page)).toBeGreaterThan(99);
+
+    const lockedY = await getScrollTop(page);
+    expect(Math.abs(lockedY - fillTop)).toBeLessThanOrEqual(4);
+
+    await dispatchWheelBurst(page, -180);
+    await page.waitForTimeout(120);
+    await expect.poll(() => getFillLockState(page)).toBe("false");
+
+    await sendMouseWheelBurst(page, 600);
+    await page.waitForTimeout(700);
+    await expect.poll(() => getFillLockState(page)).toBe("true");
+
+    const relockedY = await getScrollTop(page);
+    expect(Math.abs(relockedY - fillTop)).toBeLessThanOrEqual(4);
+    await expect.poll(() => getFillLevel(page)).toBeLessThan(78);
   });
 });

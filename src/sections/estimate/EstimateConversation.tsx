@@ -217,6 +217,23 @@ const featureGroups: FeatureGroup[] = [
   { id: "external-integration", title: "외부 서비스 연동", optionIds: ["map", "notification-email", "notification-sms", "external-api"] },
 ];
 
+const featureReplyById: Record<string, string> = {
+  "member-auth": "회원가입과 로그인은 가입 방식과 필요한 기본 정보만 먼저 정해도 범위를 꽤 정확하게 잡을 수 있어요.",
+  "social-login": "소셜 로그인은 어떤 플랫폼을 붙일지와 기존 계정 연동 방식까지 같이 보면 구현 범위가 선명해져요.",
+  "role-permission": "권한 분리는 누가 무엇을 볼 수 있는지부터 정하면 화면과 데이터 범위가 깔끔하게 정리돼요.",
+  "admin-dashboard": "관리자 대시보드는 첫 화면에서 꼭 봐야 할 지표만 먼저 추리면 훨씬 실용적으로 설계할 수 있어요.",
+  "admin-module": "업무 관리 모듈은 어떤 데이터를 등록하고 처리해야 하는지 흐름부터 잡으면 견적이 안정적으로 나와요.",
+  "admin-permission": "관리자 권한 세분화는 역할별 접근 범위를 먼저 나누면 운영 구조가 훨씬 명확해져요.",
+  "stats-report": "통계와 리포트는 어떤 지표를 기간별로 볼지부터 정하면 필요한 데이터 구조를 빠르게 잡을 수 있어요.",
+  "crud-board": "콘텐츠와 데이터 기능은 등록, 수정, 삭제 흐름과 목록·상세 화면을 같이 보면 범위를 정확하게 정리할 수 있어요.",
+  payment: "온라인 결제는 결제 성공, 실패, 취소 이후 흐름까지 같이 정하면 실제 운영에 맞게 설계할 수 있어요.",
+  subscription: "정기 결제는 결제 주기, 해지, 재시도 같은 운영 규칙까지 함께 잡아야 견적이 정확해져요.",
+  map: "지도 연동은 고정 위치 표시인지, 여러 지점 안내인지에 따라 구현 범위가 꽤 달라져요.",
+  "notification-email": "자동 이메일은 어떤 시점에 누구에게 보낼지 정하면 템플릿과 연동 범위를 깔끔하게 나눌 수 있어요.",
+  "notification-sms": "문자와 알림 발송은 발송 조건과 실패 처리 기준까지 먼저 정해두면 운영이 훨씬 안정적이에요.",
+  "external-api": "외부 API 연동은 연결 대상, 인증 방식, 실패 처리까지 먼저 정리하면 리스크를 많이 줄일 수 있어요.",
+};
+
 const discountOptions: Option[] = [
   { id: "portfolio", label: "포트폴리오 소개에 동의할게요", description: "완성 후 일부 화면을 포트폴리오 예시로 소개해도 괜찮아요.", price: -5, score: 0 },
   { id: "review", label: "작업 후 짧은 후기를 남길게요", description: "작업이 끝난 뒤 간단한 후기 작성에 참여할 수 있어요.", price: -5, score: 0 },
@@ -402,6 +419,10 @@ function getPageScopeStep(form: EstimateForm) {
   return "추가 화면은 화면 수와 구성 범위를 정하는 단계예요. 실제 동작 기능은 다음 항목에서 선택하면 돼요.";
 }
 
+function getFeatureStepById(featureId: string) {
+  return featureReplyById[featureId];
+}
+
 function getFeatureStep(form: EstimateForm) {
   const featureIds = form.features;
 
@@ -556,6 +577,13 @@ function getNextStep(form: EstimateForm, field: NextStepField) {
 function getCharacterReply(form: EstimateForm, field: NextStepField | null) {
   if (!field) {
     return defaultCharacterReply;
+  }
+
+  if (field === "features") {
+    const latestSelectedFeatureId = form.features.at(-1);
+    if (latestSelectedFeatureId) {
+      return getFeatureStepById(latestSelectedFeatureId) ?? getNextStep(form, field);
+    }
   }
 
   return getNextStep(form, field);
@@ -926,6 +954,7 @@ export default function EstimateConversation() {
                                 selected={form.features.includes(option.id)}
                                 label={option.label}
                                 description={option.description}
+                                optionId={option.id}
                                 onClick={() => toggleFeature(option.id)}
                               />
                             );
@@ -1243,6 +1272,7 @@ export default function EstimateConversation() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.95 }}
               transition={{ duration: 0.35, ease }}
+              data-testid="estimate-reply-bubble"
               className="relative max-w-[16rem] rounded-[1.2rem] bg-brand px-4 py-3 text-[13px] leading-5 text-white shadow-[0_14px_36px_rgba(243,29,91,0.24)] sm:max-w-xs"
             >
               <div className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-brand" />
@@ -1320,17 +1350,20 @@ function ChoiceButton({
   description,
   label,
   onClick,
+  optionId,
   selected,
 }: {
   description: string;
   label: string;
   onClick: () => void;
+  optionId?: string;
   selected: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-option-id={optionId}
       aria-pressed={selected}
       className={[
         "group relative overflow-hidden rounded-2xl py-4 pl-5 pr-4 text-left transition-all duration-300",
