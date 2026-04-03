@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useDrag } from "@use-gesture/react";
 import GonishCharacter from "@/components/GonishCharacter";
+import { lockPageScrollForDrag, unlockPageScrollForDrag } from "@/components/layout/SmoothScroll";
 import BrandButton from "@/components/ui/BrandButton";
 import SmartLineBreak from "@/components/ui/SmartLineBreak";
 import type { EstimateContractDraft, EstimateEmailData, InquiryResponse } from "@/lib/inquiry";
@@ -598,16 +599,31 @@ export default function EstimateConversation() {
   const statusMessage = defaultEstimateStatusMessage;
   const [submitCharacterReply, setSubmitCharacterReply] = useState<string | null>(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const characterDragTargetRef = useRef<HTMLDivElement | null>(null);
+  const characterDraggingRef = useRef(false);
 
-  const bindCharacterDrag = useDrag(
-    ({ offset: [x, y], event }) => {
+  useDrag(
+    ({ first, last, offset: [x, y], event }) => {
+      if (first) {
+        characterDraggingRef.current = true;
+        lockPageScrollForDrag();
+      }
+
       event?.preventDefault();
       setDragPos({ x, y });
+
+      if (last && characterDraggingRef.current) {
+        characterDraggingRef.current = false;
+        unlockPageScrollForDrag();
+      }
     },
     {
+      eventOptions: { passive: false },
       filterTaps: true,
       from: () => [dragPos.x, dragPos.y],
+      preventDefault: true,
       pointer: { touch: true },
+      target: characterDragTargetRef,
     },
   );
 
@@ -620,6 +636,10 @@ export default function EstimateConversation() {
   useEffect(() => {
     return () => {
       if (smilingTimer.current) clearTimeout(smilingTimer.current);
+      if (characterDraggingRef.current) {
+        characterDraggingRef.current = false;
+        unlockPageScrollForDrag();
+      }
     };
   }, []);
 
@@ -1258,7 +1278,12 @@ export default function EstimateConversation() {
         className="fixed bottom-24 left-4 z-50 md:bottom-28 md:left-6 xl:bottom-6"
       >
         <div
-          {...bindCharacterDrag()}
+          ref={characterDragTargetRef}
+          data-lenis-prevent-touch
+          data-testid="estimate-floating-character"
+          onTouchCancelCapture={unlockPageScrollForDrag}
+          onTouchEndCapture={unlockPageScrollForDrag}
+          onTouchStartCapture={lockPageScrollForDrag}
           className="flex cursor-grab items-end gap-3 touch-none select-none active:cursor-grabbing"
           style={{ transform: `translate3d(${dragPos.x}px, ${dragPos.y}px, 0)` }}
         >

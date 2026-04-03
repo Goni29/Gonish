@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useDrag } from "@use-gesture/react";
 import GonishCharacter from "@/components/GonishCharacter";
+import { lockPageScrollForDrag, unlockPageScrollForDrag } from "@/components/layout/SmoothScroll";
 import BrandButton from "@/components/ui/BrandButton";
 import type { InquiryResponse } from "@/lib/inquiry";
 import { isValidReplyContact, REPLY_CONTACT_VALIDATION_MESSAGE } from "@/lib/replyContact";
@@ -34,6 +35,8 @@ export default function ContactStage() {
   const [sending, setSending] = useState(false);
   const [submitResultMessage, setSubmitResultMessage] = useState<string | null>(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const characterDragTargetRef = useRef<HTMLDivElement | null>(null);
+  const characterDraggingRef = useRef(false);
   const smileTimeoutRef = useRef<number | null>(null);
   const messageTimeoutRef = useRef<number | null>(null);
 
@@ -44,6 +47,10 @@ export default function ContactStage() {
       }
       if (messageTimeoutRef.current) {
         window.clearTimeout(messageTimeoutRef.current);
+      }
+      if (characterDraggingRef.current) {
+        characterDraggingRef.current = false;
+        unlockPageScrollForDrag();
       }
     };
   }, []);
@@ -66,16 +73,28 @@ export default function ContactStage() {
     }, contactBubbleAutoHideMs);
   }, [submitResultMessage]);
 
-  const bindCharacterDrag = useDrag(
-    ({ offset: [x, y], event }) => {
+  useDrag(
+    ({ first, last, offset: [x, y], event }) => {
+      if (first) {
+        characterDraggingRef.current = true;
+        lockPageScrollForDrag();
+      }
+
       event?.preventDefault();
       setDragPos({ x, y });
+
+      if (last && characterDraggingRef.current) {
+        characterDraggingRef.current = false;
+        unlockPageScrollForDrag();
+      }
     },
     {
       filterTaps: true,
       from: () => [dragPos.x, dragPos.y],
+      preventDefault: true,
       pointer: { touch: true },
       eventOptions: { passive: false },
+      target: characterDragTargetRef,
     },
   );
 
@@ -274,7 +293,12 @@ export default function ContactStage() {
         className="fixed bottom-24 left-4 z-50 md:bottom-28 md:left-6 lg:hidden"
       >
         <div
-          {...bindCharacterDrag()}
+          ref={characterDragTargetRef}
+          data-lenis-prevent-touch
+          data-testid="contact-floating-character"
+          onTouchCancelCapture={unlockPageScrollForDrag}
+          onTouchEndCapture={unlockPageScrollForDrag}
+          onTouchStartCapture={lockPageScrollForDrag}
           className="flex cursor-grab items-end gap-3 touch-none select-none active:cursor-grabbing"
           style={{ transform: `translate3d(${dragPos.x}px, ${dragPos.y}px, 0)` }}
         >
