@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import BrandButton from "@/components/ui/BrandButton";
@@ -48,7 +48,7 @@ const orbitItems: OrbitItem[] = [
 
 export default function ClosingSection() {
   return (
-    <section className="relative overflow-hidden py-[clamp(5rem,10vw,10rem)]">
+    <section className="closing-section relative overflow-hidden py-[clamp(5rem,10vw,10rem)]" data-home-section="closing">
       {/* 배경 글로우 */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[36rem] w-[36rem] rounded-full bg-brand/[0.06] blur-[140px]" />
 
@@ -72,7 +72,7 @@ export default function ClosingSection() {
         </motion.div>
 
         {/* 궤도 시스템 */}
-        <div className="relative mx-auto aspect-square w-full max-w-[min(520px,100%)] overflow-hidden md:max-w-[600px] md:overflow-visible">
+        <div className="closing-section__orbit-stage relative mx-auto aspect-square">
 
           {/* ── 궤도 링 1 (외부) — 상시 회전 ── */}
           <div className="pointer-events-none absolute inset-0 animate-[spin_60s_linear_infinite]">
@@ -156,7 +156,7 @@ export default function ClosingSection() {
             <motion.img
               src="/planet_circle.svg"
               alt=""
-              className="h-[180px] w-[180px] md:h-[220px] md:w-[220px]"
+              className="closing-section__planet"
               draggable={false}
               animate={{
                 filter: [
@@ -197,15 +197,21 @@ export default function ClosingSection() {
 function OrbitLabel({ item }: { item: OrbitItem }) {
   const [hovered, setHovered] = useState(false);
   const rad = (item.angle * Math.PI) / 180;
-  const x = 50 + item.radius * 100 * Math.cos(rad);
-  const y = 50 + item.radius * 100 * Math.sin(rad);
+  const orbitX = item.radius * 100 * Math.cos(rad);
+  const orbitY = item.radius * 100 * Math.sin(rad);
+  const nodeStyle = {
+    "--closing-orbit-x": `${orbitX}%`,
+    "--closing-orbit-y": `${orbitY}%`,
+    left: "calc(50% + (var(--closing-orbit-x) * var(--closing-orbit-radius-scale, 1)))",
+    top: "calc(50% + (var(--closing-orbit-y) * var(--closing-orbit-radius-scale, 1)))",
+  } as CSSProperties;
 
-  const panelLeft = x > 50;
+  const panelLeft = orbitX > 0;
 
   return (
     <motion.div
       className="absolute z-20"
-      style={{ left: `${x}%`, top: `${y}%` }}
+      style={nodeStyle}
       initial={{ opacity: 0, scale: 0.8 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
@@ -226,17 +232,17 @@ function OrbitLabel({ item }: { item: OrbitItem }) {
         animate={hovered ? { scale: 1.6 } : { scale: 1 }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
       >
-        <div className="h-3 w-3 rounded-full bg-brand/30 transition-colors duration-300" />
-        <div className="absolute inset-0 h-3 w-3 rounded-full bg-brand/10 animate-ping" />
+        <div className="closing-section__orbit-dot rounded-full bg-brand/30 transition-colors duration-300" />
+        <div className="closing-section__orbit-dot absolute inset-0 rounded-full bg-brand/10 animate-ping" />
       </motion.div>
 
       {/* 타이틀 */}
       <Link
         href={item.to}
-        className="relative -translate-x-1/2 -translate-y-[calc(100%+12px)] inline-flex min-h-[44px] items-center whitespace-nowrap"
+        className="closing-section__orbit-link relative inline-flex min-h-[44px] items-center whitespace-nowrap"
       >
         <motion.span
-          className="inline-block rounded-full border border-black/8 bg-white/76 px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] text-ink backdrop-blur-xl transition-all duration-300 hover:border-brand/25 hover:text-brand"
+          className="closing-section__orbit-pill inline-block rounded-full border border-black/8 bg-white/76 font-medium uppercase text-ink backdrop-blur-xl transition-all duration-300 hover:border-brand/25 hover:text-brand"
           animate={hovered ? { y: -4, boxShadow: "0 12px 32px rgba(243,29,91,0.12)" } : { y: 0, boxShadow: "0 4px 16px rgba(20,16,20,0.06)" }}
           transition={{ type: "spring", stiffness: 300, damping: 22 }}
         >
@@ -249,7 +255,7 @@ function OrbitLabel({ item }: { item: OrbitItem }) {
         {hovered && (
           <motion.div
             className={[
-              "absolute top-6 z-30 w-[200px] rounded-[1.2rem] border border-black/8 bg-white/80 p-4 backdrop-blur-xl shadow-[0_16px_48px_rgba(20,16,20,0.1)]",
+              "closing-section__orbit-panel absolute top-6 z-30 rounded-[1.2rem] border border-black/8 bg-white/80 p-4 backdrop-blur-xl shadow-[0_16px_48px_rgba(20,16,20,0.1)]",
               panelLeft ? "right-0 translate-x-[10%]" : "left-0 -translate-x-[10%]",
             ].join(" ")}
             initial={{ opacity: 0, y: 8, scale: 0.95 }}

@@ -201,6 +201,79 @@
   padding-block: clamp(3rem, 5vw, 5rem);
 }
 
+.closing-section {
+  --closing-orbit-stage-size: min(31rem, calc(100vw - 4.75rem));
+  --closing-orbit-radius-scale: 0.84;
+  --closing-orbit-label-gap: 0.65rem;
+  --closing-orbit-dot-size: 0.7rem;
+  --closing-orbit-pill-font-size: 0.6rem;
+  --closing-orbit-pill-letter-spacing: 0.22em;
+  --closing-orbit-pill-padding-x: 0.9rem;
+  --closing-orbit-pill-padding-y: 0.48rem;
+  --closing-orbit-panel-width: min(12rem, calc(100vw - 4.5rem));
+  --closing-planet-size: clamp(9rem, 38vw, 11rem);
+}
+
+.closing-section__orbit-stage {
+  width: var(--closing-orbit-stage-size);
+  max-width: 100%;
+  overflow: visible;
+}
+
+.closing-section__planet {
+  width: var(--closing-planet-size);
+  height: var(--closing-planet-size);
+}
+
+.closing-section__orbit-dot {
+  width: var(--closing-orbit-dot-size);
+  height: var(--closing-orbit-dot-size);
+}
+
+.closing-section__orbit-link {
+  transform: translate(-50%, calc(-100% - var(--closing-orbit-label-gap)));
+}
+
+.closing-section__orbit-pill {
+  padding: var(--closing-orbit-pill-padding-y) var(--closing-orbit-pill-padding-x);
+  font-size: var(--closing-orbit-pill-font-size);
+  letter-spacing: var(--closing-orbit-pill-letter-spacing);
+}
+
+.closing-section__orbit-panel {
+  width: var(--closing-orbit-panel-width);
+}
+
+@media (min-width: 640px) {
+  .closing-section {
+    --closing-orbit-stage-size: min(36rem, calc(100vw - 5.5rem));
+    --closing-orbit-radius-scale: 0.92;
+    --closing-orbit-label-gap: 0.7rem;
+    --closing-orbit-dot-size: 0.75rem;
+    --closing-orbit-pill-font-size: 0.7rem;
+    --closing-orbit-pill-letter-spacing: 0.24em;
+    --closing-orbit-pill-padding-x: 1rem;
+    --closing-orbit-pill-padding-y: 0.5rem;
+    --closing-orbit-panel-width: 12.5rem;
+    --closing-planet-size: 12.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .closing-section {
+    --closing-orbit-stage-size: 600px;
+    --closing-orbit-radius-scale: 1;
+    --closing-orbit-label-gap: 0.75rem;
+    --closing-orbit-dot-size: 0.75rem;
+    --closing-orbit-pill-font-size: 0.75rem;
+    --closing-orbit-pill-letter-spacing: 0.24em;
+    --closing-orbit-pill-padding-x: 1rem;
+    --closing-orbit-pill-padding-y: 0.5rem;
+    --closing-orbit-panel-width: 12.5rem;
+    --closing-planet-size: 13.75rem;
+  }
+}
+
 .panel {
   background: rgba(255, 255, 255, 0.74);
   border: 1px solid rgba(20, 16, 20, 0.08);
