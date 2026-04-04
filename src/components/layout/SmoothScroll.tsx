@@ -112,6 +112,7 @@ export default function SmoothScroll() {
     }
 
     const lenis = new Lenis({
+      allowNestedScroll: true,
       lerp: 0.1,
       touchMultiplier: 1.5,
     });

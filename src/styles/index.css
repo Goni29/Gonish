@@ -281,6 +281,104 @@
   backdrop-filter: blur(26px);
 }
 
+.estimate-compact-summary-overlay {
+  background: rgba(20, 16, 20, 0);
+  backdrop-filter: blur(0);
+}
+
+.estimate-compact-summary-overlay--opening {
+  animation: estimate-compact-summary-overlay-open 260ms ease forwards;
+}
+
+.estimate-compact-summary-overlay--open {
+  background: rgba(20, 16, 20, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.estimate-compact-summary-overlay--closing {
+  animation: estimate-compact-summary-overlay-close 260ms ease forwards;
+}
+
+.estimate-compact-summary-shell {
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+.estimate-compact-summary-shell--opening {
+  animation: estimate-compact-summary-shell-open 260ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.estimate-compact-summary-shell--open {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.estimate-compact-summary-shell--closing {
+  animation: estimate-compact-summary-shell-close 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.estimate-compact-summary-shell--closed {
+  opacity: 0;
+  transform: translate3d(0, -0.85rem, 0) scale(0.96);
+  pointer-events: none;
+}
+
+.estimate-compact-summary-surface {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(243, 29, 91, 0.14);
+  box-shadow:
+    0 24px 70px rgba(20, 16, 20, 0.18),
+    0 12px 28px rgba(243, 29, 91, 0.08);
+}
+
+@keyframes estimate-compact-summary-overlay-open {
+  from {
+    background: rgba(20, 16, 20, 0);
+    backdrop-filter: blur(0);
+  }
+
+  to {
+    background: rgba(20, 16, 20, 0.16);
+    backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes estimate-compact-summary-overlay-close {
+  from {
+    background: rgba(20, 16, 20, 0.16);
+    backdrop-filter: blur(8px);
+  }
+
+  to {
+    background: rgba(20, 16, 20, 0);
+    backdrop-filter: blur(0);
+  }
+}
+
+@keyframes estimate-compact-summary-shell-open {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -0.85rem, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes estimate-compact-summary-shell-close {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -0.85rem, 0) scale(0.96);
+  }
+}
+
 .eyebrow {
   font-size: 0.875rem;
   letter-spacing: 0.36em;

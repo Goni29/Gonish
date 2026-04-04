@@ -7,6 +7,12 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   reporter: [['html', { open: 'never' }], ['list']],
+  webServer: {
+    command: 'npm run dev',
+    reuseExistingServer: false,
+    timeout: 120000,
+    url: 'http://localhost:3000',
+  },
 
   use: {
     baseURL: 'http://localhost:3000',

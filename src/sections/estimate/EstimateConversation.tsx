@@ -45,6 +45,10 @@ const estimateSubmitSuccessMessage = "견적이 전송되었어요! 최대한 �
 const inquirySubmitFailureMessage = "문의 전송이 실패했어요. 잠시 후 다시 시도해주세요.";
 const MIN_START_PRICE = 60;
 const FAST_TRACK_PERCENT = 15;
+const COMPACT_SUMMARY_ANIMATION_MS = 260;
+const COMPACT_SUMMARY_TOUCH_GUARD_MS = 420;
+
+type CompactSummaryPanelPhase = "closed" | "closing" | "open" | "opening";
 
 const projectTypeOptions: Option[] = [
   {
@@ -599,8 +603,12 @@ export default function EstimateConversation() {
   const statusMessage = defaultEstimateStatusMessage;
   const [submitCharacterReply, setSubmitCharacterReply] = useState<string | null>(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const [compactSummaryPhase, setCompactSummaryPhase] = useState<CompactSummaryPanelPhase>("closed");
   const characterDragTargetRef = useRef<HTMLDivElement | null>(null);
   const characterDraggingRef = useRef(false);
+  const compactSummaryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const compactSummaryScrollLockedRef = useRef(false);
+  const compactSummaryTouchGuardUntilRef = useRef(0);
 
   useDrag(
     ({ first, last, offset: [x, y], event }) => {
@@ -633,15 +641,89 @@ export default function EstimateConversation() {
     smilingTimer.current = setTimeout(() => setIsSmiling(false), 2000);
   }, []);
 
+  const clearCompactSummaryTimer = useCallback(() => {
+    if (!compactSummaryTimerRef.current) return;
+    clearTimeout(compactSummaryTimerRef.current);
+    compactSummaryTimerRef.current = null;
+  }, []);
+
+  const releaseCompactSummaryScrollLock = useCallback(() => {
+    if (!compactSummaryScrollLockedRef.current) return;
+    compactSummaryScrollLockedRef.current = false;
+    unlockPageScrollForDrag();
+  }, []);
+
+  const openCompactSummaryPanel = useCallback(() => {
+    clearCompactSummaryTimer();
+
+    if (!compactSummaryScrollLockedRef.current) {
+      compactSummaryScrollLockedRef.current = true;
+      lockPageScrollForDrag();
+    }
+
+    setCompactSummaryPhase("opening");
+    compactSummaryTimerRef.current = setTimeout(() => {
+      setCompactSummaryPhase("open");
+      compactSummaryTimerRef.current = null;
+    }, COMPACT_SUMMARY_ANIMATION_MS);
+  }, [clearCompactSummaryTimer]);
+
+  const closeCompactSummaryPanel = useCallback(() => {
+    clearCompactSummaryTimer();
+    setCompactSummaryPhase("closing");
+    compactSummaryTimerRef.current = setTimeout(() => {
+      setCompactSummaryPhase("closed");
+      compactSummaryTimerRef.current = null;
+      releaseCompactSummaryScrollLock();
+    }, COMPACT_SUMMARY_ANIMATION_MS);
+  }, [clearCompactSummaryTimer, releaseCompactSummaryScrollLock]);
+
+  const toggleCompactSummaryPanel = useCallback(() => {
+    if (compactSummaryPhase === "open" || compactSummaryPhase === "opening") {
+      closeCompactSummaryPanel();
+      return;
+    }
+
+    openCompactSummaryPanel();
+  }, [closeCompactSummaryPanel, compactSummaryPhase, openCompactSummaryPanel]);
+
+  const handleCompactSummaryToggleTouchEnd = useCallback(() => {
+    compactSummaryTouchGuardUntilRef.current = Date.now() + COMPACT_SUMMARY_TOUCH_GUARD_MS;
+    toggleCompactSummaryPanel();
+  }, [toggleCompactSummaryPanel]);
+
+  const handleCompactSummaryToggleClick = useCallback(() => {
+    if (Date.now() < compactSummaryTouchGuardUntilRef.current) return;
+    toggleCompactSummaryPanel();
+  }, [toggleCompactSummaryPanel]);
+
   useEffect(() => {
     return () => {
       if (smilingTimer.current) clearTimeout(smilingTimer.current);
+      clearCompactSummaryTimer();
+      releaseCompactSummaryScrollLock();
       if (characterDraggingRef.current) {
         characterDraggingRef.current = false;
         unlockPageScrollForDrag();
       }
     };
-  }, []);
+  }, [clearCompactSummaryTimer, releaseCompactSummaryScrollLock]);
+
+  useEffect(() => {
+    if (compactSummaryPhase === "closed") return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      closeCompactSummaryPanel();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeCompactSummaryPanel, compactSummaryPhase]);
 
   const selectedType = useMemo(() => findOption(projectTypeOptions, form.projectType), [form.projectType]);
   const selectedPageScope = useMemo(() => findOption(pageScopeOptions, form.pageScope), [form.pageScope]);
@@ -736,6 +818,8 @@ export default function EstimateConversation() {
     () => submitCharacterReply ?? getCharacterReply(form, lastTouchedField),
     [form, lastTouchedField, submitCharacterReply],
   );
+  const compactSummaryPanelVisible = compactSummaryPhase !== "closed";
+  const compactSummaryPanelExpanded = compactSummaryPhase === "open" || compactSummaryPhase === "opening";
 
   const handleTextChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -884,6 +968,105 @@ export default function EstimateConversation() {
 
   return (
     <section className="section-space relative">
+      <div className="fixed right-4 top-4 z-[70] sm:right-6 xl:hidden">
+        <button
+          type="button"
+          aria-controls="estimate-compact-summary-panel"
+          aria-expanded={compactSummaryPanelExpanded}
+          data-testid="estimate-compact-summary-toggle"
+          onClick={handleCompactSummaryToggleClick}
+          onTouchEnd={handleCompactSummaryToggleTouchEnd}
+          className="panel flex items-center gap-3 rounded-full border-brand/15 bg-white/90 px-4 py-3 text-left shadow-[0_18px_50px_rgba(20,16,20,0.12)] backdrop-blur-[18px]"
+        >
+          <span className="flex flex-col">
+            <span className="text-[9px] uppercase tracking-[0.28em] text-brand">예상 시작가</span>
+            <span className="mt-1 font-display text-[1rem] leading-none text-brand">
+              <SmartLineBreak text={formatPrice(priceEstimate.basePrice)} maxCharsPerLine={10} maxLines={2} />
+            </span>
+          </span>
+          <span
+            aria-hidden="true"
+            className={[
+              "flex size-8 items-center justify-center rounded-full bg-brand/[0.08] text-sm text-brand transition-transform duration-300",
+              compactSummaryPanelExpanded ? "rotate-180" : "",
+            ]
+              .join(" ")
+              .trim()}
+          >
+            ▾
+          </span>
+        </button>
+      </div>
+
+      {compactSummaryPanelVisible ? (
+        <div
+          className={[
+            "estimate-compact-summary-overlay fixed inset-0 z-[60] xl:hidden",
+            `estimate-compact-summary-overlay--${compactSummaryPhase}`,
+          ].join(" ")}
+        >
+          <button
+            type="button"
+            aria-label="예상 견적 패널 닫기"
+            onClick={closeCompactSummaryPanel}
+            className="absolute inset-0 h-full w-full cursor-default"
+          />
+
+          <div
+            id="estimate-compact-summary-panel"
+            className={[
+              "estimate-compact-summary-shell absolute right-4 top-[5rem] w-[min(24rem,calc(100vw-2rem))] sm:right-6 sm:top-[5.5rem] sm:w-[min(26rem,calc(100vw-3rem))]",
+              `estimate-compact-summary-shell--${compactSummaryPhase}`,
+            ].join(" ")}
+          >
+            <div
+              data-lenis-prevent
+              data-lenis-prevent-touch
+              data-lenis-prevent-wheel
+              data-testid="estimate-compact-summary-panel"
+              className="panel estimate-compact-summary-surface max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain rounded-[2rem] p-5"
+            >
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Estimate panel</p>
+                  <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">예상 견적 상세</p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="예상 견적 패널 닫기"
+                  onClick={closeCompactSummaryPanel}
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full border border-ink/10 bg-white/80 text-lg leading-none text-ink"
+                >
+                  ×
+                </button>
+              </div>
+
+              <EstimateCompactSummaryPanel
+                estimateBandExplanation={estimateBand.explanation}
+                estimateBandLabel={estimateBand.label}
+                priceEstimateDescription={priceEstimate.description}
+                priceEstimateValue={formatPrice(priceEstimate.basePrice)}
+                selectedDiscountLabel={
+                  selectedDiscounts.length > 0
+                    ? selectedDiscounts.map((discount) => discount.label).join(", ")
+                    : "아직 선택 전"
+                }
+                selectedDomainHostingLabel={selectedDomainHosting?.label ?? "아직 고르는 중"}
+                selectedFeatureLabel={
+                  selectedFeatures.length > 0
+                    ? selectedFeatures.map((feature) => feature.label).join(", ")
+                    : "선택된 추가 기능 없음"
+                }
+                selectedPageScopeLabel={selectedPageScope?.label ?? "아직 고르는 중"}
+                selectedReadinessLabel={selectedReadiness?.label ?? "아직 고르는 중"}
+                selectedScheduleLabel={selectedSchedule?.label ?? "아직 고르는 중"}
+                selectedTypeLabel={selectedType?.label ?? "아직 고르는 중"}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Cosmic background glows */}
       <div className="pointer-events-none absolute inset-0 overflow-x-clip">
         <div className="absolute left-[-8rem] top-28 h-[18rem] w-[18rem] rounded-full bg-brand/[0.05] blur-[110px]" />
@@ -1186,7 +1369,7 @@ export default function EstimateConversation() {
           </form>
 
           {/* ── Right: Aside ── */}
-          <aside className="xl:sticky xl:top-6 xl:self-start">
+          <aside className="hidden xl:sticky xl:top-6 xl:block xl:self-start">
             {/* Sticky panel — follows scroll */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1409,6 +1592,84 @@ function ChoiceButton({
       <p className={["text-[15px] font-medium leading-6 transition-colors duration-300", selected ? "text-brand" : "text-ink"].join(" ")}>{label}</p>
       <p className="mt-1.5 text-sm leading-6 text-ink-muted">{description}</p>
     </button>
+  );
+}
+
+function EstimateCompactSummaryPanel({
+  estimateBandExplanation,
+  estimateBandLabel,
+  priceEstimateDescription,
+  priceEstimateValue,
+  selectedDiscountLabel,
+  selectedDomainHostingLabel,
+  selectedFeatureLabel,
+  selectedPageScopeLabel,
+  selectedReadinessLabel,
+  selectedScheduleLabel,
+  selectedTypeLabel,
+}: {
+  estimateBandExplanation: string;
+  estimateBandLabel: string;
+  priceEstimateDescription: string;
+  priceEstimateValue: string;
+  selectedDiscountLabel: string;
+  selectedDomainHostingLabel: string;
+  selectedFeatureLabel: string;
+  selectedPageScopeLabel: string;
+  selectedReadinessLabel: string;
+  selectedScheduleLabel: string;
+  selectedTypeLabel: string;
+}) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="eyebrow">예상 견적</p>
+        <p className="mt-1.5 text-[10px] uppercase tracking-[0.32em] text-brand">예상 시작가</p>
+        <p className="mt-2 font-display text-[clamp(2rem,3vw,2.8rem)] leading-[0.95] text-brand">
+          <SmartLineBreak text={priceEstimateValue} maxCharsPerLine={11} maxLines={3} />
+        </p>
+        <p className="mt-3 text-sm leading-6 text-ink-muted">{priceEstimateDescription}</p>
+        <p className="mt-2 text-xs leading-5 text-ink/62">
+          선택하신 범위를 기준으로 계산한 예상 금액입니다. 최종 견적은 기능 상세 범위, 디자인 난이도,
+          외부 연동 여부에 따라 조정될 수 있어요.
+        </p>
+      </div>
+
+      <div className="soft-divider" />
+
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.32em] text-brand">프로젝트 복잡도 가이드</p>
+        <p className="mt-2 font-medium leading-6 text-ink">{estimateBandLabel}</p>
+        <p className="mt-1.5 text-sm leading-6 text-ink-muted">{estimateBandExplanation}</p>
+      </div>
+
+      <div className="soft-divider" />
+
+      <div className="space-y-2.5 text-sm leading-6 text-ink-muted">
+        <SummaryLine label="프로젝트 유형" value={selectedTypeLabel} />
+        <SummaryLine label="추가 화면 구성" value={selectedPageScopeLabel} />
+        <SummaryLine label="추가 기능 구성" value={selectedFeatureLabel} />
+        <SummaryLine label="자료 준비 상태" value={selectedReadinessLabel} />
+        <SummaryLine label="희망 일정" value={selectedScheduleLabel} />
+        <SummaryLine label="도메인 / 호스팅" value={selectedDomainHostingLabel} />
+        <SummaryLine label="적용 할인" value={selectedDiscountLabel} />
+      </div>
+
+      <div className="soft-divider" />
+
+      <div className="space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.32em] text-brand">안내 사항</p>
+        <p className="text-xs leading-5 text-ink-muted">
+          유지보수와 운영 지원은 포함되지 않고, 신규 기능 개발은 별도 협의가 필요해요.
+        </p>
+        <p className="text-xs leading-5 text-ink/62">
+          모든 견적은 템플릿 재활용이 아닌 맞춤 제작 기준으로 계산됩니다.
+        </p>
+        <p className="text-xs leading-5 text-ink/62">
+          단순 최저가보다 완성도와 운영 안정성을 우선으로, 필요한 범위를 투명하게 안내해드릴게요.
+        </p>
+      </div>
+    </div>
   );
 }
 

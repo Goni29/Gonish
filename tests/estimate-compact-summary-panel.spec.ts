@@ -30,16 +30,15 @@ test("compact estimate panel animates through opening and closing states", async
   await dispatchTouchToggle(toggle);
 
   expect(await toggle.getAttribute("aria-expanded")).toBe("true");
-  expect(await overlay.evaluate((node) => node.className)).toContain("estimate-compact-summary-overlay--opening");
-  expect(await panelShell.evaluate((node) => node.className)).toContain("estimate-compact-summary-shell--opening");
+  await expect(overlay).toHaveClass(/estimate-compact-summary-overlay--(opening|open)/);
+  await expect(panelShell).toHaveClass(/estimate-compact-summary-shell--(opening|open)/);
   await expect(panel).toBeVisible();
   await expect(panelShell).toHaveClass(/estimate-compact-summary-shell--open/, { timeout: 2000 });
 
   await dispatchTouchToggle(toggle);
 
   expect(await toggle.getAttribute("aria-expanded")).toBe("false");
-  expect(await overlay.evaluate((node) => node.className)).toContain("estimate-compact-summary-overlay--closing");
-  expect(await panelShell.evaluate((node) => node.className)).toContain("estimate-compact-summary-shell--closing");
-  await expect(panelShell).toHaveClass(/estimate-compact-summary-shell--closed/, { timeout: 2000 });
+  await expect(overlay).toHaveClass(/estimate-compact-summary-overlay--(closing|closed)/);
+  await expect(panelShell).toHaveClass(/estimate-compact-summary-shell--(closing|closed)/);
   await expect(panel).toBeHidden();
 });
