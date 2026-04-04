@@ -1,0 +1,25 @@
+
+> gonish-portfolio@0.0.0 dev
+> next dev
+
+▲ Next.js 16.1.7 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.35.51:3000
+- Environments: .env.local
+
+✓ Starting...
+Creating turbopack project { dir: 'D:\\Python\\Portfolio\\Gonish', testMode: true }
+✓ Ready in 2.5s
+○ Compiling /estimate ...
+ GET /estimate 200 in 8.1s (compile: 7.6s, render: 517ms)
+ GET /estimate 200 in 158ms (compile: 11ms, render: 147ms)
+ POST /api/analytics 200 in 1343ms (compile: 5ms, render: 1337ms)
+ GET /estimate 200 in 117ms (compile: 6ms, render: 111ms)
+ POST /api/analytics 200 in 2.1s (compile: 145ms, render: 1968ms)
+○ Compiling / ...
+ GET / 200 in 9.5s (compile: 9.0s, render: 549ms)
+ POST /api/analytics 200 in 267ms (compile: 5ms, render: 261ms)
+ GET /estimate 200 in 1219ms (compile: 725ms, render: 493ms)
+ POST /api/analytics 200 in 842ms (compile: 14ms, render: 828ms)
+ GET /estimate 200 in 122ms (compile: 11ms, render: 111ms)
+ POST /api/analytics 200 in 933ms (compile: 3ms, render: 930ms)
