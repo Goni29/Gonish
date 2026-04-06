@@ -16,6 +16,25 @@ let nativeDragScrollLockSnapshot: {
   scrollY: number;
 } | null = null;
 
+function clearLenisClasses() {
+  document.documentElement.classList.remove(
+    "lenis",
+    "lenis-smooth",
+    "lenis-stopped",
+    "lenis-scrolling",
+    "lenis-locked",
+  );
+}
+
+function setScrollMode(mode: "native" | "lenis" | null) {
+  if (mode) {
+    document.documentElement.dataset.scrollMode = mode;
+    return;
+  }
+
+  delete document.documentElement.dataset.scrollMode;
+}
+
 export function getLenis(): Lenis | null {
   return globalLenis;
 }
@@ -87,16 +106,34 @@ export function isIosTouchDevice() {
   return isAppleMobile && window.matchMedia("(pointer: coarse)").matches;
 }
 
-export default function SmoothScroll() {
+export function shouldUseNativeTouchScroll() {
+  return window.matchMedia("(pointer: coarse)").matches || isIosTouchDevice();
+}
+
+type SmoothScrollProps = {
+  restoreLegacyTouchMode?: boolean;
+};
+
+export default function SmoothScroll({ restoreLegacyTouchMode = false }: SmoothScrollProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     ScrollTrigger.config({ ignoreMobileResize: true });
 
-    const useNativeScroll = isIosTouchDevice();
-    ScrollTrigger.normalizeScroll(true);
+    const useNativeScroll = restoreLegacyTouchMode
+      ? isIosTouchDevice()
+      : shouldUseNativeTouchScroll();
+
+    if (restoreLegacyTouchMode) {
+      ScrollTrigger.normalizeScroll(true);
+    }
 
     if (useNativeScroll) {
+      if (!restoreLegacyTouchMode) {
+        ScrollTrigger.normalizeScroll(false);
+        clearLenisClasses();
+      }
+      setScrollMode("native");
       globalLenis = null;
       lenisRef.current = null;
 
@@ -107,9 +144,15 @@ export default function SmoothScroll() {
       return () => {
         window.cancelAnimationFrame(refreshId);
         ScrollTrigger.normalizeScroll(false);
+        setScrollMode(null);
         globalLenis = null;
       };
     }
+
+    if (!restoreLegacyTouchMode) {
+      ScrollTrigger.normalizeScroll(true);
+    }
+    setScrollMode("lenis");
 
     const lenis = new Lenis({
       allowNestedScroll: true,
@@ -135,8 +178,10 @@ export default function SmoothScroll() {
       ScrollTrigger.normalizeScroll(false);
       lenisRef.current = null;
       globalLenis = null;
+      clearLenisClasses();
+      setScrollMode(null);
     };
-  }, []);
+  }, [restoreLegacyTouchMode]);
 
   return null;
 }

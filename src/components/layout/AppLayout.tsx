@@ -73,7 +73,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <div className="min-h-screen flex flex-col">
       <AnalyticsTracker />
       <ScrollToTop />
-      <SmoothScroll />
+      <SmoothScroll restoreLegacyTouchMode={isHome} />
       <SiteHeader />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

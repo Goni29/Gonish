@@ -135,6 +135,14 @@
     overflow-x: clip;
   }
 
+  html[data-scroll-mode="native"] {
+    overscroll-behavior-y: auto;
+  }
+
+  html[data-scroll-mode="native"] body {
+    overscroll-behavior-y: auto;
+  }
+
   p,
   li {
     line-break: strict;
