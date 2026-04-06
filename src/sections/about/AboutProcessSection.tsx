@@ -59,23 +59,29 @@ export default function AboutProcessSection() {
               당신의 브랜드가 오래 기억되도록, 모든 디테일을 다듬습니다.
             </p>
 
-            <div className="mt-8 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="flex min-w-max items-start gap-1.5 px-1 sm:gap-2 lg:w-full lg:min-w-0 lg:justify-between lg:px-0">
+            <div className="mt-8 lg:hidden" data-testid="about-process-compact">
+              <div className="grid grid-cols-[minmax(0,1fr)_0.5rem_minmax(0,1fr)_0.5rem_minmax(0,1fr)_0.5rem_minmax(0,1fr)_0.5rem_minmax(0,1fr)] items-start sm:grid-cols-[minmax(0,1fr)_0.9rem_minmax(0,1fr)_0.9rem_minmax(0,1fr)_0.9rem_minmax(0,1fr)_0.9rem_minmax(0,1fr)]">
+                {processSteps.map((step, index) => (
+                  <Fragment key={step.id}>
+                    <ProcessStepCard step={step} compact />
+                    {index < processSteps.length - 1 ? (
+                      <div
+                        aria-hidden="true"
+                        data-testid="about-process-compact-connector"
+                        className="mt-[1.35rem] h-px self-start border-t border-dashed border-[#e4b4c0] sm:mt-[1.52rem]"
+                      />
+                    ) : null}
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 hidden lg:block">
+              <div className="flex items-start gap-1.5 px-1 sm:gap-2 lg:w-full lg:min-w-0 lg:justify-between lg:px-0">
                 {processSteps.map((step, index) => (
                   <Fragment key={step.id}>
                     <div className="w-[98px] text-center sm:w-[124px] lg:w-[156px]">
-                      <div
-                        className={[
-                          "mx-auto flex size-[3.25rem] items-center justify-center rounded-full border sm:size-[3.55rem]",
-                          step.isHighlighted
-                            ? "border-brand/45 bg-brand text-white shadow-[0_0_0_4px_rgba(243,29,91,0.14),0_12px_26px_rgba(243,29,91,0.3)]"
-                            : "border-[#ecc8d3] bg-white/94 text-[#c15a79] shadow-[0_8px_22px_rgba(20,16,20,0.08)]",
-                        ].join(" ")}
-                      >
-                        {step.icon}
-                      </div>
-                      <p className="mt-3 text-[1.03rem] font-semibold leading-tight text-ink sm:text-[1.12rem]">{step.title}</p>
-                      <p className="mt-1 text-[0.8rem] leading-[1.45] text-ink-muted sm:text-[0.86rem]">{step.description}</p>
+                      <ProcessStepCard step={step} />
                     </div>
 
                     {index < processSteps.length - 1 ? (
@@ -95,6 +101,47 @@ export default function AboutProcessSection() {
 type IconProps = {
   className?: string;
 };
+
+type ProcessStepCardProps = {
+  step: ProcessStep;
+  compact?: boolean;
+};
+
+function ProcessStepCard({ step, compact = false }: ProcessStepCardProps) {
+  return (
+    <div className="min-w-0 text-center" data-testid={compact ? "about-process-compact-step" : undefined}>
+      <div
+        data-testid={compact ? "about-process-compact-icon" : undefined}
+        className={[
+          compact
+            ? "mx-auto flex size-[2.75rem] items-center justify-center rounded-full border sm:size-[3.05rem]"
+            : "mx-auto flex size-[3.25rem] items-center justify-center rounded-full border sm:size-[3.55rem]",
+          step.isHighlighted
+            ? "border-brand/45 bg-brand text-white shadow-[0_0_0_4px_rgba(243,29,91,0.14),0_12px_26px_rgba(243,29,91,0.3)]"
+            : "border-[#ecc8d3] bg-white/94 text-[#c15a79] shadow-[0_8px_22px_rgba(20,16,20,0.08)]",
+        ].join(" ")}
+      >
+        {step.icon}
+      </div>
+      <p
+        className={[
+          "font-semibold leading-tight text-ink break-keep",
+          compact ? "mt-2 text-[0.75rem] sm:mt-3 sm:text-[0.9rem]" : "mt-3 text-[1.03rem] sm:text-[1.12rem]",
+        ].join(" ")}
+      >
+        {step.title}
+      </p>
+      <p
+        className={[
+          "break-keep text-ink-muted",
+          compact ? "mt-1 text-[0.62rem] leading-[1.35] sm:text-[0.72rem]" : "mt-1 text-[0.8rem] leading-[1.45] sm:text-[0.86rem]",
+        ].join(" ")}
+      >
+        {step.description}
+      </p>
+    </div>
+  );
+}
 
 function DiscoverIcon({ className }: IconProps) {
   return (
