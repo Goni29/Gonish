@@ -437,6 +437,19 @@
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
+.footer-sky__nav-links {
+  align-items: center;
+}
+
+.footer-sky__contact-cluster {
+  display: inline-flex;
+  align-items: center;
+}
+
+.footer-sky__inline-cta {
+  display: none;
+}
+
 .footer-sky__sparkle {
   position: absolute;
   display: block;
@@ -524,6 +537,30 @@
   background: rgba(243, 29, 91, 0.62);
   box-shadow: 0 0 0.85rem rgba(243, 29, 91, 0.28);
   transform: translate(-50%, -50%);
+}
+
+@media (max-width: 454px) {
+  .footer-sky__nav-links {
+    column-gap: 0.95rem;
+    row-gap: 0.3rem;
+  }
+
+  .footer-sky__contact-cluster {
+    gap: 0.45rem;
+  }
+
+  .footer-sky__inline-cta {
+    display: inline-flex;
+    min-height: 2.75rem;
+    padding: 0.72rem 0.95rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    white-space: nowrap;
+  }
+
+  .footer-sky__stacked-cta {
+    display: none;
+  }
 }
 
 .signature-section {

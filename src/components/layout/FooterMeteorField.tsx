@@ -30,6 +30,16 @@ const BASE_SHOOTING_STARS: ShootingStarConfig[] = [
   { left: "90%", top: "40%", width: "8rem", duration: "4.9s", delay: "-7.7s", scale: 0.84, travelX: "-3.2rem", travelY: "4.25rem", opacity: 0.45 },
 ];
 
+const MOBILE_METEOR_QUERY = "(max-width: 639px)";
+
+const MOBILE_SHOOTING_STAR_INDICES = new Set([0, 2, 4, 6, 8, 10]);
+
+const SHOOTING_STAR_ENTRIES = BASE_SHOOTING_STARS.map((star, index) => ({ star, index }));
+
+const MOBILE_SHOOTING_STAR_ENTRIES = SHOOTING_STAR_ENTRIES.filter(({ index }) =>
+  MOBILE_SHOOTING_STAR_INDICES.has(index),
+);
+
 const SHOOTING_TRAIL = [
   { position: "14%", size: "0.56rem", opacity: 0.42 },
   { position: "29%", size: "0.44rem", opacity: 0.34 },
@@ -65,20 +75,28 @@ function createRandomStar(baseStar: ShootingStarConfig, index: number) {
   return randomizeStarPosition(baseStar, index);
 }
 
-function createInitialWaitMs(baseStar: ShootingStarConfig) {
+function createInitialWaitMs(baseStar: ShootingStarConfig, gapMultiplier = 1) {
   const durationMs = parseSeconds(baseStar.duration) * 1000;
   const delayMs = Math.abs(parseSeconds(baseStar.delay)) * 1000;
-  return delayMs % durationMs;
+  return Math.round((delayMs % durationMs) * gapMultiplier);
 }
 
-function createCycleGapMs() {
-  return Math.round(220 + Math.random() * 920);
+function createCycleGapMs(gapMultiplier = 1) {
+  return Math.round((220 + Math.random() * 920) * gapMultiplier);
 }
 
-function FooterMeteor({ baseStar, index }: { baseStar: ShootingStarConfig; index: number }) {
+function FooterMeteor({
+  baseStar,
+  index,
+  gapMultiplier = 1,
+}: {
+  baseStar: ShootingStarConfig;
+  index: number;
+  gapMultiplier?: number;
+}) {
   const [star, setStar] = useState(baseStar);
   const [isActive, setIsActive] = useState(false);
-  const [cycleGapMs, setCycleGapMs] = useState(() => createInitialWaitMs(baseStar));
+  const [cycleGapMs, setCycleGapMs] = useState(() => createInitialWaitMs(baseStar, gapMultiplier));
 
   useEffect(() => {
     if (isActive) return;
@@ -92,9 +110,9 @@ function FooterMeteor({ baseStar, index }: { baseStar: ShootingStarConfig; index
 
   useEffect(() => {
     setStar(createRandomStar(baseStar, index));
-    setCycleGapMs(createInitialWaitMs(baseStar));
+    setCycleGapMs(createInitialWaitMs(baseStar, gapMultiplier));
     setIsActive(false);
-  }, [baseStar, index]);
+  }, [baseStar, gapMultiplier, index]);
 
   return (
     <span
@@ -113,7 +131,7 @@ function FooterMeteor({ baseStar, index }: { baseStar: ShootingStarConfig; index
         onAnimationEnd={() => {
           setIsActive(false);
           setStar(createRandomStar(baseStar, index));
-          setCycleGapMs(createCycleGapMs());
+          setCycleGapMs(createCycleGapMs(gapMultiplier));
         }}
         style={
           {
@@ -148,10 +166,37 @@ function FooterMeteor({ baseStar, index }: { baseStar: ShootingStarConfig; index
 }
 
 export default function FooterMeteorField() {
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_METEOR_QUERY);
+    const syncViewportState = () => {
+      setIsMobileViewport(mediaQuery.matches);
+    };
+
+    syncViewportState();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", syncViewportState);
+      return () => mediaQuery.removeEventListener("change", syncViewportState);
+    }
+
+    mediaQuery.addListener(syncViewportState);
+    return () => mediaQuery.removeListener(syncViewportState);
+  }, []);
+
+  const meteorEntries = isMobileViewport ? MOBILE_SHOOTING_STAR_ENTRIES : SHOOTING_STAR_ENTRIES;
+  const gapMultiplier = isMobileViewport ? 1.85 : 1;
+
   return (
     <>
-      {BASE_SHOOTING_STARS.map((star, index) => (
-        <FooterMeteor key={index} baseStar={star} index={index} />
+      {meteorEntries.map(({ star, index }) => (
+        <FooterMeteor
+          key={`${star.left}-${star.top}-${index}`}
+          baseStar={star}
+          index={index}
+          gapMultiplier={gapMultiplier}
+        />
       ))}
     </>
   );

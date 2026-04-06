@@ -20,6 +20,8 @@ const sparkleDots = [
   { left: "94%", top: "14%", size: "0.2rem", delay: "-4.4s" },
 ] as const;
 
+const projectCtaLabel = "\uD504\uB85C\uC81D\uD2B8 \uC774\uC57C\uAE30\uD558\uAE30";
+
 export default function SiteFooter() {
   return (
     <footer className="mt-auto pt-1">
@@ -67,22 +69,41 @@ export default function SiteFooter() {
               </div>
 
               <div className="flex max-w-xl flex-col items-start gap-5 lg:items-end lg:self-center">
-                <div className="flex flex-wrap gap-x-5 gap-y-2 text-[0.95rem] font-medium text-ink-muted lg:justify-end">
-                  {navigation.map((link) => (
-                    <Link
-                      key={link.label}
-                      href={link.to}
-                      className="footer-sky__copy-shadow inline-flex min-h-11 min-w-11 items-center justify-center px-2 py-2 transition-colors duration-300 hover:text-brand"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                <div className="footer-sky__nav-links flex flex-wrap gap-x-5 gap-y-2 text-[0.95rem] font-medium text-ink-muted lg:justify-end">
+                  {navigation.map((link) =>
+                    link.to === "/contact" ? (
+                      <span key={link.label} className="footer-sky__contact-cluster">
+                        <Link
+                          href={link.to}
+                          className="footer-sky__copy-shadow inline-flex min-h-11 min-w-11 items-center justify-center px-2 py-2 transition-colors duration-300 hover:text-brand"
+                        >
+                          {link.label}
+                        </Link>
+
+                        <BrandButton
+                          to="/contact"
+                          variant="ghost"
+                          className="footer-sky__inline-cta min-h-11 min-w-0 border-black/12 bg-white/88 px-4 py-2 shadow-[0_12px_28px_rgba(243,29,91,0.1)]"
+                        >
+                          {projectCtaLabel}
+                        </BrandButton>
+                      </span>
+                    ) : (
+                      <Link
+                        key={link.label}
+                        href={link.to}
+                        className="footer-sky__copy-shadow inline-flex min-h-11 min-w-11 items-center justify-center px-2 py-2 transition-colors duration-300 hover:text-brand"
+                      >
+                        {link.label}
+                      </Link>
+                    ),
+                  )}
                 </div>
 
                 <BrandButton
                   to="/contact"
                   variant="ghost"
-                  className="min-h-12 min-w-11 border-black/12 bg-white/86 px-6 py-3 shadow-[0_16px_40px_rgba(243,29,91,0.1)]"
+                  className="footer-sky__stacked-cta min-h-12 min-w-11 border-black/12 bg-white/86 px-6 py-3 shadow-[0_16px_40px_rgba(243,29,91,0.1)]"
                 >
                   프로젝트 이야기하기
                 </BrandButton>
