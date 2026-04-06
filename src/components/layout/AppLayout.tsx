@@ -54,6 +54,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={pathname}
+            className="min-h-screen"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -69,7 +70,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <AnalyticsTracker />
       <ScrollToTop />
       <SmoothScroll />
@@ -77,13 +78,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={pathname}
+          className="flex flex-1 flex-col"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={pageTransition}
         >
           <FrozenRouter>
-            <main className={isHome ? "pt-0" : "pt-24 md:pt-28"}>
+            <main className={isHome ? "flex-1 pt-0" : "flex-1 pt-24 md:pt-28"}>
               {children}
             </main>
           </FrozenRouter>
