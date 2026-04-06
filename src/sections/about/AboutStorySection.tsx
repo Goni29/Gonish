@@ -136,24 +136,24 @@ export default function AboutStorySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.85, ease }}
-            className="lg:sticky lg:top-28"
+            className="mx-auto w-full max-w-[34rem] lg:sticky lg:top-0 lg:h-[100svh] lg:w-full lg:max-w-[34rem] lg:self-start lg:justify-self-end lg:py-3 xl:max-w-[36rem]"
           >
-            <div className="relative">
+            <div className="relative lg:h-full">
               {/* Planetary glow */}
-              <div className="absolute -inset-8 rounded-full bg-brand/[0.06] blur-[60px]" />
+              <div className="absolute -inset-6 rounded-full bg-brand/[0.06] blur-[60px] lg:-inset-10" />
 
-              <div className="panel relative overflow-hidden rounded-[2.2rem] p-4 sm:p-5">
-                <div className="overflow-hidden rounded-[1.8rem] border border-black/10 bg-[#f4eded]">
+              <div className="panel relative overflow-hidden rounded-[2rem] p-3 sm:p-4 lg:flex lg:h-full lg:max-h-full lg:flex-col">
+                <div className="relative overflow-hidden rounded-[1.7rem] border border-black/10 bg-[#f4eded] sm:aspect-[4/5] lg:min-h-0 lg:flex-1 lg:aspect-auto">
                   <Image
                     src="/Gonish_about.png"
                     alt="Gonish portrait photo"
                     width={1200}
                     height={1500}
-                    className="h-auto w-full object-cover"
-                    sizes="(min-width: 1024px) 32rem, (min-width: 640px) 70vw, 92vw"
+                    className="h-auto w-full object-cover lg:h-full"
+                    sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 34rem, (min-width: 640px) 70vw, 92vw"
                   />
                 </div>
-                <div className="space-y-4 px-2 pb-2 pt-6">
+                <div className="space-y-4 px-2 pb-2 pt-5 sm:pt-6 lg:shrink-0 lg:space-y-3 lg:pt-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="eyebrow">Brand direction</p>
