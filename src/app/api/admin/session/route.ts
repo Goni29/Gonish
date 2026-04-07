@@ -1,13 +1,23 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import {
   ADMIN_SESSION_COOKIE,
   ADMIN_SESSION_COOKIE_PATH,
-  buildAdminSessionValue,
+  ADMIN_SESSION_MAX_AGE,
+  createAdminSession,
+  deleteAdminSession,
   getAdminDashboardKey,
+  verifyAdminKey,
 } from "@/lib/server/adminAuth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim().slice(0, 64);
+  return "";
+}
 
 function clearAdminCookie(response: NextResponse) {
   response.cookies.set({
@@ -16,17 +26,7 @@ function clearAdminCookie(response: NextResponse) {
     path: ADMIN_SESSION_COOKIE_PATH,
     maxAge: 0,
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  response.cookies.set({
-    name: ADMIN_SESSION_COOKIE,
-    value: "",
-    path: "/admin",
-    maxAge: 0,
-    httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
   });
 }
@@ -48,18 +48,28 @@ export async function POST(request: Request) {
   }
 
   const inputKey = (body.key || "").trim();
-  if (!inputKey || inputKey !== dashboardKey) {
+
+  // scrypt 해시 비교 (verifyAdminKey 내부에서 timingSafeEqual 사용)
+  // 환경변수에는 비밀번호 원문이 아닌 scrypt 해시가 저장됩니다.
+  if (!verifyAdminKey(inputKey)) {
     return NextResponse.json({ ok: false, message: "관리자 키가 올바르지 않습니다." }, { status: 401 });
+  }
+
+  let rawToken: string;
+  try {
+    rawToken = await createAdminSession(getClientIp(request));
+  } catch {
+    return NextResponse.json({ ok: false, message: "세션 생성에 실패했습니다." }, { status: 500 });
   }
 
   const response = NextResponse.json({ ok: true });
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
-    value: buildAdminSessionValue(dashboardKey),
+    value: rawToken,
     path: ADMIN_SESSION_COOKIE_PATH,
-    maxAge: 60 * 60 * 12,
+    maxAge: ADMIN_SESSION_MAX_AGE,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
   });
 
@@ -67,6 +77,12 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
+  const cookieStore = await cookies();
+  const rawToken = cookieStore.get(ADMIN_SESSION_COOKIE)?.value || "";
+
+  // DB에서 세션 삭제 (best-effort)
+  await deleteAdminSession(rawToken);
+
   const response = NextResponse.json({ ok: true });
   clearAdminCookie(response);
   return response;

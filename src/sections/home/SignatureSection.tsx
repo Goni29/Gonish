@@ -84,14 +84,59 @@ function getSlot(i: number, active: number): PlanetSlot {
 }
 
 type SignatureStep = (typeof steps)[number];
-const svgMarkupCache = new Map<string, Promise<string>>();
+
+// ── SVG 캐시 (LRU, 최대 20개) ────────────────────────────────────────────────
+class LRUCache<K, V> {
+  private map = new Map<K, V>();
+  constructor(private maxSize: number) {}
+
+  get(key: K): V | undefined {
+    const val = this.map.get(key);
+    if (val !== undefined) {
+      this.map.delete(key);
+      this.map.set(key, val);
+    }
+    return val;
+  }
+
+  set(key: K, val: V): void {
+    if (this.map.size >= this.maxSize) {
+      // 가장 오래된 항목 제거 (Map은 삽입 순서 유지)
+      const oldestKey = this.map.keys().next().value;
+      if (oldestKey !== undefined) this.map.delete(oldestKey);
+    }
+    this.map.set(key, val);
+  }
+}
+
+const svgMarkupCache = new LRUCache<string, Promise<string>>(20);
+
+// ── SVG sanitizer ─────────────────────────────────────────────────────────────
+// fetch한 SVG가 올바른 형식인지 확인하고 잠재적 XSS 벡터를 제거합니다.
+// 현재 asset은 모두 static public 파일이라 위험이 낮지만 방어 레이어로 추가합니다.
+function sanitizeSvgMarkup(raw: string): string {
+  const trimmed = raw.trimStart();
+
+  // SVG 문서가 아니면 거부
+  if (!trimmed.startsWith("<svg") && !trimmed.startsWith("<?xml")) {
+    throw new Error("Invalid SVG: does not start with <svg>");
+  }
+
+  // <script> 태그 및 on* 이벤트 핸들러 제거
+  return trimmed
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/\bon\w+\s*=\s*["'][^"']*["']/gi, "")
+    .replace(/\bon\w+\s*=\s*[^\s>]*/gi, "")
+    .replace(/javascript\s*:/gi, "");
+}
 
 function loadSvgMarkup(src: string) {
   const cached = svgMarkupCache.get(src);
   if (cached) return cached;
   const request = fetch(src).then(async (res) => {
     if (!res.ok) throw new Error(`Failed to load SVG: ${src}`);
-    return res.text();
+    const text = await res.text();
+    return sanitizeSvgMarkup(text);
   });
   svgMarkupCache.set(src, request);
   return request;

@@ -151,7 +151,8 @@ export async function POST(request: Request) {
           : undefined,
       });
     } catch (error) {
-      warning = error instanceof Error ? error.message : "메일은 발송되었지만 운영 상태 업데이트에 실패했습니다.";
+      console.error("[POST /api/admin/replies] pipeline update failed", inquiryId, error);
+      warning = "메일은 발송되었지만 운영 상태 업데이트에 실패했습니다.";
     }
 
     return NextResponse.json({
@@ -204,7 +205,8 @@ export async function POST(request: Request) {
         : undefined,
     });
   } catch (error) {
-    warning = error instanceof Error ? error.message : "메일은 발송되었지만 답변 이력 저장에 실패했습니다.";
+    console.error("[POST /api/admin/replies] reply record update failed", inquiryId, error);
+    warning = "메일은 발송되었지만 답변 이력 저장에 실패했습니다.";
   }
 
   return NextResponse.json({

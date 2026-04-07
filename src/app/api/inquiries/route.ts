@@ -12,6 +12,7 @@ import { getPublicSiteOrigin } from "@/lib/publicSiteOrigin";
 import { isValidReplyContact, isValidReplyEmail, REPLY_CONTACT_VALIDATION_MESSAGE } from "@/lib/replyContact";
 import { createContactInquiry } from "@/lib/server/contactStore";
 import { createEstimateLead } from "@/lib/server/leadStore";
+import { checkRateLimit, getClientIp, RATE_LIMIT } from "@/lib/server/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,6 +37,27 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
+// 필드별 최대 길이 제한
+const FIELD_LIMITS = {
+  name:          100,
+  project:       200,
+  tone:          200,
+  reply:         200,
+  message:      3000,
+  brand:         100,
+  projectType:   100,
+  pageScope:     100,
+  features:     1000,
+  readiness:     100,
+  schedule:      100,
+  domainHosting: 200,
+  discounts:     500,
+  basePrice:     100,
+  priceRange:    100,
+  goal:         2000,
+  note:         2000,
+} as const;
+
 function isNonEmpty(value: unknown) {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -44,7 +66,27 @@ function toText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function checkLength(value: string, field: keyof typeof FIELD_LIMITS): string | null {
+  const max = FIELD_LIMITS[field];
+  if (value.length > max) {
+    return `${field} 항목이 너무 깁니다. (최대 ${max}자)`;
+  }
+  return null;
+}
+
 export async function POST(request: Request) {
+  // Rate limiting: 10분에 3회
+  const ip = getClientIp(request);
+  const allowed = await checkRateLimit(
+    ip,
+    "inquiries",
+    RATE_LIMIT.INQUIRIES.windowSecs,
+    RATE_LIMIT.INQUIRIES.maxRequests,
+  );
+  if (!allowed) {
+    return jsonResponse(429, { ok: false, message: "잠시 후 다시 시도해 주세요." });
+  }
+
   const resend = getResendClient();
   const receiveEmail = getReceiveEmail();
   const fromEmail = getFromEmail();
@@ -80,6 +122,12 @@ export async function POST(request: Request) {
       reply: toText(form.reply),
       message: toText(form.message),
     };
+
+    // 길이 검증
+    for (const field of ["name", "project", "tone", "reply", "message"] as const) {
+      const err = checkLength(sanitizedForm[field], field);
+      if (err) return jsonResponse(400, { ok: false, message: err });
+    }
 
     if (!isValidReplyContact(sanitizedForm.reply)) {
       return jsonResponse(400, {
@@ -156,6 +204,16 @@ export async function POST(request: Request) {
       goal: toText(emailData.goal),
       note: toText(emailData.note),
     };
+
+    // 길이 검증
+    for (const field of [
+      "name", "brand", "reply", "projectType", "pageScope",
+      "features", "readiness", "schedule", "domainHosting",
+      "discounts", "basePrice", "priceRange", "goal", "note",
+    ] as const) {
+      const err = checkLength(sanitizedEmailData[field], field);
+      if (err) return jsonResponse(400, { ok: false, message: err });
+    }
 
     if (!isValidReplyContact(sanitizedEmailData.reply)) {
       return jsonResponse(400, {

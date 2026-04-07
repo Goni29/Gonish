@@ -2,15 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminDashboardKey, isAdminAuthenticated } from "@/lib/server/adminAuth";
-import {
-  getDailyUserCounts,
-  getAvgSessionDurations,
-  getExitPaths,
-  getTodayUserCount,
-  getTodayAvgDuration,
-} from "@/lib/server/analyticsStore";
-import { listEstimateLeads } from "@/lib/server/leadStore";
-import { listContactInquiries } from "@/lib/server/contactStore";
 import AdminLogoutButton from "../leads/AdminLogoutButton";
 import styles from "./page.module.css";
 
@@ -21,6 +12,124 @@ export const metadata: Metadata = {
   title: "Dashboard | Gonish Admin",
   description: "Gonish 관리자 대시보드",
 };
+
+// ============================================================
+// Supabase RPC 호출 헬퍼
+// ============================================================
+
+function getSupabaseConfig() {
+  const url = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceRoleKey) throw new Error("Missing Supabase config");
+  return { url, serviceRoleKey };
+}
+
+function supabaseHeaders(serviceRoleKey: string) {
+  return {
+    apikey: serviceRoleKey,
+    Authorization: `Bearer ${serviceRoleKey}`,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+}
+
+type DashboardSummary = {
+  totalLeads: number;
+  todayLeads: number;
+  totalContacts: number;
+  todayContacts: number;
+};
+
+type AnalyticsSummary = {
+  dailyUsers: Array<{ date: string; count: number }>;
+  avgDurations: Array<{ date: string; avgMs: number }>;
+};
+
+type ExitPath = {
+  pagePath: string;
+  exitedTo: string;
+  avgDurationMs: number;
+  count: number;
+};
+
+async function fetchDashboardSummary(): Promise<DashboardSummary> {
+  const config = getSupabaseConfig();
+  const response = await fetch(`${config.url}/rest/v1/rpc/get_dashboard_summary`, {
+    method: "POST",
+    headers: supabaseHeaders(config.serviceRoleKey),
+    body: JSON.stringify({}),
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("get_dashboard_summary failed");
+  return response.json() as Promise<DashboardSummary>;
+}
+
+async function fetchAnalyticsSummary(days = 30): Promise<AnalyticsSummary> {
+  const config = getSupabaseConfig();
+  const response = await fetch(`${config.url}/rest/v1/rpc/get_analytics_summary`, {
+    method: "POST",
+    headers: supabaseHeaders(config.serviceRoleKey),
+    body: JSON.stringify({ p_days: days }),
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("get_analytics_summary failed");
+  return response.json() as Promise<AnalyticsSummary>;
+}
+
+async function fetchExitPaths(days = 30): Promise<ExitPath[]> {
+  const config = getSupabaseConfig();
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  const query = new URLSearchParams({
+    select: "page_path,exited_to,duration_ms,created_at",
+    created_at: `gte.${since.toISOString()}`,
+    exited_to: "neq.",
+    limit: "5000",
+  });
+
+  const response = await fetch(
+    `${config.url}/rest/v1/analytics_events?${query.toString()}`,
+    {
+      method: "GET",
+      headers: supabaseHeaders(config.serviceRoleKey),
+      cache: "no-store",
+    },
+  );
+  if (!response.ok) return [];
+
+  const rows = (await response.json()) as Array<{
+    page_path: string;
+    exited_to: string;
+    duration_ms: number;
+  }>;
+  if (!Array.isArray(rows)) return [];
+
+  const keyMap = new Map<string, { totalDuration: number; count: number }>();
+  for (const row of rows) {
+    const key = `${row.page_path}::${row.exited_to}`;
+    const entry = keyMap.get(key) || { totalDuration: 0, count: 0 };
+    entry.totalDuration += row.duration_ms || 0;
+    entry.count += 1;
+    keyMap.set(key, entry);
+  }
+
+  const result: ExitPath[] = [];
+  for (const [key, value] of keyMap) {
+    const [pagePath, exitedTo] = key.split("::");
+    result.push({
+      pagePath,
+      exitedTo,
+      avgDurationMs: value.count > 0 ? Math.round(value.totalDuration / value.count) : 0,
+      count: value.count,
+    });
+  }
+  return result.sort((a, b) => b.count - a.count);
+}
+
+// ============================================================
+// 유틸리티
+// ============================================================
 
 function formatDuration(ms: number) {
   if (ms < 1000) return "0초";
@@ -40,6 +149,10 @@ function isToday(dateStr: string) {
   return dateStr === new Date().toISOString().slice(0, 10);
 }
 
+// ============================================================
+// 페이지
+// ============================================================
+
 export default async function AdminDashboardPage() {
   if (!getAdminDashboardKey()) {
     redirect("/admin/login");
@@ -50,41 +163,34 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login?next=/admin/dashboard");
   }
 
-  // Fetch all data in parallel
-  const [
-    dailyUsers,
-    avgDurations,
-    exitPaths,
-    todayUsers,
-    todayAvgDuration,
-    allLeads,
-    allContacts,
-  ] = await Promise.all([
-    getDailyUserCounts(30).catch(() => []),
-    getAvgSessionDurations(30).catch(() => []),
-    getExitPaths(30).catch(() => []),
-    getTodayUserCount().catch(() => 0),
-    getTodayAvgDuration().catch(() => 0),
-    listEstimateLeads({ limit: 500, status: "all", archived: "all", sort: "created_desc" }).catch(() => []),
-    listContactInquiries(500).catch(() => []),
+  // RPC 로 집계 데이터만 수신 — 개별 row 전체를 가져오지 않습니다
+  const [summary, analytics, exitPaths] = await Promise.all([
+    fetchDashboardSummary().catch(
+      (): DashboardSummary => ({ totalLeads: 0, todayLeads: 0, totalContacts: 0, todayContacts: 0 }),
+    ),
+    fetchAnalyticsSummary(30).catch(
+      (): AnalyticsSummary => ({ dailyUsers: [], avgDurations: [] }),
+    ),
+    fetchExitPaths(30).catch((): ExitPath[] => []),
   ]);
 
-  // Inquiry counts
-  const today = new Date().toISOString().slice(0, 10);
-  const totalInquiries = allLeads.length + allContacts.length;
+  const totalInquiries = summary.totalLeads + summary.totalContacts;
+  const newInquiries = summary.todayLeads + summary.todayContacts;
 
-  const newEstimateCount = allLeads.filter((l) => l.createdAt.slice(0, 10) === today).length;
-  const newContactCount = allContacts.filter((c) => c.createdAt.slice(0, 10) === today).length;
-  const newInquiries = newEstimateCount + newContactCount;
-
-  // Chart data
-  const maxDailyCount = Math.max(1, ...dailyUsers.map((d) => d.count));
-  const maxAvgMs = Math.max(1, ...avgDurations.map((d) => d.avgMs));
-  const maxExitCount = Math.max(1, ...exitPaths.map((e) => e.count));
-
-  const last14Users = dailyUsers.slice(-14);
-  const last14Durations = avgDurations.slice(-14);
+  const last14Users = analytics.dailyUsers.slice(-14);
+  const last14Durations = analytics.avgDurations.slice(-14);
   const topExitPaths = exitPaths.slice(0, 15);
+
+  const maxDailyCount = Math.max(1, ...last14Users.map((d) => d.count));
+  const maxAvgMs = Math.max(1, ...last14Durations.map((d) => d.avgMs));
+  const maxExitCount = Math.max(1, ...topExitPaths.map((e) => e.count));
+
+  // 오늘 analytics (dailyUsers 중 오늘 항목)
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayEntry = analytics.dailyUsers.find((d) => d.date === todayStr);
+  const todayUsers = todayEntry?.count ?? 0;
+  const todayDurationEntry = analytics.avgDurations.find((d) => d.date === todayStr);
+  const todayAvgDuration = todayDurationEntry?.avgMs ?? 0;
 
   return (
     <div className={styles.page}>
@@ -259,10 +365,10 @@ export default async function AdminDashboardPage() {
               <tbody>
                 <tr>
                   <td>Estimate 견적 문의</td>
-                  <td>{allLeads.length}건</td>
+                  <td>{summary.totalLeads}건</td>
                   <td>
-                    <span className={newEstimateCount > 0 ? styles.kpiAccent : ""}>
-                      {newEstimateCount}건
+                    <span className={summary.todayLeads > 0 ? styles.kpiAccent : ""}>
+                      {summary.todayLeads}건
                     </span>
                   </td>
                   <td>
@@ -271,10 +377,10 @@ export default async function AdminDashboardPage() {
                 </tr>
                 <tr>
                   <td>Contact 일반 문의</td>
-                  <td>{allContacts.length}건</td>
+                  <td>{summary.totalContacts}건</td>
                   <td>
-                    <span className={newContactCount > 0 ? styles.kpiAccent : ""}>
-                      {newContactCount}건
+                    <span className={summary.todayContacts > 0 ? styles.kpiAccent : ""}>
+                      {summary.todayContacts}건
                     </span>
                   </td>
                   <td>

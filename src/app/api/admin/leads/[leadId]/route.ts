@@ -108,7 +108,7 @@ export async function PATCH(request: Request, context: RouteParams) {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "저장 중 오류가 발생했습니다.";
-    return NextResponse.json({ ok: false, message }, { status: 500 });
+    console.error("[PATCH /api/admin/leads]", leadId, error);
+    return NextResponse.json({ ok: false, message: "저장 중 오류가 발생했습니다." }, { status: 500 });
   }
 }
