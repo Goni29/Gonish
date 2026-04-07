@@ -13,6 +13,9 @@ export type ContactInquiryRecord = {
   kind: "contact";
   createdAt: string;
   form: ContactInquiryForm;
+  lastRepliedAt: string | null;
+  lastReplySubject: string;
+  lastReplyPreview: string;
 };
 
 export type EstimateEmailData = {

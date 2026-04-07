@@ -277,6 +277,12 @@
   color: #6b6168;
 }
 
+.operationsStack {
+  display: grid;
+  gap: 10px;
+  min-width: 420px;
+}
+
 .pipelineStatus {
   display: inline-flex;
   width: fit-content;

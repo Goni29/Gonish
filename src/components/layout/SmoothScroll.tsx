@@ -9,7 +9,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 let globalLenis: Lenis | null = null;
 let dragScrollLockCount = 0;
-let nativeDragScrollLockNormalizer: ReturnType<typeof ScrollTrigger.normalizeScroll> | null = null;
+type ScrollNormalizerController = {
+  disable: () => void;
+  enable: () => unknown;
+};
+
+let nativeDragScrollLockNormalizer: ScrollNormalizerController | null = null;
 let nativeDragScrollLockObserver: ReturnType<typeof ScrollTrigger.observe> | null = null;
 let nativeDragScrollLockSnapshot: {
   htmlOverflow: string;
@@ -35,6 +40,17 @@ function setScrollMode(mode: "native" | "lenis" | null) {
   delete document.documentElement.dataset.scrollMode;
 }
 
+function isScrollNormalizerController(value: unknown): value is ScrollNormalizerController {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "disable" in value &&
+    typeof value.disable === "function" &&
+    "enable" in value &&
+    typeof value.enable === "function"
+  );
+}
+
 export function getLenis(): Lenis | null {
   return globalLenis;
 }
@@ -53,7 +69,10 @@ export function lockPageScrollForDrag() {
     scrollY: window.scrollY,
   };
 
-  nativeDragScrollLockNormalizer = ScrollTrigger.normalizeScroll() ?? null;
+  const activeNormalizer = ScrollTrigger.normalizeScroll();
+  nativeDragScrollLockNormalizer = isScrollNormalizerController(activeNormalizer)
+    ? activeNormalizer
+    : null;
   nativeDragScrollLockNormalizer?.disable();
 
   document.documentElement.style.overflow = "hidden";

@@ -1,91 +1,83 @@
-type Row = { label: string; value: string };
+import {
+  buildAbsoluteAssetUrl,
+  buildGonishEmailShell,
+  renderDetailTable,
+  renderEditorialSection,
+  renderLineList,
+  renderOrbitBand,
+  renderPrimaryButton,
+  renderQuoteRail,
+  safeEmailMultiline,
+  safeEmailText,
+  splitEmailCsv,
+} from "@/lib/emailBranding";
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+type ContactEmailOptions = {
+  siteOrigin?: string;
+};
 
-function normalizeText(value: string) {
-  return value.trim();
-}
+type EstimateEmailOptions = {
+  contractUrl?: string;
+  siteOrigin?: string;
+};
 
-function safeText(value: string, fallback = "-") {
-  const normalized = normalizeText(value);
-  if (!normalized) return fallback;
-  return escapeHtml(normalized);
-}
+export function contactEmailHtml(
+  form: {
+    name: string;
+    project: string;
+    tone: string;
+    reply: string;
+    message: string;
+  },
+  options?: ContactEmailOptions,
+) {
+  const title = form.project || form.name || "새 프로젝트 문의";
+  const adminContactsUrl = buildAbsoluteAssetUrl(options?.siteOrigin, "/admin/contacts");
 
-function safeMultiline(value: string) {
-  const normalized = normalizeText(value);
-  if (!normalized) return "";
-  return escapeHtml(normalized).replaceAll("\n", "<br/>");
-}
+  const body = [
+    renderEditorialSection({
+      eyebrow: "문의 내용",
+      title: "문의 요약",
+      body: renderDetailTable([
+        { label: "이름", value: form.name || "미입력" },
+        { label: "회신 연락처", value: form.reply || "미입력" },
+        { label: "문의 주제", value: form.project || "새 프로젝트 문의" },
+        { label: "원하는 분위기", value: form.tone || "미정" },
+      ]),
+    }),
+    renderEditorialSection({
+      eyebrow: "남겨주신 말",
+      title: "전달해 주신 메모",
+      body: renderQuoteRail(safeEmailMultiline(form.message, "남겨진 메시지가 없습니다.")),
+    }),
+    renderEditorialSection({
+      eyebrow: "확인 안내",
+      title: "회신은 이 연락처로 이어집니다",
+      body: `
+        <div style="font-size:14px;line-height:1.9;color:#5c3f42;">
+          <strong style="color:#b90040;">${safeEmailText(form.reply || "회신 연락처 미입력")}</strong> 로 답장을 이어갈 수 있습니다.
+          아래에서 문의 목록을 열면 바로 확인하고 회신하실 수 있어요.
+        </div>`,
+    }),
+    adminContactsUrl
+      ? renderPrimaryButton({
+          href: adminContactsUrl,
+          label: "문의 목록 열기",
+        })
+      : "",
+  ].join("");
 
-function rows(items: Row[]) {
-  return items
-    .map(
-      ({ label, value }) => `
-      <tr>
-        <td style="padding:10px 12px;font-size:11px;font-weight:700;color:#665C63;letter-spacing:0.6px;width:130px;border-bottom:1px solid #f0ecee;vertical-align:top">${safeText(label)}</td>
-        <td style="padding:10px 12px;font-size:13px;color:#141014;line-height:1.6;border-bottom:1px solid #f0ecee">${safeText(value)}</td>
-      </tr>`,
-    )
-    .join("");
-}
-
-function wrap(badge: string, title: string, body: string) {
-  return `
-<div style="max-width:620px;margin:0 auto;font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#FFFDFC;border:1px solid rgba(20,16,20,0.08);border-radius:22px;overflow:hidden">
-  <div style="padding:24px 28px;border-bottom:2px solid #F31D5B;background:linear-gradient(180deg,#fffdfd 0%,#fff7fa 100%)">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
-      <tr>
-        <td style="font-size:22px;font-weight:700;color:#F31D5B;letter-spacing:1.6px;line-height:1;vertical-align:middle">Gonish</td>
-        <td align="right" style="vertical-align:middle">
-          <span style="display:inline-block;background:#F31D5B;color:#fff;padding:5px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.2px;line-height:1.2;mso-line-height-rule:exactly">${safeText(badge)}</span>
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div style="padding:22px 28px 0">
-    <div style="font-size:20px;font-weight:700;color:#141014;margin-bottom:4px">${safeText(title)}</div>
-    <div style="font-size:11px;color:#665C63">${new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</div>
-  </div>
-  <div style="padding:18px 28px 28px">
-    ${body}
-  </div>
-  <div style="padding:14px 28px;border-top:1px solid #f0ecee;display:flex;justify-content:space-between;align-items:center;background:#fff9fb">
-    <span style="font-size:10px;color:#665C63">Gonish | Custom Web Design & Development</span>
-    <span style="display:inline-block;width:6px;height:6px;border-radius:3px;background:#F31D5B;float:right"></span>
-  </div>
-</div>`;
-}
-
-export function contactEmailHtml(form: {
-  name: string;
-  project: string;
-  tone: string;
-  reply: string;
-  message: string;
-}) {
-  const tableRows = rows([
-    { label: "Name", value: form.name },
-    { label: "Contact", value: form.reply },
-    { label: "Project", value: form.project },
-    { label: "Mood", value: form.tone },
-  ]);
-
-  const body = `
-    <table style="width:100%;border-collapse:collapse;margin-bottom:20px">${tableRows}</table>
-    <div style="padding:16px 20px;background:#faf7f8;border-radius:8px;border-left:3px solid #F31D5B">
-      <div style="font-size:10px;font-weight:700;color:#F31D5B;letter-spacing:1.4px;margin-bottom:8px">MESSAGE</div>
-      <div style="font-size:13px;color:#141014;line-height:1.7;white-space:pre-wrap">${safeMultiline(form.message) || "내용 없음"}</div>
-    </div>`;
-
-  return wrap("PROJECT INQUIRY", form.project || "새 프로젝트 문의", body);
+  return buildGonishEmailShell({
+    badge: "새 문의",
+    eyebrow: "문의 알림",
+    title: `${title} 문의가 도착했습니다`,
+    subtitle: `${form.name || "새로운 문의자"}님이 문의를 남겨주셨습니다. 아래에 주요 내용을 정리해두었으니 확인 후 편하실 때 답장을 이어가 주세요.`,
+    siteOrigin: options?.siteOrigin,
+    orbitLabel: "일반 문의",
+    heroHighlights: [form.tone || "원하는 분위기 미정", form.reply || "회신 연락처 확인"],
+    footerNote: "문의 폼으로 접수된 내용입니다. 필요하시면 문의 목록에서 바로 확인하고 답장을 이어가실 수 있어요.",
+    body,
+  });
 }
 
 export function estimateEmailHtml(
@@ -105,92 +97,112 @@ export function estimateEmailHtml(
     goal: string;
     note: string;
   },
-  options?: { contractUrl?: string },
+  options?: EstimateEmailOptions,
 ) {
-  const clientRows = rows([
-    { label: "이름", value: data.name },
-    { label: "브랜드명", value: data.brand },
-    { label: "연락처", value: data.reply },
-  ]);
+  const featureItems = splitEmailCsv(data.features);
+  const discountItems = splitEmailCsv(data.discounts);
+  const contractUrl = options?.contractUrl?.trim() || "";
+  const adminLeadsUrl = buildAbsoluteAssetUrl(options?.siteOrigin, "/admin/leads");
+  const title = data.brand || data.name || data.projectType || "새 프로젝트";
 
-  const scopeRows = rows([
-    { label: "프로젝트 유형", value: data.projectType },
-    { label: "추가 화면 구성", value: data.pageScope },
-    { label: "추가 기능", value: data.features },
-    { label: "자료 준비 상태", value: data.readiness },
-    { label: "희망 일정", value: data.schedule },
-    { label: "도메인/호스팅", value: data.domainHosting },
-    { label: "적용 혜택", value: data.discounts },
-  ]);
+  const body = [
+    renderOrbitBand({
+      eyebrow: "예상 견적",
+      title: data.priceRange || "예산 범위 조율 예정",
+      body: data.basePrice || "별도 안내",
+      aside: "견적 초안",
+    }),
+    renderEditorialSection({
+      eyebrow: "기본 정보",
+      title: "기본 정보",
+      body: renderDetailTable([
+        { label: "이름", value: data.name || "미입력" },
+        { label: "브랜드명", value: data.brand || "미입력" },
+        { label: "회신 연락처", value: data.reply || "미입력" },
+      ]),
+    }),
+    renderEditorialSection({
+      eyebrow: "상담 범위",
+      title: "상담에 필요한 범위",
+      body: renderDetailTable([
+        { label: "프로젝트 유형", value: data.projectType || "미정" },
+        { label: "페이지 범위", value: data.pageScope || "미정" },
+        { label: "자료 준비 상태", value: data.readiness || "확인 필요" },
+        { label: "희망 일정", value: data.schedule || "미정" },
+        { label: "도메인/호스팅", value: data.domainHosting || "미정" },
+      ]),
+    }),
+    renderEditorialSection({
+      eyebrow: "선택 항목",
+      title: "기능과 혜택",
+      body: `
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#b90040;">선택 기능</div>
+        <div style="margin-top:12px;">${renderLineList(featureItems, "기본 구성 중심")}</div>
+        <div style="margin-top:22px;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#b90040;">적용 혜택</div>
+        <div style="margin-top:12px;">${renderLineList(discountItems, "혜택 없음")}</div>
+      `,
+    }),
+    data.goal || data.note
+      ? renderEditorialSection({
+          eyebrow: "추가 메모",
+          title: "전달해 주신 내용",
+          body: `
+            ${
+              data.goal
+                ? `
+              <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#b90040;">프로젝트 목표</div>
+              <div style="margin-top:12px;">${renderQuoteRail(safeEmailMultiline(data.goal))}</div>`
+                : ""
+            }
+            ${
+              data.note
+                ? `
+              <div style="margin-top:${data.goal ? "24px" : "0"};font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#b90040;">추가 요청사항</div>
+              <div style="margin-top:12px;">${renderQuoteRail(safeEmailMultiline(data.note))}</div>`
+                : ""
+            }
+          `,
+        })
+      : "",
+    contractUrl
+      ? renderEditorialSection({
+          eyebrow: "바로 확인하기",
+          title: "계약서 초안을 함께 확인하실 수 있어요",
+          body: `
+            <div style="font-size:14px;line-height:1.9;color:#5c3f42;">
+              아래 링크에서 자동 입력된 계약서 초안을 열어 바로 검토하실 수 있습니다.
+            </div>
+            ${renderPrimaryButton({ href: contractUrl, label: "계약서 초안 보기", align: "left" })}
+            <div style="margin-top:14px;font-size:11px;line-height:1.75;color:#9d808b;word-break:break-all;">
+              ${safeEmailText(contractUrl)}
+            </div>
+          `,
+        })
+      : adminLeadsUrl
+        ? renderEditorialSection({
+            eyebrow: "바로 확인하기",
+            title: "문의 목록에서 이어서 확인하실 수 있어요",
+            body: `
+              <div style="font-size:14px;line-height:1.9;color:#5c3f42;">
+                계약서 링크가 아직 없어도 문의 목록에서 내용을 확인하고 후속 안내를 이어가실 수 있습니다.
+              </div>
+              ${renderPrimaryButton({ href: adminLeadsUrl, label: "견적 문의 목록 열기", align: "left" })}
+            `,
+          })
+        : "",
+  ]
+    .filter(Boolean)
+    .join("");
 
-  const featureTags = data.features
-    .split(",")
-    .map((feature) => normalizeText(feature))
-    .filter((feature) => feature && feature !== "-");
-
-  const discountTags = data.discounts
-    .split(",")
-    .map((discount) => normalizeText(discount))
-    .filter((discount) => discount && discount !== "-");
-
-  const contractUrl = options?.contractUrl ? escapeHtml(options.contractUrl) : "";
-
-  const body = `
-    <div style="border:1px solid rgba(243,29,91,0.14);background:#fff5f8;border-radius:16px;padding:16px 18px;margin-bottom:18px">
-      <div style="font-size:10px;font-weight:700;color:#665C63;letter-spacing:1.4px;margin-bottom:8px">예상 시작가</div>
-      <div style="font-size:30px;line-height:1;font-weight:700;color:#F31D5B">${safeText(data.basePrice)}</div>
-      <div style="margin-top:8px;font-size:12px;color:#665C63">${safeText(data.priceRange)}</div>
-    </div>
-
-    <div style="font-size:10px;font-weight:700;color:#F31D5B;letter-spacing:1.4px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #f0ecee">CLIENT</div>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:20px">${clientRows}</table>
-
-    <div style="font-size:10px;font-weight:700;color:#F31D5B;letter-spacing:1.4px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #f0ecee">PROJECT SCOPE</div>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:18px">${scopeRows}</table>
-
-    ${
-      featureTags.length > 0
-        ? `<div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#665C63;letter-spacing:1.2px;margin-bottom:8px">선택 기능</div>
-      ${featureTags.map((feature) => `<span style="display:inline-block;margin:0 8px 8px 0;padding:7px 12px;border-radius:999px;background:#fff6f9;border:1px solid rgba(243,29,91,.2);font-size:12px;color:#5c4951">${safeText(feature)}</span>`).join("")}
-    </div>`
-        : ""
-    }
-
-    ${
-      discountTags.length > 0
-        ? `<div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#665C63;letter-spacing:1.2px;margin-bottom:8px">적용 혜택</div>
-      ${discountTags.map((discount) => `<span style="display:inline-block;margin:0 8px 8px 0;padding:7px 12px;border-radius:999px;background:#fff;border:1px solid rgba(20,16,20,.14);font-size:12px;color:#4a3f45">${safeText(discount)}</span>`).join("")}
-    </div>`
-        : ""
-    }
-
-    <div style="padding:14px 16px;background:#faf7f8;border-radius:12px;border-left:3px solid #F31D5B;margin-bottom:16px">
-      <div style="font-size:12px;color:#4d4349;line-height:1.7">
-        견적은 현재 선택하신 범위를 기준으로 계산된 초안이며, 상세 범위 확정 시 조정될 수 있어요.
-      </div>
-    </div>
-
-    ${
-      data.goal || data.note
-        ? `<div style="padding:16px 20px;background:#faf7f8;border-radius:12px;border-left:3px solid #F31D5B;margin-bottom:16px">
-        ${data.goal ? `<div style="font-size:10px;font-weight:700;color:#F31D5B;letter-spacing:1.4px;margin-bottom:8px">PROJECT GOAL</div><div style="font-size:13px;color:#141014;line-height:1.7;margin-bottom:12px;white-space:pre-wrap">${safeMultiline(data.goal)}</div>` : ""}
-        ${data.note ? `<div style="font-size:10px;font-weight:700;color:#F31D5B;letter-spacing:1.4px;margin-bottom:8px">NOTE</div><div style="font-size:13px;color:#141014;line-height:1.7;white-space:pre-wrap">${safeMultiline(data.note)}</div>` : ""}
-      </div>`
-        : ""
-    }
-
-    ${
-      contractUrl
-        ? `<div style="padding:16px 18px;background:#fff5f8;border:1px solid rgba(243,29,91,.18);border-radius:14px">
-      <div style="font-size:10px;font-weight:700;color:#F31D5B;letter-spacing:1.4px;margin-bottom:8px">NEXT STEP</div>
-      <div style="font-size:13px;color:#4d4349;line-height:1.7;margin-bottom:12px">아래 버튼으로 자동 입력된 계약서 초안을 열어 바로 PDF로 내보낼 수 있습니다.</div>
-      <a href="${contractUrl}" style="display:inline-block;background:#F31D5B;color:#fff;text-decoration:none;padding:10px 14px;border-radius:999px;font-size:13px;font-weight:700">계약서 초안 열기</a>
-      <div style="margin-top:10px;font-size:11px;color:#6c5f66;line-height:1.6;word-break:break-all">${contractUrl}</div>
-    </div>`
-        : ""
-    }`;
-
-  return wrap("ESTIMATE", `${data.brand || data.name || "새 프로젝트"} 견적서`, body);
+  return buildGonishEmailShell({
+    badge: "새 견적 문의",
+    eyebrow: "견적 문의 알림",
+    title: `${title} 견적 문의가 도착했습니다`,
+    subtitle: "견적 문의에 필요한 범위와 일정, 전달해 주신 메모를 아래에 정리해두었습니다. 확인 후 다음 안내를 편하게 이어가 주세요.",
+    siteOrigin: options?.siteOrigin,
+    orbitLabel: "견적 문의",
+    heroHighlights: [data.projectType || "프로젝트 유형 미정", data.schedule || "희망 일정 조율", data.reply || "회신 연락처 확인"],
+    footerNote: "견적 문의 폼으로 접수된 내용입니다. 계약서 초안이나 문의 목록에서 바로 이어서 확인하실 수 있어요.",
+    body,
+  });
 }

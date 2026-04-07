@@ -1,0 +1,163 @@
+.composer {
+  display: grid;
+  gap: 12px;
+  min-width: min(100%, 420px);
+  border-radius: 20px;
+  border: 1px solid rgba(20, 16, 20, 0.1);
+  background:
+    radial-gradient(circle at top right, rgba(243, 29, 91, 0.1), transparent 34%),
+    linear-gradient(180deg, #fffdfc 0%, #fff7f5 100%);
+  padding: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 20, 0.44);
+}
+
+.title {
+  margin-top: 4px;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #1b1418;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 29, 91, 0.22);
+  background: rgba(255, 255, 255, 0.78);
+  color: #a72853;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.context {
+  display: grid;
+  gap: 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(20, 16, 20, 0.08);
+  padding: 12px;
+}
+
+.contextRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: #5c4d55;
+}
+
+.contextLabel {
+  color: rgba(20, 16, 20, 0.56);
+}
+
+.contextValue {
+  text-align: right;
+  color: #1b1418;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.subjectPreview {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.65;
+  color: #6a5c63;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  font-size: 11px;
+  color: #6b6168;
+  letter-spacing: 0.02em;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(20, 16, 20, 0.14);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #141014;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 220px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.hint {
+  margin: -4px 0 0;
+  font-size: 12px;
+  line-height: 1.65;
+  color: #7b4f5f;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: #f31d5b;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.buttonSecondary {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(20, 16, 20, 0.14);
+  color: #1b1418;
+}
+
+.feedback {
+  margin: 0;
+  width: 100%;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.feedbackSuccess {
+  color: #2f6d4d;
+}
+
+.feedbackError {
+  color: #a33255;
+}

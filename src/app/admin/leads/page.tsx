@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { buildEstimateReplyDraft } from "@/lib/adminReply";
 import {
   ESTIMATE_LEAD_ARCHIVE_FILTER_LABELS,
   ESTIMATE_LEAD_ARCHIVE_FILTER_VALUES,
@@ -119,7 +120,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
           <div className={styles.titleWrap}>
             <p className={styles.eyebrow}>Gonish admin</p>
             <h1 className={styles.title}>견적 리드 운영</h1>
-            <p className={styles.desc}>상태, 담당자, 다음 액션일, 내부 메모를 기준으로 견적 리드를 운영하세요.</p>
+            <p className={styles.desc}>상태, 담당자, 다음 액션일, 내부 메모와 답변 메일 발송 기준으로 견적 리드를 운영하세요.</p>
           </div>
           <div className={styles.actions}>
             <Link href="/admin/dashboard" className={`${styles.button} ${styles.buttonSecondary}`}>
@@ -138,7 +139,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
         <section className={styles.card}>
           <div className={styles.meta}>
             <span>총 {leads.length}건</span>
-            <span>운영중 {activeCount}건</span>
+            <span>운영 중 {activeCount}건</span>
             <span>아카이브 {archivedCount}건</span>
           </div>
 
@@ -212,6 +213,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                       normalizeList(lead.contractDraft.discountLabels).length > 0
                         ? normalizeList(lead.contractDraft.discountLabels)
                         : parseCommaList(lead.emailData.discounts);
+                    const replyDraft = buildEstimateReplyDraft(lead);
 
                     return (
                       <tr key={lead.id}>
@@ -245,7 +247,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                                 <span>{lead.emailData.schedule || "-"}</span>
                               </div>
                               <div className={styles.detailItem}>
-                                <span className={styles.detailLabel}>도메인/호스팅</span>
+                                <span className={styles.detailLabel}>도메인 / 호스팅</span>
                                 <span>{lead.emailData.domainHosting || "-"}</span>
                               </div>
                               <div className={styles.detailItem}>
@@ -263,7 +265,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                                 )}
                               </div>
                               <div className={styles.detailItem}>
-                                <span className={styles.detailLabel}>혜택 선택</span>
+                                <span className={styles.detailLabel}>할인 선택</span>
                                 {discountLabels.length > 0 ? (
                                   <div className={styles.tagWrap}>
                                     {discountLabels.map((label) => (
@@ -296,22 +298,28 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                           </details>
                         </td>
                         <td>
-                          <div className={styles.pipelineMeta}>
-                            <span className={styles.pipelineStatus}>{ESTIMATE_PIPELINE_STATUS_LABELS[lead.pipelineStatus]}</span>
-                            <span>다음 액션: {formatDate(lead.nextActionAt)}</span>
-                            <span>마지막 연락: {formatDate(lead.lastContactedAt)}</span>
-                            <span>업데이트: {formatDateTime(lead.updatedAt)}</span>
+                          <div className={styles.operationsStack}>
+                            <div className={styles.pipelineMeta}>
+                              <span className={styles.pipelineStatus}>{ESTIMATE_PIPELINE_STATUS_LABELS[lead.pipelineStatus]}</span>
+                              <span>다음 액션: {formatDate(lead.nextActionAt)}</span>
+                              <span>마지막 연락: {formatDate(lead.lastContactedAt)}</span>
+                              <span>업데이트: {formatDateTime(lead.updatedAt)}</span>
+                            </div>
+                            <LeadPipelineEditor
+                              leadId={lead.id}
+                              initialStatus={lead.pipelineStatus}
+                              initialAssignedTo={lead.assignedTo}
+                              initialNextActionAt={lead.nextActionAt}
+                              initialLastContactedAt={lead.lastContactedAt}
+                              initialInternalNote={lead.internalNote}
+                              initialCloseReason={lead.closeReason}
+                              initialArchived={lead.archived}
+                              replyContact={lead.emailData.reply}
+                              initialReplyRecipientEmail={replyDraft.recipientEmail}
+                              initialReplySubject={replyDraft.subject}
+                              initialReplyMessage={replyDraft.message}
+                            />
                           </div>
-                          <LeadPipelineEditor
-                            leadId={lead.id}
-                            initialStatus={lead.pipelineStatus}
-                            initialAssignedTo={lead.assignedTo}
-                            initialNextActionAt={lead.nextActionAt}
-                            initialLastContactedAt={lead.lastContactedAt}
-                            initialInternalNote={lead.internalNote}
-                            initialCloseReason={lead.closeReason}
-                            initialArchived={lead.archived}
-                          />
                         </td>
                         <td>
                           <Link href={contractPath} className={styles.link}>

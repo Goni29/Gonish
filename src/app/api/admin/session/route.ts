@@ -1,10 +1,25 @@
 import { NextResponse } from "next/server";
-import { ADMIN_SESSION_COOKIE, buildAdminSessionValue, getAdminDashboardKey } from "@/lib/server/adminAuth";
+import {
+  ADMIN_SESSION_COOKIE,
+  ADMIN_SESSION_COOKIE_PATH,
+  buildAdminSessionValue,
+  getAdminDashboardKey,
+} from "@/lib/server/adminAuth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function clearAdminCookie(response: NextResponse) {
+  response.cookies.set({
+    name: ADMIN_SESSION_COOKIE,
+    value: "",
+    path: ADMIN_SESSION_COOKIE_PATH,
+    maxAge: 0,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
     value: "",
@@ -41,7 +56,7 @@ export async function POST(request: Request) {
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
     value: buildAdminSessionValue(dashboardKey),
-    path: "/admin",
+    path: ADMIN_SESSION_COOKIE_PATH,
     maxAge: 60 * 60 * 12,
     httpOnly: true,
     sameSite: "lax",

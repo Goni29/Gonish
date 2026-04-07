@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
 
 export const ADMIN_SESSION_COOKIE = "gonish_admin_session";
+export const ADMIN_SESSION_COOKIE_PATH = "/";
 
 export function getAdminDashboardKey() {
   return (process.env.ADMIN_DASHBOARD_KEY || "").trim();

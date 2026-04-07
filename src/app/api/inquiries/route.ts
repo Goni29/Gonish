@@ -29,6 +29,26 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
+function getSiteOrigin(requestUrl: string) {
+  const explicit =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.SITE_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    process.env.VERCEL_URL ||
+    "";
+
+  if (explicit.trim()) {
+    const normalized = explicit.trim();
+    return normalized.startsWith("http") ? normalized : `https://${normalized}`;
+  }
+
+  try {
+    return new URL(requestUrl).origin;
+  } catch {
+    return "";
+  }
+}
+
 function isNonEmpty(value: unknown) {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -41,6 +61,7 @@ export async function POST(request: Request) {
   const resend = getResendClient();
   const receiveEmail = getReceiveEmail();
   const fromEmail = getFromEmail();
+  const siteOrigin = getSiteOrigin(request.url);
 
   if (!resend || !receiveEmail || !fromEmail) {
     return jsonResponse(500, {
@@ -93,7 +114,7 @@ export async function POST(request: Request) {
         to: [receiveEmail],
         replyTo: isValidReplyEmail(sanitizedForm.reply) ? sanitizedForm.reply : undefined,
         subject,
-        html: contactEmailHtml(sanitizedForm),
+        html: contactEmailHtml(sanitizedForm, { siteOrigin }),
       });
     } catch {
       return jsonResponse(502, { ok: false, message: "메일 발송에 실패했어요. 잠시 후 다시 시도해 주세요." });
@@ -191,7 +212,10 @@ export async function POST(request: Request) {
         to: [receiveEmail],
         replyTo: isValidReplyEmail(lead.emailData.reply) ? lead.emailData.reply : undefined,
         subject,
-        html: estimateEmailHtml(lead.emailData, { contractUrl: contractUrl.toString() }),
+        html: estimateEmailHtml(lead.emailData, {
+          contractUrl: contractUrl.toString(),
+          siteOrigin,
+        }),
       });
     } catch {
       return jsonResponse(502, { ok: false, message: "메일 발송에 실패했어요. 잠시 후 다시 시도해 주세요." });

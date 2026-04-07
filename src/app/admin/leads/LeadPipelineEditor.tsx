@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import InquiryReplyComposer, { type ReplySentPayload } from "@/components/admin/InquiryReplyComposer";
 import {
   ESTIMATE_PIPELINE_STATUS_LABELS,
   ESTIMATE_PIPELINE_STATUS_VALUES,
@@ -18,6 +19,10 @@ type LeadPipelineEditorProps = {
   initialInternalNote: string;
   initialCloseReason: string;
   initialArchived: boolean;
+  replyContact: string;
+  initialReplyRecipientEmail: string;
+  initialReplySubject: string;
+  initialReplyMessage: string;
 };
 
 type UpdateResponse = {
@@ -49,6 +54,10 @@ export default function LeadPipelineEditor({
   initialInternalNote,
   initialCloseReason,
   initialArchived,
+  replyContact,
+  initialReplyRecipientEmail,
+  initialReplySubject,
+  initialReplyMessage,
 }: LeadPipelineEditorProps) {
   const router = useRouter();
   const [status, setStatus] = useState<EstimatePipelineStatus>(initialStatus);
@@ -62,6 +71,15 @@ export default function LeadPipelineEditor({
   const [feedback, setFeedback] = useState("");
 
   const disableCloseReason = useMemo(() => status !== "lost" && status !== "on_hold", [status]);
+
+  const handleReplySent = (payload: ReplySentPayload) => {
+    if (payload.kind !== "estimate") return;
+
+    setLastContactedAt(toDateTimeLocalInput(payload.lastSentAt));
+    if (payload.pipelineStatus && ESTIMATE_PIPELINE_STATUS_VALUES.includes(payload.pipelineStatus as EstimatePipelineStatus)) {
+      setStatus(payload.pipelineStatus as EstimatePipelineStatus);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -118,12 +136,7 @@ export default function LeadPipelineEditor({
 
         <label className={styles.editorField}>
           <span className={styles.editorLabel}>담당자</span>
-          <input
-            value={assignedTo}
-            onChange={(event) => setAssignedTo(event.target.value)}
-            placeholder="예: Goni"
-            className={styles.editorInput}
-          />
+          <input value={assignedTo} onChange={(event) => setAssignedTo(event.target.value)} placeholder="예: Goni" className={styles.editorInput} />
         </label>
       </div>
 
@@ -161,29 +174,40 @@ export default function LeadPipelineEditor({
           value={internalNote}
           onChange={(event) => setInternalNote(event.target.value)}
           className={styles.editorTextarea}
-          placeholder="다음 통화 때 확인할 내용, 리스크, 우선순위 등을 기록"
+          placeholder="다음 통화 때 확인할 내용이나 우선순위를 메모해 두세요."
         />
       </label>
 
+      <InquiryReplyComposer
+        inquiryId={leadId}
+        kind="estimate"
+        replyContact={replyContact}
+        initialRecipientEmail={initialReplyRecipientEmail}
+        initialSubject={initialReplySubject}
+        initialMessage={initialReplyMessage}
+        lastSentAt={initialLastContactedAt}
+        onSent={handleReplySent}
+      />
+
       <label className={styles.editorField}>
-        <span className={styles.editorLabel}>종료/보류 사유</span>
+        <span className={styles.editorLabel}>종료 / 보류 사유</span>
         <input
           value={closeReason}
           onChange={(event) => setCloseReason(event.target.value)}
           className={styles.editorInput}
           disabled={disableCloseReason}
-          placeholder={disableCloseReason ? "상태가 종료(실패)/보류일 때 입력" : "예: 예산 보류, 일정 미스매치"}
+          placeholder={disableCloseReason ? "상태가 종료 또는 보류일 때만 입력됩니다." : "예: 일정 미스매치, 예산 보류"}
         />
       </label>
 
       <label className={styles.archiveCheck}>
         <input type="checkbox" checked={archived} onChange={(event) => setArchived(event.target.checked)} />
-        <span>아카이브로 숨김 처리</span>
+        <span>아카이브로 이동</span>
       </label>
 
       <div className={styles.editorFooter}>
         <button type="button" className={styles.button} onClick={handleSave} disabled={saving}>
-          {saving ? "저장 중..." : "저장"}
+          {saving ? "저장 중..." : "운영 상태 저장"}
         </button>
         {feedback ? <span className={styles.feedback}>{feedback}</span> : null}
       </div>

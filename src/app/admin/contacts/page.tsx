@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import InquiryReplyComposer from "@/components/admin/InquiryReplyComposer";
+import { buildContactReplyDraft } from "@/lib/adminReply";
 import { getAdminDashboardKey, isAdminAuthenticated } from "@/lib/server/adminAuth";
 import { listContactInquiries } from "@/lib/server/contactStore";
 import AdminLogoutButton from "./AdminLogoutButton";
@@ -13,6 +15,13 @@ export const metadata: Metadata = {
   title: "Admin Contacts | Gonish",
   description: "Gonish Contact 문의 운영 페이지",
 };
+
+function formatDateTime(value: string | null) {
+  if (!value) return "아직 발송 이력이 없습니다.";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "아직 발송 이력이 없습니다.";
+  return parsed.toLocaleString("ko-KR");
+}
 
 export default async function AdminContactsPage() {
   if (!getAdminDashboardKey()) {
@@ -40,7 +49,7 @@ export default async function AdminContactsPage() {
           <div className={styles.titleWrap}>
             <p className={styles.eyebrow}>Gonish admin</p>
             <h1 className={styles.title}>Contact 문의 운영</h1>
-            <p className={styles.desc}>Contact 페이지에서 들어온 상담 문의를 최신 순으로 확인합니다.</p>
+            <p className={styles.desc}>Contact 페이지에서 들어온 상담 문의를 확인하고 바로 답변 메일을 발송할 수 있습니다.</p>
           </div>
           <div className={styles.actions}>
             <Link href="/admin/dashboard" className={`${styles.button} ${styles.buttonSecondary}`}>
@@ -72,33 +81,52 @@ export default async function AdminContactsPage() {
                 <thead>
                   <tr>
                     <th>접수일</th>
-                    <th>이름/브랜드</th>
+                    <th>이름 / 브랜드</th>
                     <th>연락처</th>
                     <th>프로젝트</th>
                     <th>무드</th>
                     <th>메시지</th>
+                    <th>답변 메일</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {inquiries.map((inquiry) => (
-                    <tr key={inquiry.id}>
-                      <td>
-                        <div>{new Date(inquiry.createdAt).toLocaleDateString("ko-KR")}</div>
-                        <div className={styles.muted}>{new Date(inquiry.createdAt).toLocaleTimeString("ko-KR")}</div>
-                      </td>
-                      <td>
-                        <div className={styles.rowTitle}>{inquiry.form.name || "-"}</div>
-                      </td>
-                      <td>{inquiry.form.reply || "-"}</td>
-                      <td>
-                        <div>{inquiry.form.project || "-"}</div>
-                      </td>
-                      <td>{inquiry.form.tone || "-"}</td>
-                      <td>
-                        <p className={styles.multiline}>{inquiry.form.message || "-"}</p>
-                      </td>
-                    </tr>
-                  ))}
+                  {inquiries.map((inquiry) => {
+                    const replyDraft = buildContactReplyDraft(inquiry);
+
+                    return (
+                      <tr key={inquiry.id}>
+                        <td>
+                          <div>{new Date(inquiry.createdAt).toLocaleDateString("ko-KR")}</div>
+                          <div className={styles.muted}>{new Date(inquiry.createdAt).toLocaleTimeString("ko-KR")}</div>
+                        </td>
+                        <td>
+                          <div className={styles.rowTitle}>{inquiry.form.name || "-"}</div>
+                        </td>
+                        <td>{inquiry.form.reply || "-"}</td>
+                        <td>
+                          <div>{inquiry.form.project || "-"}</div>
+                        </td>
+                        <td>{inquiry.form.tone || "-"}</td>
+                        <td>
+                          <p className={styles.multiline}>{inquiry.form.message || "-"}</p>
+                          <div className={styles.muted}>최근 답변: {formatDateTime(inquiry.lastRepliedAt)}</div>
+                          {inquiry.lastReplySubject ? <div className={styles.muted}>{inquiry.lastReplySubject}</div> : null}
+                        </td>
+                        <td>
+                          <InquiryReplyComposer
+                            inquiryId={inquiry.id}
+                            kind="contact"
+                            replyContact={inquiry.form.reply}
+                            initialRecipientEmail={replyDraft.recipientEmail}
+                            initialSubject={replyDraft.subject}
+                            initialMessage={replyDraft.message}
+                            lastSentAt={inquiry.lastRepliedAt}
+                            lastSentSubject={inquiry.lastReplySubject}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

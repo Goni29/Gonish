@@ -23,6 +23,7 @@ Supabase SQL Editor에서 아래 파일을 실행합니다.
 - `docs/internal/supabase-contact-inquiries.sql`
 
 `estimate_leads`를 이미 운영 중이라면 `supabase-estimate-leads.sql`을 다시 실행해서 파이프라인 컬럼(상태/담당자/다음 액션일/메모/아카이브)을 추가하세요.
+`contact_inquiries`를 이미 운영 중이라면 `supabase-contact-inquiries.sql`을 다시 실행해서 답변 발송 이력 컬럼을 추가하세요.
 
 ## 3) 운영 플로우 점검
 

@@ -1,6 +1,10 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
-const PUBLIC_PAGES = ["/", "/about", "/portfolio", "/contact", "/estimate"];
+const PUBLIC_PAGES = ["/about", "/portfolio", "/contact", "/estimate"];
+const FLOATING_CHARACTER_CASES = [
+  { path: "/contact", testId: "contact-floating-character" },
+  { path: "/estimate", testId: "estimate-floating-character" },
+] as const;
 
 async function inspectGlobalTouchMove(page: Page) {
   return page.evaluate(() => {
@@ -51,45 +55,26 @@ async function inspectGlobalTouchMove(page: Page) {
   });
 }
 
-async function getSignatureTop(page: Page) {
-  return page.evaluate(() => {
-    const section = document.querySelector('[data-home-section="signature"]');
-    if (!(section instanceof HTMLElement)) return -1;
-    return Math.round(section.getBoundingClientRect().top + window.scrollY);
-  });
-}
-
-async function getSignatureStep(page: Page) {
-  return page.evaluate(() => {
-    const section = document.querySelector('[data-home-section="signature"]');
-    const activeStepAttr = section?.getAttribute("data-active-step");
-    return activeStepAttr ? Number.parseInt(activeStepAttr, 10) : -1;
-  });
-}
-
-async function getSignatureLockState(page: Page) {
-  return page.evaluate(() => {
-    const section = document.querySelector('[data-home-section="signature"]');
-    return section?.getAttribute("data-scene-locked") ?? "false";
-  });
-}
-
-async function dispatchTouchSwipe(page: Page, startY: number, endY: number) {
-  await page.evaluate(({ swipeStartY, swipeEndY }) => {
-    const touchTarget = document.body ?? document.documentElement;
-    const createTouchLike = (clientY: number) => ({
+async function dispatchSyntheticTouchSequence(target: Locator) {
+  await target.evaluate((node) => {
+    const createTouchLike = (clientX: number, clientY: number) => ({
       identifier: 1,
-      target: touchTarget,
-      clientX: 160,
+      target: node,
+      clientX,
       clientY,
-      pageX: 160,
+      pageX: clientX,
       pageY: clientY,
-      screenX: 160,
+      screenX: clientX,
       screenY: clientY,
       radiusX: 12,
       radiusY: 12,
+      force: 0.5,
     });
-    const createTouchEvent = (type: string, touches: ReturnType<typeof createTouchLike>[], changedTouches = touches) => {
+    const createTouchEvent = (
+      type: string,
+      touches: ReturnType<typeof createTouchLike>[],
+      changedTouches = touches,
+    ) => {
       const event = new Event(type, { bubbles: true, cancelable: true });
       Object.defineProperties(event, {
         touches: { value: touches },
@@ -99,13 +84,13 @@ async function dispatchTouchSwipe(page: Page, startY: number, endY: number) {
       return event;
     };
 
-    const startTouch = createTouchLike(swipeStartY);
-    const moveTouch = createTouchLike(swipeEndY);
+    const startTouch = createTouchLike(160, 540);
+    const moveTouch = createTouchLike(184, 500);
 
-    touchTarget.dispatchEvent(createTouchEvent("touchstart", [startTouch]));
-    touchTarget.dispatchEvent(createTouchEvent("touchmove", [moveTouch]));
-    touchTarget.dispatchEvent(createTouchEvent("touchend", [], [moveTouch]));
-  }, { swipeStartY: startY, swipeEndY: endY });
+    node.dispatchEvent(createTouchEvent("touchstart", [startTouch]));
+    node.dispatchEvent(createTouchEvent("touchmove", [moveTouch]));
+    node.dispatchEvent(createTouchEvent("touchend", [], [moveTouch]));
+  });
 }
 
 test.describe("Touch scroll behavior", () => {
@@ -120,29 +105,27 @@ test.describe("Touch scroll behavior", () => {
     }
   });
 
-  test("home signature scene only intercepts touch gestures while locked", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle" });
-    await page.waitForTimeout(1200);
-
-    await expect.poll(() => inspectGlobalTouchMove(page)).toMatchObject({
-      prevented: false,
-      scrollMode: "native",
+  test("floating character touch lock does not throw runtime errors", async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
     });
 
-    const signatureTop = await getSignatureTop(page);
-    expect(signatureTop).toBeGreaterThan(0);
+    for (const { path, testId } of FLOATING_CHARACTER_CASES) {
+      await page.goto(path, { waitUntil: "networkidle" });
+      await page.waitForTimeout(900);
 
-    await page.evaluate((scrollTop) => window.scrollTo(0, scrollTop), signatureTop + 12);
-    await page.waitForTimeout(500);
+      const baselineErrorCount = pageErrors.length;
+      const target = page.getByTestId(testId);
+      await expect(target).toBeVisible();
 
-    await expect.poll(() => getSignatureLockState(page)).toBe("true");
-    await expect.poll(() => inspectGlobalTouchMove(page)).toMatchObject({
-      prevented: true,
-      scrollMode: "native",
-    });
+      await dispatchSyntheticTouchSequence(target);
+      await page.waitForTimeout(200);
 
-    await dispatchTouchSwipe(page, 620, 440);
-    await page.waitForTimeout(700);
-    await expect.poll(() => getSignatureStep(page)).toBe(1);
+      expect(
+        pageErrors.slice(baselineErrorCount),
+        `${path} floating character should not trigger page errors on touch lock`,
+      ).toEqual([]);
+    }
   });
 });

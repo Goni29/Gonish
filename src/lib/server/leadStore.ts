@@ -100,6 +100,16 @@ function mapRowToLeadRecord(row: SupabaseLeadRow): EstimateLeadRecord {
 function shouldRetryWithoutPipelineColumns(status: number, errorText: string) {
   if (status !== 400) return false;
   const lowered = errorText.toLowerCase();
+  const isSchemaColumnError =
+    lowered.includes("schema cache") ||
+    lowered.includes("does not exist") ||
+    lowered.includes("could not find") ||
+    lowered.includes("unknown column");
+
+  if (!isSchemaColumnError) {
+    return false;
+  }
+
   return PIPELINE_COLUMN_NAMES.some((column) => lowered.includes(column));
 }
 
@@ -154,6 +164,46 @@ async function selectLeadRowByIdAndViewKey(leadId: string, viewKey: string, incl
     const errorText = await response.text();
     if (includePipeline && shouldRetryWithoutPipelineColumns(response.status, errorText)) {
       return selectLeadRowByIdAndViewKey(leadId, viewKey, false);
+    }
+    throw new Error(`Supabase select failed: ${response.status} ${errorText}`);
+  }
+
+  const rows = (await response.json()) as SupabaseLeadRow[];
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return null;
+  }
+
+  const row = rows[0];
+  if (row.kind !== "estimate") {
+    return null;
+  }
+
+  return row;
+}
+
+async function selectLeadRowById(leadId: string, includePipeline = true): Promise<SupabaseLeadRow | null> {
+  const config = getSupabaseConfig();
+
+  const query = new URLSearchParams({
+    select: includePipeline ? PIPELINE_SELECT_COLUMNS : BASE_SELECT_COLUMNS,
+    id: `eq.${leadId}`,
+    limit: "1",
+  });
+
+  const response = await fetch(`${config.url}/rest/v1/${SUPABASE_TABLE}?${query.toString()}`, {
+    method: "GET",
+    headers: {
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    if (includePipeline && shouldRetryWithoutPipelineColumns(response.status, errorText)) {
+      return selectLeadRowById(leadId, false);
     }
     throw new Error(`Supabase select failed: ${response.status} ${errorText}`);
   }
@@ -274,6 +324,12 @@ export async function getEstimateLeadForView(leadId: string, viewKey: string) {
   return mapRowToLeadRecord(row);
 }
 
+export async function getEstimateLeadById(leadId: string) {
+  const row = await selectLeadRowById(leadId);
+  if (!row) return null;
+  return mapRowToLeadRecord(row);
+}
+
 export async function listEstimateLeads(options: number | ListEstimateLeadsOptions = 100) {
   const normalizedOptions: ListEstimateLeadsOptions =
     typeof options === "number"
@@ -311,7 +367,6 @@ export async function updateEstimateLeadPipeline(leadId: string, input: UpdateEs
   const query = new URLSearchParams({
     id: `eq.${leadId}`,
     select: PIPELINE_SELECT_COLUMNS,
-    limit: "1",
   });
 
   const response = await fetch(`${config.url}/rest/v1/${SUPABASE_TABLE}?${query.toString()}`, {
