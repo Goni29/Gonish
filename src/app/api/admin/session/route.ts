@@ -9,15 +9,10 @@ import {
   getAdminDashboardKey,
   verifyAdminKey,
 } from "@/lib/server/adminAuth";
+import { checkRateLimit, getClientIp, RATE_LIMIT } from "@/lib/server/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim().slice(0, 64);
-  return "";
-}
 
 function clearAdminCookie(response: NextResponse) {
   response.cookies.set({
@@ -32,6 +27,21 @@ function clearAdminCookie(response: NextResponse) {
 }
 
 export async function POST(request: Request) {
+  // Rate limiting: 15분에 10회 (brute-force 방어)
+  const ip = getClientIp(request);
+  const allowed = await checkRateLimit(
+    ip,
+    "admin_login",
+    RATE_LIMIT.ADMIN_LOGIN.windowSecs,
+    RATE_LIMIT.ADMIN_LOGIN.maxRequests,
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { ok: false, message: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
+      { status: 429 },
+    );
+  }
+
   const dashboardKey = getAdminDashboardKey();
   if (!dashboardKey) {
     return NextResponse.json(
