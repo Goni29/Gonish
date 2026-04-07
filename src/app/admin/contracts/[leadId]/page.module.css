@@ -1,24 +1,30 @@
 .page {
+  --admin-page-padding: clamp(16px, 2vw, 28px);
   min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
     linear-gradient(180deg, #fffdfd 0%, #f8f3f1 52%, #f5f0ef 100%);
   color: #141014;
   font-family: "Noto Sans KR", "Segoe UI", sans-serif;
+  padding: var(--admin-page-padding);
 }
 
 .shell {
-  width: min(1040px, calc(100vw - 32px));
-  margin: 0 auto;
-  padding: 28px 0 56px;
+  width: 100%;
+  min-height: calc(100dvh - (var(--admin-page-padding) * 2));
+  margin: 0;
+  display: grid;
+  gap: 16px;
+  align-content: start;
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 .toolbarNote {
@@ -26,6 +32,7 @@
   font-size: 14px;
   line-height: 1.75;
   color: #6b6168;
+  max-width: min(920px, 100%);
 }
 
 .toolbarActions {
@@ -71,7 +78,7 @@
   border-radius: 34px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 28px 80px rgba(20, 16, 20, 0.08);
-  padding: 34px;
+  padding: clamp(24px, 3vw, 38px);
 }
 
 .eyebrow {
@@ -99,7 +106,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin-top: 22px;
 }
@@ -134,7 +141,7 @@
   border: 1px solid rgba(20, 16, 20, 0.1);
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.82);
-  padding: 22px;
+  padding: clamp(20px, 2vw, 28px);
 }
 
 .sectionHead {
@@ -184,7 +191,7 @@
 
 .signature {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin-top: 18px;
 }
@@ -217,9 +224,17 @@
     display: none !important;
   }
 
+  .page {
+    min-height: auto;
+    padding: 0;
+    background: white;
+  }
+
   .shell {
     width: 100%;
+    min-height: auto;
     padding: 0;
+    gap: 0;
   }
 
   .toolbar {

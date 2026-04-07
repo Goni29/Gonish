@@ -1,4 +1,9 @@
 import { randomBytes, randomUUID } from "node:crypto";
+import {
+  buildEstimateContractPaymentLabels,
+  normalizeEstimateBasePriceInput,
+  normalizeEstimatePriceRangeInput,
+} from "@/lib/estimatePricing";
 import type { EstimateContractDraft, EstimateEmailData, EstimateLeadRecord } from "@/lib/inquiry";
 import type { EstimateLeadArchiveFilter, EstimateLeadSort, EstimatePipelineStatus } from "@/lib/leadPipeline";
 import { normalizeEstimatePipelineStatus } from "@/lib/leadPipeline";
@@ -51,6 +56,8 @@ export type UpdateEstimateLeadPipelineInput = {
   internalNote?: string;
   closeReason?: string;
   archived?: boolean;
+  basePrice?: string;
+  priceRange?: string;
 };
 
 function createViewKey() {
@@ -357,6 +364,35 @@ export async function updateEstimateLeadPipeline(leadId: string, input: UpdateEs
   if (input.internalNote !== undefined) payload.internal_note = input.internalNote;
   if (input.closeReason !== undefined) payload.close_reason = input.closeReason;
   if (input.archived !== undefined) payload.archived = input.archived;
+  if (input.basePrice !== undefined || input.priceRange !== undefined) {
+    const currentRow = await selectLeadRowById(leadId);
+    if (!currentRow) {
+      return null;
+    }
+
+    const nextEmailData: EstimateEmailData = { ...currentRow.email_data };
+    const nextContractDraft: EstimateContractDraft = { ...currentRow.contract_draft };
+
+    if (input.basePrice !== undefined) {
+      const normalizedBasePrice = normalizeEstimateBasePriceInput(input.basePrice);
+      nextEmailData.basePrice = normalizedBasePrice;
+      nextContractDraft.basePriceLabel = normalizedBasePrice;
+
+      const paymentLabels = buildEstimateContractPaymentLabels(normalizedBasePrice);
+      nextContractDraft.quoteLabel = paymentLabels.quoteLabel;
+      nextContractDraft.depositLabel = paymentLabels.depositLabel;
+      nextContractDraft.balanceLabel = paymentLabels.balanceLabel;
+    }
+
+    if (input.priceRange !== undefined) {
+      const normalizedPriceRange = normalizeEstimatePriceRangeInput(input.priceRange);
+      nextEmailData.priceRange = normalizedPriceRange;
+      nextContractDraft.priceRangeLabel = normalizedPriceRange;
+    }
+
+    payload.email_data = nextEmailData;
+    payload.contract_draft = nextContractDraft;
+  }
 
   if (Object.keys(payload).length === 0) {
     throw new Error("No pipeline fields to update.");

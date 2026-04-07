@@ -1,22 +1,28 @@
 .page {
+  --admin-page-padding: clamp(16px, 2vw, 28px);
   min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
     linear-gradient(180deg, #fffdfd 0%, #f8f3f1 52%, #f5f0ef 100%);
-  padding: 22px;
+  padding: var(--admin-page-padding);
 }
 
 .shell {
-  width: min(1280px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  min-height: calc(100dvh - (var(--admin-page-padding) * 2));
+  margin: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px;
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 12px;
 }
 
 .titleWrap {
@@ -78,6 +84,9 @@
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 24px 80px rgba(20, 16, 20, 0.08);
   overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .meta {
@@ -93,6 +102,8 @@
 
 .tableWrap {
   overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .table {
@@ -134,7 +145,7 @@
   white-space: pre-wrap;
   line-height: 1.55;
   color: #393136;
-  max-width: 460px;
+  max-width: none;
 }
 
 .empty {

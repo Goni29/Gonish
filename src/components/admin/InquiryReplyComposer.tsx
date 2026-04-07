@@ -40,7 +40,16 @@ function formatDateTime(value?: string | null) {
   if (!value) return "아직 발송 이력이 없어요.";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "아직 발송 이력이 없어요.";
-  return parsed.toLocaleString("ko-KR");
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Seoul",
+  }).format(parsed);
 }
 
 export default function InquiryReplyComposer({

@@ -1,20 +1,42 @@
 .page {
+  --admin-page-padding: clamp(16px, 2vw, 28px);
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  min-height: 100dvh;
+  display: flex;
+  padding: var(--admin-page-padding);
   background:
     radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
     linear-gradient(180deg, #fffdfd 0%, #f8f3f1 52%, #f5f0ef 100%);
 }
 
 .card {
-  width: min(520px, 100%);
+  position: relative;
+  width: 100%;
+  min-height: calc(100dvh - (var(--admin-page-padding) * 2));
   border: 1px solid rgba(20, 16, 20, 0.1);
   border-radius: 26px;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 24px 80px rgba(20, 16, 20, 0.08);
-  padding: 24px;
+  padding: clamp(24px, 4vw, 48px);
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  overflow: hidden;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -28% 48%;
+  height: clamp(240px, 40vw, 520px);
+  background: radial-gradient(circle, rgba(243, 29, 91, 0.16), rgba(243, 29, 91, 0));
+  pointer-events: none;
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+  max-width: 540px;
 }
 
 .eyebrow {

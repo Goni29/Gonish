@@ -20,6 +20,8 @@ type UpdateLeadPayload = {
   internalNote?: string;
   closeReason?: string;
   archived?: boolean;
+  basePrice?: string;
+  priceRange?: string;
 };
 
 function toText(value: unknown) {
@@ -73,6 +75,8 @@ export async function PATCH(request: Request, context: RouteParams) {
     internalNote: body.internalNote !== undefined ? toText(body.internalNote) : undefined,
     closeReason: body.closeReason !== undefined ? toText(body.closeReason) : undefined,
     archived: typeof body.archived === "boolean" ? body.archived : undefined,
+    basePrice: body.basePrice !== undefined ? toText(body.basePrice) : undefined,
+    priceRange: body.priceRange !== undefined ? toText(body.priceRange) : undefined,
   } as const;
 
   const hasChanges = Object.values(patch).some((value) => value !== undefined);
@@ -99,6 +103,8 @@ export async function PATCH(request: Request, context: RouteParams) {
         closeReason: updated.closeReason,
         archived: updated.archived,
         updatedAt: updated.updatedAt,
+        basePrice: updated.emailData.basePrice,
+        priceRange: updated.emailData.priceRange,
       },
     });
   } catch (error) {

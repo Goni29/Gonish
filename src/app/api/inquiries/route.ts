@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { contactEmailHtml, estimateEmailHtml } from "@/lib/emailTemplate";
+import { getEmailLogoAttachment } from "@/lib/emailBranding";
+import {
+  contactEmailHtml,
+  contactReceiptEmailHtml,
+  estimateEmailHtml,
+  estimateReceiptEmailHtml,
+} from "@/lib/emailTemplate";
 import type { InquiryPayload, InquiryResponse } from "@/lib/inquiry";
+import { getPublicSiteOrigin } from "@/lib/publicSiteOrigin";
 import { isValidReplyContact, isValidReplyEmail, REPLY_CONTACT_VALIDATION_MESSAGE } from "@/lib/replyContact";
 import { createContactInquiry } from "@/lib/server/contactStore";
 import { createEstimateLead } from "@/lib/server/leadStore";
@@ -29,26 +36,6 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
-function getSiteOrigin(requestUrl: string) {
-  const explicit =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.SITE_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-    process.env.VERCEL_URL ||
-    "";
-
-  if (explicit.trim()) {
-    const normalized = explicit.trim();
-    return normalized.startsWith("http") ? normalized : `https://${normalized}`;
-  }
-
-  try {
-    return new URL(requestUrl).origin;
-  } catch {
-    return "";
-  }
-}
-
 function isNonEmpty(value: unknown) {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -61,7 +48,8 @@ export async function POST(request: Request) {
   const resend = getResendClient();
   const receiveEmail = getReceiveEmail();
   const fromEmail = getFromEmail();
-  const siteOrigin = getSiteOrigin(request.url);
+  const siteOrigin = getPublicSiteOrigin({ requestUrl: request.url, fromEmail });
+  const internalReplyTo = isValidReplyEmail(receiveEmail) ? receiveEmail : undefined;
 
   if (!resend || !receiveEmail || !fromEmail) {
     return jsonResponse(500, {
@@ -107,15 +95,32 @@ export async function POST(request: Request) {
     }
 
     const subject = `[Gonish 문의] ${toText(form.project) || toText(form.name) || "새 프로젝트"}`;
+    const customerReceiptSubject = `[Gonish] ${toText(form.project) || "문의"} 문의가 접수되었습니다`;
 
     try {
-      await resend.emails.send({
+      const adminEmailPromise = resend.emails.send({
         from: fromEmail,
         to: [receiveEmail],
         replyTo: isValidReplyEmail(sanitizedForm.reply) ? sanitizedForm.reply : undefined,
         subject,
         html: contactEmailHtml(sanitizedForm, { siteOrigin }),
+        attachments: [getEmailLogoAttachment()],
       });
+
+      const customerReceiptPromise = isValidReplyEmail(sanitizedForm.reply)
+        ? resend.emails
+            .send({
+              from: fromEmail,
+              to: [sanitizedForm.reply],
+              replyTo: internalReplyTo,
+              subject: customerReceiptSubject,
+              html: contactReceiptEmailHtml(sanitizedForm, { siteOrigin }),
+              attachments: [getEmailLogoAttachment()],
+            })
+            .catch(() => undefined)
+        : Promise.resolve(undefined);
+
+      await Promise.all([adminEmailPromise, customerReceiptPromise]);
     } catch {
       return jsonResponse(502, { ok: false, message: "메일 발송에 실패했어요. 잠시 후 다시 시도해 주세요." });
     }
@@ -205,9 +210,10 @@ export async function POST(request: Request) {
     contractUrl.searchParams.set("key", lead.viewKey);
 
     const subject = `[Gonish 견적 문의] ${lead.emailData.brand || lead.emailData.name || lead.emailData.projectType || "새 프로젝트"}`;
+    const customerReceiptSubject = `[Gonish] ${lead.emailData.brand || lead.emailData.name || "견적"} 견적 문의가 접수되었습니다`;
 
     try {
-      await resend.emails.send({
+      const adminEmailPromise = resend.emails.send({
         from: fromEmail,
         to: [receiveEmail],
         replyTo: isValidReplyEmail(lead.emailData.reply) ? lead.emailData.reply : undefined,
@@ -216,7 +222,25 @@ export async function POST(request: Request) {
           contractUrl: contractUrl.toString(),
           siteOrigin,
         }),
+        attachments: [getEmailLogoAttachment()],
       });
+
+      const customerReceiptPromise = isValidReplyEmail(lead.emailData.reply)
+        ? resend.emails
+            .send({
+              from: fromEmail,
+              to: [lead.emailData.reply],
+              replyTo: internalReplyTo,
+              subject: customerReceiptSubject,
+              html: estimateReceiptEmailHtml(lead.emailData, {
+                siteOrigin,
+              }),
+              attachments: [getEmailLogoAttachment()],
+            })
+            .catch(() => undefined)
+        : Promise.resolve(undefined);
+
+      await Promise.all([adminEmailPromise, customerReceiptPromise]);
     } catch {
       return jsonResponse(502, { ok: false, message: "메일 발송에 실패했어요. 잠시 후 다시 시도해 주세요." });
     }

@@ -9,6 +9,7 @@
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
 - `CONTACT_RECEIVE_EMAIL`
+- `NEXT_PUBLIC_SITE_URL` (메일 로고/링크에 사용할 공개 도메인, 예: `https://gonish.kr`)
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_LEADS_TABLE` (기본값: `estimate_leads`)

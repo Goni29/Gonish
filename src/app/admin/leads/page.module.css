@@ -1,22 +1,28 @@
 .page {
+  --admin-page-padding: clamp(16px, 2vw, 28px);
   min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at top left, rgba(243, 29, 91, 0.08), transparent 24%),
     linear-gradient(180deg, #fffdfd 0%, #f8f3f1 52%, #f5f0ef 100%);
-  padding: 22px;
+  padding: var(--admin-page-padding);
 }
 
 .shell {
-  width: min(1280px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  min-height: calc(100dvh - (var(--admin-page-padding) * 2));
+  margin: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px;
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 12px;
 }
 
 .titleWrap {
@@ -78,6 +84,9 @@
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 24px 80px rgba(20, 16, 20, 0.08);
   overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .meta {
@@ -140,6 +149,8 @@
 
 .tableWrap {
   overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .table {
@@ -314,6 +325,42 @@
   gap: 5px;
 }
 
+.editorHint {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #7b6b74;
+}
+
+.amountActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(243, 29, 91, 0.12);
+  background: linear-gradient(180deg, #fff8fb 0%, #fffdfd 100%);
+}
+
+.amountPreview {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.amountPreviewText {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #4f434a;
+}
+
+.amountApplyButton {
+  flex-shrink: 0;
+}
+
 .editorLabel {
   font-size: 11px;
   color: #6b6168;
@@ -380,5 +427,9 @@
 @media (max-width: 1080px) {
   .editorRow {
     grid-template-columns: 1fr;
+  }
+
+  .amountApplyButton {
+    width: 100%;
   }
 }

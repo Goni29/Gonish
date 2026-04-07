@@ -16,7 +16,7 @@ import {
 import { getAdminDashboardKey, isAdminAuthenticated } from "@/lib/server/adminAuth";
 import { listEstimateLeads } from "@/lib/server/leadStore";
 import AdminLogoutButton from "./AdminLogoutButton";
-import LeadPipelineEditor from "./LeadPipelineEditor";
+import EstimateLeadLiveCells from "./EstimateLeadLiveCells";
 import styles from "./page.module.css";
 
 type MaybePromise<T> = Promise<T> | T;
@@ -107,7 +107,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
       sort,
     });
   } catch (error) {
-    loadError = error instanceof Error ? error.message : "리드 조회 중 오류가 발생했습니다.";
+    loadError = error instanceof Error ? error.message : "리드를 불러오는 중 오류가 발생했습니다.";
   }
 
   const activeCount = leads.filter((lead) => !lead.archived).length;
@@ -120,7 +120,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
           <div className={styles.titleWrap}>
             <p className={styles.eyebrow}>Gonish admin</p>
             <h1 className={styles.title}>견적 리드 운영</h1>
-            <p className={styles.desc}>상태, 담당자, 다음 액션일, 내부 메모와 답변 메일 발송 기준으로 견적 리드를 운영하세요.</p>
+            <p className={styles.desc}>상태, 담당자, 다음 액션일, 내부 메모와 답변 메일 초안을 기준으로 견적 리드를 운영하세요.</p>
           </div>
           <div className={styles.actions}>
             <Link href="/admin/dashboard" className={`${styles.button} ${styles.buttonSecondary}`}>
@@ -199,7 +199,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                     <th>고객</th>
                     <th>연락처</th>
                     <th>프로젝트</th>
-                    <th>예상금액</th>
+                    <th>예상 금액</th>
                     <th>상세</th>
                     <th>운영</th>
                     <th>작업</th>
@@ -230,11 +230,26 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                           <div>{lead.emailData.projectType || "-"}</div>
                           <div className={styles.muted}>{lead.emailData.pageScope || "-"}</div>
                         </td>
-                        <td>
-                          <span className={styles.pill}>{lead.emailData.basePrice || "-"}</span>
-                          <div className={styles.muted}>{lead.emailData.priceRange || "-"}</div>
-                        </td>
-                        <td>
+                        <EstimateLeadLiveCells
+                          leadId={lead.id}
+                          initialBasePrice={lead.emailData.basePrice}
+                          initialPriceRange={lead.emailData.priceRange}
+                          pipelineStatusLabel={ESTIMATE_PIPELINE_STATUS_LABELS[lead.pipelineStatus]}
+                          nextActionLabel={formatDate(lead.nextActionAt)}
+                          lastContactedLabel={formatDate(lead.lastContactedAt)}
+                          updatedLabel={formatDateTime(lead.updatedAt)}
+                          initialStatus={lead.pipelineStatus}
+                          initialAssignedTo={lead.assignedTo}
+                          initialNextActionAt={lead.nextActionAt}
+                          initialLastContactedAt={lead.lastContactedAt}
+                          initialInternalNote={lead.internalNote}
+                          initialCloseReason={lead.closeReason}
+                          initialArchived={lead.archived}
+                          replyContact={lead.emailData.reply}
+                          initialReplyRecipientEmail={replyDraft.recipientEmail}
+                          initialReplySubject={replyDraft.subject}
+                          initialReplyMessage={replyDraft.message}
+                        >
                           <details className={styles.details}>
                             <summary className={styles.detailsSummary}>선택 내역 보기</summary>
                             <div className={styles.detailsBody}>
@@ -296,31 +311,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
                               </div>
                             </div>
                           </details>
-                        </td>
-                        <td>
-                          <div className={styles.operationsStack}>
-                            <div className={styles.pipelineMeta}>
-                              <span className={styles.pipelineStatus}>{ESTIMATE_PIPELINE_STATUS_LABELS[lead.pipelineStatus]}</span>
-                              <span>다음 액션: {formatDate(lead.nextActionAt)}</span>
-                              <span>마지막 연락: {formatDate(lead.lastContactedAt)}</span>
-                              <span>업데이트: {formatDateTime(lead.updatedAt)}</span>
-                            </div>
-                            <LeadPipelineEditor
-                              leadId={lead.id}
-                              initialStatus={lead.pipelineStatus}
-                              initialAssignedTo={lead.assignedTo}
-                              initialNextActionAt={lead.nextActionAt}
-                              initialLastContactedAt={lead.lastContactedAt}
-                              initialInternalNote={lead.internalNote}
-                              initialCloseReason={lead.closeReason}
-                              initialArchived={lead.archived}
-                              replyContact={lead.emailData.reply}
-                              initialReplyRecipientEmail={replyDraft.recipientEmail}
-                              initialReplySubject={replyDraft.subject}
-                              initialReplyMessage={replyDraft.message}
-                            />
-                          </div>
-                        </td>
+                        </EstimateLeadLiveCells>
                         <td>
                           <Link href={contractPath} className={styles.link}>
                             계약서 초안 열기

@@ -7,6 +7,8 @@ import {
   buildReplyEmailText,
   buildReplyPreview,
 } from "@/lib/adminReply";
+import { getEmailLogoAttachment } from "@/lib/emailBranding";
+import { getPublicSiteOrigin } from "@/lib/publicSiteOrigin";
 import { isValidReplyEmail } from "@/lib/replyContact";
 import { getAdminDashboardKey, isAdminAuthenticated } from "@/lib/server/adminAuth";
 import { getContactInquiryById, updateContactInquiryReply } from "@/lib/server/contactStore";
@@ -48,29 +50,7 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
-function getSiteOrigin(requestUrl: string) {
-  const explicit =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.SITE_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-    process.env.VERCEL_URL ||
-    "";
-
-  if (explicit.trim()) {
-    const normalized = explicit.trim();
-    return normalized.startsWith("http") ? normalized : `https://${normalized}`;
-  }
-
-  try {
-    return new URL(requestUrl).origin;
-  } catch {
-    return "";
-  }
-}
-
 export async function POST(request: Request) {
-  const siteOrigin = getSiteOrigin(request.url);
-
   if (!getAdminDashboardKey()) {
     return NextResponse.json({ ok: false, message: "ADMIN_DASHBOARD_KEY가 설정되지 않았습니다." }, { status: 500 });
   }
@@ -83,6 +63,7 @@ export async function POST(request: Request) {
   const resend = getResendClient();
   const receiveEmail = getReceiveEmail().trim();
   const fromEmail = getFromEmail().trim();
+  const siteOrigin = getPublicSiteOrigin({ requestUrl: request.url, fromEmail });
 
   if (!resend || !receiveEmail || !fromEmail) {
     return NextResponse.json(
@@ -144,6 +125,7 @@ export async function POST(request: Request) {
         subject,
         html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
         text: buildReplyEmailText(draft, message, receiveEmail),
+        attachments: [getEmailLogoAttachment()],
       });
     } catch {
       return NextResponse.json({ ok: false, message: "메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요." }, { status: 502 });
@@ -195,6 +177,7 @@ export async function POST(request: Request) {
       subject,
       html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
       text: buildReplyEmailText(draft, message, receiveEmail),
+      attachments: [getEmailLogoAttachment()],
     });
   } catch {
     return NextResponse.json({ ok: false, message: "메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요." }, { status: 502 });

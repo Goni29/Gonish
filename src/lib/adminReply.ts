@@ -4,6 +4,7 @@ import {
   renderDetailTable,
   renderEditorialSection,
   renderQuoteRail,
+  safeEmailSmartText,
   safeEmailText,
   splitEmailCsv,
 } from "@/lib/emailBranding";
@@ -98,7 +99,7 @@ function renderMessageBlocks(message: string) {
                     <span style="display:inline-block;width:7px;height:7px;border-radius:999px;background:#f31d5b;"></span>
                   </td>
                   <td style="padding:3px 0 6px;font-size:14px;line-height:1.9;color:#5c3f42;">
-                    ${escapeEmailHtml(line.slice(2).trim())}
+                    ${safeEmailSmartText(line.slice(2).trim(), "-", { maxCharsPerLine: 26, maxLines: 3, minCharsPerLine: 10 })}
                   </td>
                 </tr>`,
             )
@@ -107,7 +108,11 @@ function renderMessageBlocks(message: string) {
       continue;
     }
 
-    textBlocks.push(`<div>${lines.map((line) => escapeEmailHtml(line)).join("<br/>")}</div>`);
+    textBlocks.push(
+      `<div>${lines
+        .map((line) => safeEmailSmartText(line, "-", { maxCharsPerLine: 30, maxLines: 4, minCharsPerLine: 12 }))
+        .join("<br/>")}</div>`,
+    );
   }
 
   flushTextBlocks();
@@ -176,7 +181,7 @@ export function buildReplyEmailHtml(
       title: "추가로 필요한 내용이 있으면 편하게 답장해 주세요",
       body: `
         <div style="font-size:14px;line-height:1.9;color:#5c3f42;">
-          ${safeEmailText(buildReplyGuide())}
+          ${safeEmailSmartText(buildReplyGuide(), "-", { maxCharsPerLine: 30, maxLines: 4, minCharsPerLine: 12 })}
         </div>
       `,
     }),
