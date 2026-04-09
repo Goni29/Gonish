@@ -548,19 +548,19 @@
   --signature-stage-margin-bottom: -1.15rem;
   --signature-stage-padding-bottom: 0.25rem;
   --signature-stage-shift: 0.8rem;
-  --signature-content-min-height: clamp(13rem, 29svh, 17rem);
+  --signature-content-min-height: clamp(17rem, 35svh, 22rem);
   --signature-content-padding-top: 0.2rem;
   --signature-content-padding-bottom: 0.45rem;
-  --signature-keyword-width: clamp(6.7rem, 26vw, 8.8rem);
-  --signature-headline-size: clamp(1rem, 4vw, 1.4rem);
-  --signature-headline-margin-top: 0.7rem;
-  --signature-body-size: 0.81rem;
-  --signature-body-line-height: 1.62;
-  --signature-body-margin-top: 0.7rem;
-  --signature-points-margin-top: 0.8rem;
-  --signature-points-gap: 0.42rem;
-  --signature-point-size: 0.75rem;
-  --signature-point-line-height: 1.38;
+  --signature-keyword-width: clamp(8rem, 30vw, 10.5rem);
+  --signature-headline-size: clamp(1.38rem, 5vw, 1.65rem);
+  --signature-headline-margin-top: 1.1rem;
+  --signature-body-size: 0.97rem;
+  --signature-body-line-height: 1.76;
+  --signature-body-margin-top: 1.1rem;
+  --signature-points-margin-top: 1.25rem;
+  --signature-points-gap: 0.75rem;
+  --signature-point-size: 0.9rem;
+  --signature-point-line-height: 1.58;
   --signature-progress-bottom: max(1.05rem, calc(env(safe-area-inset-bottom, 0px) + 1.15rem));
 }
 
@@ -674,18 +674,18 @@
     --signature-stage-margin-bottom: -1.35rem;
     --signature-stage-padding-bottom: 0;
     --signature-stage-shift: 0.35rem;
-    --signature-content-min-height: clamp(10.75rem, 24svh, 13.25rem);
+    --signature-content-min-height: clamp(12.5rem, 27svh, 15.5rem);
     --signature-content-padding-top: 0;
-    --signature-keyword-width: clamp(5.8rem, 22vw, 7rem);
-    --signature-headline-size: clamp(0.92rem, 3.5vw, 1.15rem);
-    --signature-headline-margin-top: 0.45rem;
-    --signature-body-size: 0.75rem;
-    --signature-body-line-height: 1.5;
-    --signature-body-margin-top: 0.55rem;
-    --signature-points-margin-top: 0.65rem;
-    --signature-points-gap: 0.25rem;
-    --signature-point-size: 0.69rem;
-    --signature-point-line-height: 1.28;
+    --signature-keyword-width: clamp(6.8rem, 25vw, 8.2rem);
+    --signature-headline-size: clamp(1.08rem, 4.2vw, 1.28rem);
+    --signature-headline-margin-top: 0.65rem;
+    --signature-body-size: 0.86rem;
+    --signature-body-line-height: 1.62;
+    --signature-body-margin-top: 0.72rem;
+    --signature-points-margin-top: 0.85rem;
+    --signature-points-gap: 0.4rem;
+    --signature-point-size: 0.78rem;
+    --signature-point-line-height: 1.42;
     --signature-progress-bottom: max(0.8rem, calc(env(safe-area-inset-bottom, 0px) + 0.9rem));
   }
 

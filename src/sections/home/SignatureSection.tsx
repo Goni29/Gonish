@@ -1,6 +1,7 @@
 "use client";
 
 import { animate, createDrawable, type JSAnimation } from "animejs";
+import Image from "next/image";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import gsap from "gsap";
 import { getLenis } from "@/components/layout/SmoothScroll";
@@ -916,20 +917,17 @@ export default function SignatureSection() {
         {/* Header */}
         <div className="shrink-0 flex items-center gap-3 pb-3">
           <span className="h-px w-10 bg-brand/40" />
-          <p className="eyebrow">
-            Why{" "}
-            <span
-              style={{
-                fontFamily: "'Snell Roundhand', 'Segoe Script', 'Brush Script MT', 'Apple Chancery', cursive",
-                color: "#F31D5B",
-                fontSize: "1.8em",
-                letterSpacing: "0.01em",
-                textTransform: "none",
-                opacity: 0.9,
-              }}
-            >
-              Gonish
-            </span>
+          <p className="eyebrow flex items-baseline gap-2">
+            Why
+            <Image
+              src="/signature-gonish-segoe-script.png"
+              alt="Gonish"
+              width={1257}
+              height={271}
+              sizes="140px"
+              priority
+              className="inline-block h-[1.55em] w-auto translate-y-[0.1em] opacity-90"
+            />
           </p>
         </div>
         <div className="h-px w-full bg-gradient-to-r from-transparent via-ink/[0.07] to-transparent" />
