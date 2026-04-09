@@ -166,7 +166,11 @@ export default function FillWordSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} data-home-section="fill-word" className="fill-word-section relative isolate h-[200svh]">
+    <section
+      ref={sectionRef}
+      data-home-section="fill-word"
+      className="fill-word-section relative isolate h-[300svh] md:h-[270svh] lg:h-[230svh]"
+    >
       <div ref={sceneViewportRef} className="fill-word-section__scene-viewport sticky top-0 h-[100svh] overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
