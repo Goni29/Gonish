@@ -261,7 +261,7 @@ function DeviceShowcase({
                 transform: `scale(${scale})`,
               }}
               loading="lazy"
-              sandbox="allow-scripts allow-same-origin"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation-by-user-activation allow-modals"
             />
           </div>
         </div>
