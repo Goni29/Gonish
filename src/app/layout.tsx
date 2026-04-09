@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   title: "Gonish",
   description: "Curated premium brand portfolio by Gonish",
   icons: {
-    icon: "/Gonish.png",
-    shortcut: "/Gonish.png",
+    icon: "/G.svg",
+    shortcut: "/G.svg",
     apple: "/Gonish.png",
   },
 };
