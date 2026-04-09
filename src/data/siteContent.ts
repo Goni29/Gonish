@@ -23,7 +23,6 @@ export type CaseStudy = {
   summary: string;
   title: string;
   url: string;
-  year: string;
 };
 
 export const navigation = [
@@ -95,7 +94,6 @@ export const caseStudies: CaseStudy[] = [
     id: "velvet-ritual",
     title: "Haute Beauty Commerce",
     category: "Premium beauty e-commerce",
-    year: "2026",
     role: "Visual commerce direction, product storytelling, full purchase flow design",
     summary: "컬렉션 큐레이션부터 장바구니, 결제까지 — 제품의 감각이 그대로 구매로 이어지는 하이엔드 뷰티 커머스.",
     description:
@@ -156,7 +154,6 @@ export const caseStudies: CaseStudy[] = [
     id: "maison-archive",
     title: "Private Dental Clinic",
     category: "Medical brand & reservation site",
-    year: "2026",
     role: "Patient-first information design, reservation flow, trust-building experience",
     summary: "진료 과목부터 의료진 소개, 달력 예약, 온라인 상담까지 — 환자가 필요한 정보를 직관적으로 찾고 안심하고 예약하는 치과 병원 사이트.",
     description:
@@ -213,7 +210,6 @@ export const caseStudies: CaseStudy[] = [
     id: "atelier-journal",
     title: "Prestige Law Firm",
     category: "Legal brand & consultation site",
-    year: "2026",
     role: "Trust-first brand direction, case showcase architecture, consultation flow design",
     summary: "업무 분야와 성공사례가 한눈에 읽히고, 상담 요청까지 자연스럽게 이어지는 법무법인 브랜드 사이트.",
     description:

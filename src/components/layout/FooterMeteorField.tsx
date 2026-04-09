@@ -40,15 +40,6 @@ const MOBILE_SHOOTING_STAR_ENTRIES = SHOOTING_STAR_ENTRIES.filter(({ index }) =>
   MOBILE_SHOOTING_STAR_INDICES.has(index),
 );
 
-const SHOOTING_TRAIL = [
-  { position: "14%", size: "0.56rem", opacity: 0.42 },
-  { position: "29%", size: "0.44rem", opacity: 0.34 },
-  { position: "44%", size: "0.34rem", opacity: 0.29 },
-  { position: "60%", size: "0.28rem", opacity: 0.24 },
-  { position: "76%", size: "0.22rem", opacity: 0.19 },
-  { position: "90%", size: "0.16rem", opacity: 0.14 },
-] as const;
-
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
@@ -147,18 +138,6 @@ function FooterMeteor({
         <span className="footer-shooting-star__lane">
           <span className="footer-shooting-star__glow" />
           <span className="footer-shooting-star__cross" />
-          {SHOOTING_TRAIL.map((dot) => (
-            <span
-              key={`${dot.position}-${dot.size}`}
-              className="footer-shooting-star__dot"
-              style={{
-                left: dot.position,
-                width: dot.size,
-                height: dot.size,
-                opacity: dot.opacity,
-              }}
-            />
-          ))}
         </span>
       </span>
     </span>

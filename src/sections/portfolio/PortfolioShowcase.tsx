@@ -61,14 +61,6 @@ export default function PortfolioShowcase() {
                 >
                   {project.title}
                 </span>
-                <span
-                  className={[
-                    "text-[10px] uppercase tracking-[0.28em] transition-all duration-300",
-                    isActive ? "text-ink/45" : "text-ink/20",
-                  ].join(" ")}
-                >
-                  {project.year}
-                </span>
               </button>
             );
           })}
@@ -230,53 +222,37 @@ function DeviceShowcase({
         : "mx-auto w-full max-w-[min(420px,100%)] rounded-[2.2rem] p-2 sm:p-3";
 
   return (
-    <div className="space-y-6">
-      {/* Device frame */}
-      <div
-        className={[
-          frameClasses,
-          "border border-black/10 bg-[#181217] shadow-[0_32px_120px_rgba(20,16,20,0.18)]",
-        ].join(" ")}
-      >
-        <div className="rounded-[1.8rem] bg-[#fffaf9] p-1.5">
-          <div className="mb-0 flex items-center gap-2 px-4 py-2.5">
-            <span className="size-2 rounded-full bg-[#ff817d]" />
-            <span className="size-2 rounded-full bg-[#ffd76b]" />
-            <span className="size-2 rounded-full bg-[#58d17d]" />
-          </div>
-
-          <div
-            ref={ref}
-            className="overflow-hidden rounded-[1.4rem]"
-            style={{ height: visibleHeight || 720 }}
-            data-lenis-prevent
-          >
-            <iframe
-              src={url}
-              title={preview.title}
-              className="border-0 origin-top-left"
-              style={{
-                width: iframeWidth,
-                height: iframeHeight,
-                transform: `scale(${scale})`,
-              }}
-              loading="lazy"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation-by-user-activation allow-modals"
-            />
-          </div>
+    <div
+      className={[
+        frameClasses,
+        "border border-black/10 bg-[#181217] shadow-[0_32px_120px_rgba(20,16,20,0.18)]",
+      ].join(" ")}
+    >
+      <div className="rounded-[1.8rem] bg-[#fffaf9] p-1.5">
+        <div className="mb-0 flex items-center gap-2 px-4 py-2.5">
+          <span className="size-2 rounded-full bg-[#ff817d]" />
+          <span className="size-2 rounded-full bg-[#ffd76b]" />
+          <span className="size-2 rounded-full bg-[#58d17d]" />
         </div>
-      </div>
 
-      {/* Floating annotation below device */}
-      <div className="flex items-start gap-6 px-2">
-        <div className="flex-1">
-          <p className="eyebrow">{deviceLabels[device]}</p>
-          <p className="mt-2 text-sm leading-6 text-ink-muted">{preview.highlight}</p>
-        </div>
-        <div className="hidden w-px self-stretch bg-gradient-to-b from-ink/10 to-transparent sm:block" />
-        <div className="hidden flex-1 sm:block">
-          <p className="eyebrow">Refined note</p>
-          <p className="mt-2 text-sm leading-6 text-ink-muted">{preview.note}</p>
+        <div
+          ref={ref}
+          className="overflow-hidden rounded-[1.4rem]"
+          style={{ height: visibleHeight || 720 }}
+          data-lenis-prevent
+        >
+          <iframe
+            src={url}
+            title={preview.title}
+            className="border-0 origin-top-left"
+            style={{
+              width: iframeWidth,
+              height: iframeHeight,
+              transform: `scale(${scale})`,
+            }}
+            loading="lazy"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation-by-user-activation allow-modals"
+          />
         </div>
       </div>
     </div>

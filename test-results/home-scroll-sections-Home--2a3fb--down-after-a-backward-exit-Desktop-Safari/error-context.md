@@ -1,0 +1,143 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner:
+      - button "Open navigation" [ref=e4] [cursor=pointer]:
+        - img "Gonish" [ref=e6]
+    - main [ref=e8]:
+      - generic [ref=e10]:
+        - generic:
+          - img "Gonish"
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - paragraph [ref=e17]: Why Gonish
+          - generic [ref=e18]:
+            - paragraph [ref=e20]: Scroll to enter
+            - paragraph [ref=e21]: Enter the pinned story
+        - generic [ref=e23]:
+          - generic [ref=e25]:
+            - img
+            - generic [ref=e27] [cursor=pointer]:
+              - generic [ref=e29]: 품격
+              - img [ref=e30]
+            - generic [ref=e34] [cursor=pointer]:
+              - generic [ref=e36]: 맞춤
+              - img [ref=e37]
+            - generic [ref=e41]:
+              - generic [ref=e43]: 속도
+              - img [ref=e45]
+          - generic [ref=e49]:
+            - img [ref=e53]
+            - heading "늦지 않게, 가볍지 않게. 완성도 높은 속도로 오픈합니다." [level=2] [ref=e60]
+            - paragraph [ref=e61]: 런칭이 늦어질수록 기회도 함께 미뤄집니다. 빠른 초안과 명확한 진행 공유로 불확실성을 줄이고, 약속한 일정 안에서 품질을 놓치지 않는 제작을 지향합니다.
+            - generic [ref=e62]:
+              - paragraph [ref=e65]: 빠른 초안으로 시작부터 방향을 선명하게 확인
+              - paragraph [ref=e68]: 투명한 진행으로 기대를 현실로 만드는 경험
+              - paragraph [ref=e71]: 빠르게 만들었다는 티 없이 완성도까지 챙긴 결과물
+        - generic:
+          - generic:
+            - paragraph: Scroll to enter
+            - paragraph: Enter the pinned story
+          - generic:
+            - generic: 품격
+          - generic:
+            - generic: 맞춤
+          - generic:
+            - generic: 속도
+        - paragraph [ref=e72]: Scene 3 of 3
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - paragraph [ref=e78]: Signature invitation
+          - paragraph [ref=e79]: 브랜드가 가장 빛나는 순간, 그 느낌을 놓치지 않도록. Gonish가 당신의 브랜드를 완성해드릴게요.
+        - generic [ref=e80]:
+          - paragraph [ref=e81]:
+            - generic [ref=e82]: Gonish와 완성하세요.
+          - paragraph [ref=e83]:
+            - generic [ref=e84]:
+              - text: Gonish와
+              - text: 완성하세요.
+          - paragraph:
+            - generic: Gonish와 완성하세요.
+        - paragraph [ref=e86]:
+          - generic [ref=e87]:
+            - text: 한 번 스쳐 가는 화면보다,
+            - text: 오래 남는 첫인상을 설계합니다.
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - paragraph [ref=e91]: Next orbit
+          - paragraph [ref=e92]:
+            - text: 원하는 궤도를 선택해
+            - text: 다음 장면으로
+            - text: 이어가세요.
+        - generic [ref=e93]:
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - img
+          - link "About" [ref=e100]:
+            - /url: /about
+            - generic [ref=e101]: About
+          - link "Portfolio" [ref=e107]:
+            - /url: /portfolio
+            - generic [ref=e108]: Portfolio
+          - link "Estimate" [ref=e114]:
+            - /url: /estimate
+            - generic [ref=e115]: Estimate
+          - link "Contact" [ref=e121]:
+            - /url: /contact
+            - generic [ref=e122]: Contact
+        - generic [ref=e123]:
+          - link "프로젝트 상담 시작하기" [ref=e124]:
+            - /url: /contact
+          - paragraph [ref=e125]: 궤도 위의 항목을 선택하거나, 바로 상담을 시작하실 수 있습니다.
+    - contentinfo [ref=e126]:
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - paragraph [ref=e134]: Gonish
+            - paragraph [ref=e135]:
+              - text: 당신의 브랜드가
+              - text: 당신의 생각보다 더 빛나도록
+          - generic [ref=e136]:
+            - generic [ref=e137]:
+              - link "Main" [ref=e138]:
+                - /url: /
+              - link "About" [ref=e139]:
+                - /url: /about
+              - link "Portfolio" [ref=e140]:
+                - /url: /portfolio
+              - link "Estimate" [ref=e141]:
+                - /url: /estimate
+              - link "Contact" [ref=e143]:
+                - /url: /contact
+            - link "프로젝트 이야기하기" [ref=e144]:
+              - /url: /contact
+        - generic [ref=e146]:
+          - paragraph [ref=e147]: 브랜드의 가치를 더 빛나게 설계해드립니다.
+          - paragraph [ref=e148]: © 2026 Gonish. Brand-focused web studio.
+  - generic [ref=e153] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e154]:
+      - img [ref=e155]
+    - generic [ref=e160]:
+      - button "Open issues overlay" [ref=e161]:
+        - generic [ref=e162]:
+          - generic [ref=e163]: "0"
+          - generic [ref=e164]: "1"
+        - generic [ref=e165]: Issue
+      - button "Collapse issues badge" [ref=e166]:
+        - img [ref=e167]
+  - alert [ref=e169]
+```
