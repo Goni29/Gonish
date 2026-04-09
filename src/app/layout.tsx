@@ -4,8 +4,13 @@ import AppLayout from "@/components/layout/AppLayout";
 import "@/styles/index.css";
 
 export const metadata: Metadata = {
-  title: "Gonish Portfolio",
+  title: "Gonish",
   description: "Curated premium brand portfolio by Gonish",
+  icons: {
+    icon: "/Gonish.png",
+    shortcut: "/Gonish.png",
+    apple: "/Gonish.png",
+  },
 };
 
 type RootLayoutProps = {
