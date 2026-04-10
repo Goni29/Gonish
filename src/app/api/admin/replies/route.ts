@@ -7,7 +7,6 @@ import {
   buildReplyEmailText,
   buildReplyPreview,
 } from "@/lib/adminReply";
-import { getEmailLogoAttachment } from "@/lib/emailBranding";
 import { getPublicSiteOrigin } from "@/lib/publicSiteOrigin";
 import { isValidReplyEmail } from "@/lib/replyContact";
 import { getAdminDashboardKey, isAdminAuthenticated } from "@/lib/server/adminAuth";
@@ -124,7 +123,6 @@ export async function POST(request: Request) {
       subject,
       html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
       text: buildReplyEmailText(draft, message, receiveEmail),
-      attachments: [getEmailLogoAttachment()],
     }).catch((e: unknown) => ({ data: null, error: e }));
 
     if (sendError) {
@@ -178,7 +176,6 @@ export async function POST(request: Request) {
     subject,
     html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
     text: buildReplyEmailText(draft, message, receiveEmail),
-    attachments: [getEmailLogoAttachment()],
   }).catch((e: unknown) => ({ data: null, error: e }));
 
   if (sendError) {
