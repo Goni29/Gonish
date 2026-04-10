@@ -2,7 +2,7 @@ import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypt
 import { cookies } from "next/headers";
 
 export const ADMIN_SESSION_COOKIE = "gonish_admin_session";
-export const ADMIN_SESSION_COOKIE_PATH = "/admin";
+export const ADMIN_SESSION_COOKIE_PATH = "/";
 export const ADMIN_SESSION_MAX_AGE = 60 * 60 * 12; // 12시간
 
 /**
