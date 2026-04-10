@@ -15,15 +15,17 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function clearAdminCookie(response: NextResponse) {
-  response.cookies.set({
+  const base = {
     name: ADMIN_SESSION_COOKIE,
     value: "",
-    path: ADMIN_SESSION_COOKIE_PATH,
     maxAge: 0,
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "strict" as const,
     secure: process.env.NODE_ENV === "production",
-  });
+  };
+  // 현재 path(/)와 구버전 path(/admin) 모두 제거
+  response.cookies.set({ ...base, path: ADMIN_SESSION_COOKIE_PATH });
+  response.cookies.set({ ...base, path: "/admin" });
 }
 
 export async function POST(request: Request) {
