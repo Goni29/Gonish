@@ -429,10 +429,7 @@ export function buildGonishEmailShell({
   <body style="margin:0;padding:0;background:#fdf8f9;">
     <div style="background:radial-gradient(circle at 12% 8%, rgba(243,29,91,0.07) 0%, rgba(243,29,91,0) 28%), radial-gradient(circle at 88% 16%, rgba(124,77,255,0.06) 0%, rgba(124,77,255,0) 24%), linear-gradient(180deg, #fdf8f9 0%, #fff5f8 100%);">
       <div style="max-width:720px;margin:0 auto;padding:52px 20px 56px;">
-        <div style="position:relative;">
-          <div style="position:absolute;top:72px;left:-56px;width:240px;height:240px;border:1px solid rgba(243,29,91,0.06);border-radius:50%;"></div>
-          <div style="position:absolute;top:224px;right:-30px;width:190px;height:190px;border:1px solid rgba(243,29,91,0.05);border-radius:50%;"></div>
-          <div style="position:relative;z-index:1;">
+        <div>
             <div style="text-align:center;">
               ${renderLogo(siteOrigin, { variant: "hero" })}
             </div>
@@ -462,7 +459,6 @@ export function buildGonishEmailShell({
               </div>
               ${renderFooterLink(siteOrigin)}
             </div>
-          </div>
         </div>
       </div>
     </div>
