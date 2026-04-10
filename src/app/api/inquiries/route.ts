@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { getEmailLogoAttachment } from "@/lib/emailBranding";
 import {
   contactEmailHtml,
   contactReceiptEmailHtml,
@@ -152,7 +151,6 @@ export async function POST(request: Request) {
         replyTo: isValidReplyEmail(sanitizedForm.reply) ? sanitizedForm.reply : undefined,
         subject,
         html: contactEmailHtml(sanitizedForm, { siteOrigin }),
-        attachments: [getEmailLogoAttachment()],
       });
 
       const customerReceiptPromise = isValidReplyEmail(sanitizedForm.reply)
@@ -163,7 +161,6 @@ export async function POST(request: Request) {
               replyTo: internalReplyTo,
               subject: customerReceiptSubject,
               html: contactReceiptEmailHtml(sanitizedForm, { siteOrigin }),
-              attachments: [getEmailLogoAttachment()],
             })
             .catch(() => undefined)
         : Promise.resolve(undefined);
@@ -280,7 +277,6 @@ export async function POST(request: Request) {
           contractUrl: contractUrl.toString(),
           siteOrigin,
         }),
-        attachments: [getEmailLogoAttachment()],
       });
 
       const customerReceiptPromise = isValidReplyEmail(lead.emailData.reply)
@@ -293,7 +289,6 @@ export async function POST(request: Request) {
               html: estimateReceiptEmailHtml(lead.emailData, {
                 siteOrigin,
               }),
-              attachments: [getEmailLogoAttachment()],
             })
             .catch(() => undefined)
         : Promise.resolve(undefined);

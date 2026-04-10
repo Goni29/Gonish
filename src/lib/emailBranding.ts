@@ -245,14 +245,17 @@ export function getEmailLogoAttachment() {
     contentId: EMAIL_LOGO_CID,
   };
 }
-function renderLogo(_siteOrigin?: string, options?: LogoRenderOptions) {
+function renderLogo(siteOrigin?: string, options?: LogoRenderOptions) {
   const variant = options?.variant ?? "hero";
   const width = variant === "hero" ? 360 : 170;
   const height = variant === "hero" ? 134 : 63;
+  const logoUrl = buildAbsoluteAssetUrl(siteOrigin, "/Gonish_email_logo.png");
+
+  if (!logoUrl) return "";
 
   return `
     <img
-      src="cid:${EMAIL_LOGO_CID}"
+      src="${logoUrl}"
       width="${width}"
       height="${height}"
       alt="Gonish"
