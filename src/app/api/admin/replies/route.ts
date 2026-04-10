@@ -117,17 +117,18 @@ export async function POST(request: Request) {
 
     const draft = buildEstimateReplyDraft(lead);
 
-    try {
-      await resend.emails.send({
-        from: fromEmail,
-        to: [recipientEmail],
-        replyTo,
-        subject,
-        html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
-        text: buildReplyEmailText(draft, message, receiveEmail),
-        attachments: [getEmailLogoAttachment()],
-      });
-    } catch {
+    const { error: sendError } = await resend.emails.send({
+      from: fromEmail,
+      to: [recipientEmail],
+      replyTo,
+      subject,
+      html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
+      text: buildReplyEmailText(draft, message, receiveEmail),
+      attachments: [getEmailLogoAttachment()],
+    }).catch((e: unknown) => ({ data: null, error: e }));
+
+    if (sendError) {
+      console.error("[POST /api/admin/replies] resend error (estimate)", sendError);
       return NextResponse.json({ ok: false, message: "메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요." }, { status: 502 });
     }
 
@@ -170,17 +171,18 @@ export async function POST(request: Request) {
 
   const draft = buildContactReplyDraft(inquiry);
 
-  try {
-    await resend.emails.send({
-      from: fromEmail,
-      to: [recipientEmail],
-      replyTo,
-      subject,
-      html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
-      text: buildReplyEmailText(draft, message, receiveEmail),
-      attachments: [getEmailLogoAttachment()],
-    });
-  } catch {
+  const { error: sendError } = await resend.emails.send({
+    from: fromEmail,
+    to: [recipientEmail],
+    replyTo,
+    subject,
+    html: buildReplyEmailHtml(draft, message, receiveEmail, { siteOrigin }),
+    text: buildReplyEmailText(draft, message, receiveEmail),
+    attachments: [getEmailLogoAttachment()],
+  }).catch((e: unknown) => ({ data: null, error: e }));
+
+  if (sendError) {
+    console.error("[POST /api/admin/replies] resend error (contact)", sendError);
     return NextResponse.json({ ok: false, message: "메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요." }, { status: 502 });
   }
 
