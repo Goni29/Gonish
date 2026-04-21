@@ -77,7 +77,7 @@ function draftToSections(draft: EstimateContractDraft) {
       `잔금 ${balanceLabel}은 최종 검수 완료 후 지급합니다.`,
       "세금계산서 또는 현금영수증 발행 여부는 별도 협의합니다.",
     ],
-    revisionText: draft.revisionPolicy || "시안 기준 2회 수정 포함. 방향 변경이나 추가 기능 요청은 별도 견적으로 제안합니다.",
+    revisionText: draft.revisionPolicy || "기본 6회 수정 포함. 방향 변경이나 추가 기능 요청은 별도 견적으로 제안합니다.",
     portfolioReviewText,
     extraText,
   };

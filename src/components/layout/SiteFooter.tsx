@@ -40,7 +40,7 @@ export default function SiteFooter() {
                 >
                   당신의 브랜드가
                   <br />
-                  당신의 생각보다 더 빛나도록
+                  더 빛나도록 설계합니다.
                 </p>
               </div>
 

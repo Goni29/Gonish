@@ -280,7 +280,7 @@ export default function LeadPipelineEditor({
             value={priceRange}
             onChange={(event) => setPriceRange(event.target.value)}
             onBlur={() => setPriceRange(normalizeEstimatePriceRangeInput(priceRange))}
-            placeholder="예: 180~260 또는 180만 ~ 260만 원"
+            placeholder="예: 20~45 또는 20만 ~ 45만 원"
             className={styles.editorInput}
           />
           <span className={styles.editorHint}>적용 버튼을 누르면 템플릿 초안이 새로고침 없이 바로 바뀝니다.</span>
