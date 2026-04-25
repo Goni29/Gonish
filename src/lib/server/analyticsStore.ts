@@ -2,6 +2,7 @@ const SUPABASE_ANALYTICS_TABLE = process.env.SUPABASE_ANALYTICS_TABLE || "analyt
 
 type AnalyticsEventRow = {
   id: string;
+  visitor_id: string | null;
   session_id: string;
   page_path: string;
   referrer: string;
@@ -13,6 +14,7 @@ type AnalyticsEventRow = {
 };
 
 export type InsertAnalyticsEvent = {
+  visitorId: string;
   sessionId: string;
   pagePath: string;
   referrer?: string;
@@ -52,6 +54,7 @@ export async function insertAnalyticsEvent(event: InsertAnalyticsEvent) {
     headers: { ...supabaseHeaders(config.serviceRoleKey), Prefer: "return=minimal" },
     body: JSON.stringify([
       {
+        visitor_id: event.visitorId,
         session_id: event.sessionId,
         page_path: event.pagePath,
         referrer: event.referrer || "",
@@ -70,11 +73,18 @@ export async function insertAnalyticsEvent(event: InsertAnalyticsEvent) {
   }
 }
 
-export async function updateAnalyticsEventDuration(sessionId: string, pagePath: string, durationMs: number, exitedTo: string) {
+export async function updateAnalyticsEventDuration(
+  visitorId: string,
+  sessionId: string,
+  pagePath: string,
+  durationMs: number,
+  exitedTo: string,
+) {
   const config = getSupabaseConfig();
 
   const latestRowQuery = new URLSearchParams({
     select: "id",
+    visitor_id: `eq.${visitorId}`,
     session_id: `eq.${sessionId}`,
     page_path: `eq.${pagePath}`,
     order: "created_at.desc",
@@ -107,6 +117,7 @@ export async function updateAnalyticsEventDuration(sessionId: string, pagePath: 
     method: "PATCH",
     headers: { ...supabaseHeaders(config.serviceRoleKey), Prefer: "return=minimal" },
     body: JSON.stringify({
+      visitor_id: visitorId,
       duration_ms: durationMs,
       exited_to: exitedTo,
     }),
@@ -125,7 +136,7 @@ async function fetchRecentEvents(days: number): Promise<AnalyticsEventRow[]> {
   since.setDate(since.getDate() - days);
 
   const query = new URLSearchParams({
-    select: "id,session_id,page_path,referrer,entered_at,duration_ms,exited_to,user_agent,created_at",
+    select: "id,visitor_id,session_id,page_path,referrer,entered_at,duration_ms,exited_to,user_agent,created_at",
     created_at: `gte.${since.toISOString()}`,
     order: "created_at.desc",
     limit: "5000",
@@ -146,7 +157,7 @@ async function fetchRecentEvents(days: number): Promise<AnalyticsEventRow[]> {
   return Array.isArray(rows) ? rows : [];
 }
 
-/** 일일 접속 유저수 (unique sessions per day) for last N days */
+/** 일일 방문자 수 (visitor_id 우선, 과거 데이터는 session_id fallback) */
 export async function getDailyUserCounts(days = 30): Promise<DailyUserCount[]> {
   const rows = await fetchRecentEvents(days);
 
@@ -154,7 +165,7 @@ export async function getDailyUserCounts(days = 30): Promise<DailyUserCount[]> {
   for (const row of rows) {
     const date = row.created_at.slice(0, 10);
     if (!dateMap.has(date)) dateMap.set(date, new Set());
-    dateMap.get(date)!.add(row.session_id);
+    dateMap.get(date)!.add(row.visitor_id || row.session_id);
   }
 
   const result: DailyUserCount[] = [];
@@ -165,7 +176,7 @@ export async function getDailyUserCounts(days = 30): Promise<DailyUserCount[]> {
   return result.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-/** 유저 체류 시간 (average session duration per day) */
+/** 방문 세션 평균 체류 시간 */
 export async function getAvgSessionDurations(days = 30): Promise<AvgDuration[]> {
   const rows = await fetchRecentEvents(days);
 
@@ -188,7 +199,7 @@ export async function getAvgSessionDurations(days = 30): Promise<AvgDuration[]> 
   return result.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-/** 유저 체류 시간 대비 이탈 경로 */
+/** 방문 세션 체류 시간 대비 이탈 경로 */
 export async function getExitPaths(days = 30): Promise<ExitPath[]> {
   const rows = await fetchRecentEvents(days);
 
@@ -216,7 +227,7 @@ export async function getExitPaths(days = 30): Promise<ExitPath[]> {
   return result.sort((a, b) => b.count - a.count);
 }
 
-/** 오늘 접속 유저수 */
+/** 오늘 방문자 수 */
 export async function getTodayUserCount(): Promise<number> {
   const rows = await fetchRecentEvents(1);
   const today = new Date().toISOString().slice(0, 10);
